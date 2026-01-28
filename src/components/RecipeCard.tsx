@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link } from "react-router-dom";
 import {
   Card,
   CardContent,
@@ -9,10 +9,10 @@ import {
   Box,
   Chip,
   Stack,
-} from '@mui/material';
-import { Add as AddIcon, AccessTime as ClockIcon } from '@mui/icons-material';
-import { Recipe } from '@/data/recipes';
-import { useShoppingList } from '@/context/ShoppingListContext';
+} from "@mui/material";
+import { Add as AddIcon, AccessTime as ClockIcon } from "@mui/icons-material";
+import { Recipe } from "@/data/recipes";
+import { useShoppingList } from "@/context/ShoppingListContext";
 
 interface RecipeCardProps {
   recipe: Recipe;
@@ -32,31 +32,31 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
       component={Link}
       to={`/recipe/${recipe.id}`}
       sx={{
-        textDecoration: 'none',
-        display: 'block',
-        transition: 'all 0.3s ease',
-        '&:hover': {
-          transform: 'translateY(-4px)',
-          boxShadow: '0 10px 20px -5px rgba(31, 26, 20, 0.15)',
+        textDecoration: "none",
+        display: "block",
+        transition: "all 0.3s ease",
+        "&:hover": {
+          transform: "translateY(-4px)",
+          boxShadow: "0 10px 20px -5px rgba(31, 26, 20, 0.15)",
         },
-        '&:hover .add-button': {
+        "&:hover .add-button": {
           opacity: 1,
         },
-        '&:hover .recipe-image': {
-          transform: 'scale(1.05)',
+        "&:hover .recipe-image": {
+          transform: "scale(1.05)",
         },
       }}
     >
-      <Box sx={{ position: 'relative', overflow: 'hidden' }}>
+      <Box sx={{ position: "relative", overflow: "hidden" }}>
         <CardMedia
           component="img"
           image={recipe.image}
           alt={recipe.title}
           className="recipe-image"
           sx={{
-            aspectRatio: '4/3',
-            objectFit: 'cover',
-            transition: 'transform 0.5s ease',
+            aspectRatio: "4/3",
+            objectFit: "cover",
+            transition: "transform 0.5s ease",
           }}
         />
 
@@ -64,17 +64,17 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
         <Stack
           direction="row"
           spacing={1}
-          sx={{ position: 'absolute', top: 12, left: 12 }}
+          sx={{ position: "absolute", top: 12, left: 12 }}
         >
           {recipe.isTopRated && (
             <Chip
               label="Top 50"
               size="small"
               sx={{
-                bgcolor: 'warning.main',
-                color: 'white',
+                bgcolor: "warning.main",
+                color: "white",
                 fontWeight: 600,
-                fontSize: '0.75rem',
+                fontSize: "0.75rem",
               }}
             />
           )}
@@ -85,14 +85,14 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
           className="add-button"
           onClick={handleAddToList}
           sx={{
-            position: 'absolute',
+            position: "absolute",
             top: 12,
             right: 12,
-            bgcolor: 'rgba(255, 255, 255, 0.9)',
+            bgcolor: "rgba(255, 255, 255, 0.9)",
             opacity: 0,
-            transition: 'opacity 0.2s ease',
-            '&:hover': {
-              bgcolor: 'white',
+            transition: "opacity 0.2s ease",
+            "&:hover": {
+              bgcolor: "white",
             },
           }}
           size="small"
@@ -108,20 +108,25 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
           sx={{
             fontFamily: '"Fraunces", serif',
             fontWeight: 600,
-            fontSize: '1.1rem',
+            fontSize: "1.1rem",
             lineHeight: 1.3,
             mb: 1,
-            display: '-webkit-box',
+            display: "-webkit-box",
             WebkitLineClamp: 2,
-            WebkitBoxOrient: 'vertical',
-            overflow: 'hidden',
+            WebkitBoxOrient: "vertical",
+            overflow: "hidden",
           }}
         >
           {recipe.title}
         </Typography>
 
-        <Stack direction="row" alignItems="center" spacing={0.5} sx={{ mb: 1.5 }}>
-          <ClockIcon sx={{ fontSize: 16, color: 'text.secondary' }} />
+        <Stack
+          direction="row"
+          alignItems="center"
+          spacing={0.5}
+          sx={{ mb: 1.5 }}
+        >
+          <ClockIcon sx={{ fontSize: 16, color: "text.secondary" }} />
           <Typography variant="body2" color="text.secondary">
             {recipe.cookTime}
           </Typography>

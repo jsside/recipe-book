@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useState, useCallback } from 'react';
-import { Ingredient } from '@/data/recipes';
+import React, { createContext, useContext, useState, useCallback } from "react";
+import { Ingredient } from "@/data/recipes";
 
 interface ShoppingItem extends Ingredient {
   checked: boolean;
@@ -9,7 +9,11 @@ interface ShoppingItem extends Ingredient {
 
 interface ShoppingListContextType {
   items: ShoppingItem[];
-  addIngredients: (ingredients: Ingredient[], recipeId: string, recipeTitle: string) => void;
+  addIngredients: (
+    ingredients: Ingredient[],
+    recipeId: string,
+    recipeTitle: string,
+  ) => void;
   removeItem: (itemId: string, recipeId: string) => void;
   toggleItem: (itemId: string, recipeId: string) => void;
   clearList: () => void;
@@ -19,42 +23,59 @@ interface ShoppingListContextType {
   itemCount: number;
 }
 
-const ShoppingListContext = createContext<ShoppingListContextType | undefined>(undefined);
+const ShoppingListContext = createContext<ShoppingListContextType | undefined>(
+  undefined,
+);
 
-export function ShoppingListProvider({ children }: { children: React.ReactNode }) {
+export function ShoppingListProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const [items, setItems] = useState<ShoppingItem[]>([]);
   const [isOpen, setIsOpen] = useState(false);
 
-  const addIngredients = useCallback((ingredients: Ingredient[], recipeId: string, recipeTitle: string) => {
-    setItems(prev => {
-      const newItems = ingredients.map(ing => ({
-        ...ing,
-        checked: false,
-        recipeId,
-        recipeTitle,
-      }));
-      
-      // Filter out duplicates from the same recipe
-      const filtered = prev.filter(
-        item => !(item.recipeId === recipeId && ingredients.some(ing => ing.id === item.id))
-      );
-      
-      return [...filtered, ...newItems];
-    });
-    setIsOpen(true);
-  }, []);
+  const addIngredients = useCallback(
+    (ingredients: Ingredient[], recipeId: string, recipeTitle: string) => {
+      setItems((prev) => {
+        const newItems = ingredients.map((ing) => ({
+          ...ing,
+          checked: false,
+          recipeId,
+          recipeTitle,
+        }));
+
+        // Filter out duplicates from the same recipe
+        const filtered = prev.filter(
+          (item) =>
+            !(
+              item.recipeId === recipeId &&
+              ingredients.some((ing) => ing.id === item.id)
+            ),
+        );
+
+        return [...filtered, ...newItems];
+      });
+      setIsOpen(true);
+    },
+    [],
+  );
 
   const removeItem = useCallback((itemId: string, recipeId: string) => {
-    setItems(prev => prev.filter(item => !(item.id === itemId && item.recipeId === recipeId)));
+    setItems((prev) =>
+      prev.filter(
+        (item) => !(item.id === itemId && item.recipeId === recipeId),
+      ),
+    );
   }, []);
 
   const toggleItem = useCallback((itemId: string, recipeId: string) => {
-    setItems(prev =>
-      prev.map(item =>
+    setItems((prev) =>
+      prev.map((item) =>
         item.id === itemId && item.recipeId === recipeId
           ? { ...item, checked: !item.checked }
-          : item
-      )
+          : item,
+      ),
     );
   }, []);
 
@@ -63,7 +84,7 @@ export function ShoppingListProvider({ children }: { children: React.ReactNode }
   }, []);
 
   const clearChecked = useCallback(() => {
-    setItems(prev => prev.filter(item => !item.checked));
+    setItems((prev) => prev.filter((item) => !item.checked));
   }, []);
 
   return (
@@ -88,7 +109,9 @@ export function ShoppingListProvider({ children }: { children: React.ReactNode }
 export function useShoppingList() {
   const context = useContext(ShoppingListContext);
   if (!context) {
-    throw new Error('useShoppingList must be used within a ShoppingListProvider');
+    throw new Error(
+      "useShoppingList must be used within a ShoppingListProvider",
+    );
   }
   return context;
 }

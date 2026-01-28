@@ -1,5 +1,5 @@
-import { useState, useMemo } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useState, useMemo } from "react";
+import { useSearchParams } from "react-router-dom";
 import {
   Container,
   Box,
@@ -8,21 +8,24 @@ import {
   TextField,
   InputAdornment,
   Button,
-} from '@mui/material';
-import { Search as SearchIcon, FilterList as FilterIcon } from '@mui/icons-material';
-import { RecipeCard } from '@/components/RecipeCard';
-import { CategoryChips } from '@/components/CategoryChips';
-import { useRecipes } from '@/context/RecipeContext';
+} from "@mui/material";
+import {
+  Search as SearchIcon,
+  FilterList as FilterIcon,
+} from "@mui/icons-material";
+import { RecipeCard } from "@/components/RecipeCard";
+import { CategoryChips } from "@/components/CategoryChips";
+import { useRecipes } from "@/context/RecipeContext";
 
 export default function Recipes() {
   const { recipes } = useRecipes();
   const [searchParams] = useSearchParams();
-  const categoryParam = searchParams.get('category') || '';
-  const ingredientParam = searchParams.get('ingredient') || '';
+  const categoryParam = searchParams.get("category") || "";
+  const ingredientParam = searchParams.get("ingredient") || "";
 
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(
-    categoryParam || null
+    categoryParam || null,
   );
 
   const filteredRecipes = useMemo(() => {
@@ -30,30 +33,32 @@ export default function Recipes() {
 
     // Filter by category
     if (selectedCategory) {
-      filtered = filtered.filter(r =>
-        r.category.some(cat =>
-          cat.toLowerCase().includes(selectedCategory.toLowerCase())
-        )
+      filtered = filtered.filter((r) =>
+        r.category.some((cat) =>
+          cat.toLowerCase().includes(selectedCategory.toLowerCase()),
+        ),
       );
     }
 
     // Filter by ingredient
     if (ingredientParam) {
-      filtered = filtered.filter(r =>
-        r.ingredients.some(ing =>
-          ing.name.toLowerCase().includes(ingredientParam.toLowerCase()) ||
-          ing.category.toLowerCase().includes(ingredientParam.toLowerCase())
-        )
+      filtered = filtered.filter((r) =>
+        r.ingredients.some(
+          (ing) =>
+            ing.name.toLowerCase().includes(ingredientParam.toLowerCase()) ||
+            ing.category.toLowerCase().includes(ingredientParam.toLowerCase()),
+        ),
       );
     }
 
     // Filter by search
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
-      filtered = filtered.filter(r =>
-        r.title.toLowerCase().includes(query) ||
-        r.description.toLowerCase().includes(query) ||
-        r.ingredients.some(ing => ing.name.toLowerCase().includes(query))
+      filtered = filtered.filter(
+        (r) =>
+          r.title.toLowerCase().includes(query) ||
+          r.description.toLowerCase().includes(query) ||
+          r.ingredients.some((ing) => ing.name.toLowerCase().includes(query)),
       );
     }
 
@@ -61,15 +66,15 @@ export default function Recipes() {
   }, [selectedCategory, ingredientParam, searchQuery, recipes]);
 
   return (
-    <Box sx={{ minHeight: '100vh', py: 4 }}>
+    <Box sx={{ minHeight: "100vh", py: 4 }}>
       <Container maxWidth="lg">
         {/* Header */}
         <Box sx={{ mb: 4 }}>
           <Typography
             variant="h1"
-            sx={{ fontSize: { xs: '1.75rem', md: '2.25rem' }, mb: 1 }}
+            sx={{ fontSize: { xs: "1.75rem", md: "2.25rem" }, mb: 1 }}
           >
-            {ingredientParam ? `${ingredientParam} Recipes` : 'All Recipes'}
+            {ingredientParam ? `${ingredientParam} Recipes` : "All recipes"}
           </Typography>
           <Typography color="text.secondary">
             {filteredRecipes.length} recipes found
@@ -79,8 +84,8 @@ export default function Recipes() {
         {/* Search and filters */}
         <Box
           sx={{
-            display: 'flex',
-            flexDirection: { xs: 'column', sm: 'row' },
+            display: "flex",
+            flexDirection: { xs: "column", sm: "row" },
             gap: 2,
             mb: 3,
           }}
@@ -95,13 +100,13 @@ export default function Recipes() {
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
-                  <SearchIcon sx={{ color: 'text.secondary' }} />
+                  <SearchIcon sx={{ color: "text.secondary" }} />
                 </InputAdornment>
               ),
               sx: {
                 borderRadius: 6,
-                bgcolor: 'rgba(0, 0, 0, 0.04)',
-                '& fieldset': { border: 'none' },
+                bgcolor: "rgba(0, 0, 0, 0.04)",
+                "& fieldset": { border: "none" },
               },
             }}
           />
@@ -109,8 +114,8 @@ export default function Recipes() {
             variant="outlined"
             startIcon={<FilterIcon />}
             sx={{
-              borderColor: 'divider',
-              color: 'text.primary',
+              borderColor: "divider",
+              color: "text.primary",
             }}
           >
             Filters
@@ -135,7 +140,7 @@ export default function Recipes() {
             ))}
           </Grid>
         ) : (
-          <Box sx={{ textAlign: 'center', py: 10 }}>
+          <Box sx={{ textAlign: "center", py: 10 }}>
             <Typography variant="h6" sx={{ mb: 1 }}>
               No recipes found
             </Typography>

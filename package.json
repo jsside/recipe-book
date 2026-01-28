@@ -10,7 +10,10 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "prepare": "husky install",
+    "fix:format": "prettier --write '**/*.{ts,tsx,js,json,md,mdx}'",
+    "fix:lint": "eslint --fix ./src --ext ts,tsx --report-unused-disable-directives --max-warnings 0"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -45,15 +48,19 @@
     "@radix-ui/react-toggle": "^1.1.9",
     "@radix-ui/react-toggle-group": "^1.1.10",
     "@radix-ui/react-tooltip": "^1.2.7",
+    "@supabase/supabase-js": "^2.93.2",
     "@tanstack/react-query": "^5.83.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
     "date-fns": "^3.6.0",
+    "devmoji": "^2.3.0",
     "embla-carousel-react": "^8.6.0",
+    "husky": "^9.1.7",
     "input-otp": "^1.4.2",
     "lucide-react": "^0.462.0",
     "next-themes": "^0.3.0",
+    "prettier": "^3.8.1",
     "react": "^18.3.1",
     "react-day-picker": "^8.10.1",
     "react-dom": "^18.3.1",
@@ -89,5 +96,11 @@
     "typescript-eslint": "^8.38.0",
     "vite": "^5.4.19",
     "vitest": "^3.2.4"
+  },
+  "lint-staged": {
+    "src/**/*.{ts,tsx,js}": [
+      "prettier --write '**/*.{ts,tsx,js,json,md,mdx}'",
+      "eslint --fix ./src --ext ts,tsx --report-unused-disable-directives --max-warnings 0"
+    ]
   }
 }

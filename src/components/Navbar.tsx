@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import {
   AppBar,
   Toolbar,
@@ -19,7 +19,7 @@ import {
   Menu,
   MenuItem,
   Divider,
-} from '@mui/material';
+} from "@mui/material";
 import {
   Search as SearchIcon,
   ShoppingCart as CartIcon,
@@ -27,21 +27,28 @@ import {
   Close as CloseIcon,
   Person as PersonIcon,
   Add as AddIcon,
-} from '@mui/icons-material';
-import { useShoppingList } from '@/context/ShoppingListContext';
-import { useAuth } from '@/context/AuthContext';
+} from "@mui/icons-material";
+import { useShoppingList } from "@/context/ShoppingListContext";
+import { useAuth } from "@/context/AuthContext";
+import { insertIf } from "@/features/isFeatureEnabled";
+import { Features } from "@/features";
+import RenderComponent from "./helpers/renderComponent";
+import { SITE_NAME } from "@/constants";
+import { supabase } from "@/db/supabaseClient";
 
 const navLinks = [
-  { label: 'All Recipes', href: '/recipes' },
-  { label: 'Weeknight Dinner', href: '/recipes?category=Dinner' },
-  { label: 'Easy Lunches', href: '/recipes?category=Easy lunches' },
-  { label: 'Ingredients', href: '/ingredients' },
-  { label: 'Plan & Batch', href: '/meal-plans' },
+  { label: "All recipes", href: "/recipes" },
+  insertIf(Features["feature-recipe-by-ingredient"], [
+    { label: "Ingredients", href: "/ingredients" },
+  ]),
+  insertIf(Features["feature-plan-batch"], [
+    { label: "Plan & Batch", href: "/meal-plans" },
+  ]),
 ];
 
 export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const { setIsOpen, itemCount } = useShoppingList();
   const { user, isAuthenticated, logout } = useAuth();
@@ -65,25 +72,11 @@ export function Navbar() {
   const handleLogout = () => {
     logout();
     handleUserMenuClose();
-    navigate('/');
+    navigate("/");
   };
 
   return (
     <>
-      {/* Top banner */}
-      <Box
-        sx={{
-          bgcolor: 'secondary.main',
-          color: 'secondary.contrastText',
-          textAlign: 'center',
-          py: 1,
-          fontSize: '0.875rem',
-          fontWeight: 500,
-        }}
-      >
-        Welcome to MOB Kitchen
-      </Box>
-
       {/* Main navbar */}
       <AppBar position="sticky" color="transparent" elevation={0}>
         <Toolbar sx={{ gap: 2 }}>
@@ -93,14 +86,14 @@ export function Navbar() {
             to="/"
             sx={{
               fontFamily: '"Fraunces", serif',
-              fontSize: '1.5rem',
+              fontSize: "1.5rem",
               fontWeight: 700,
-              color: 'text.primary',
-              textDecoration: 'none',
+              color: "text.primary",
+              textDecoration: "none",
               flexShrink: 0,
             }}
           >
-            mob
+            {SITE_NAME}
           </Typography>
 
           {/* Search bar - desktop */}
@@ -108,7 +101,7 @@ export function Navbar() {
             component="form"
             onSubmit={handleSearch}
             sx={{
-              display: { xs: 'none', md: 'flex' },
+              display: { xs: "none", md: "flex" },
               flex: 1,
               maxWidth: 400,
             }}
@@ -122,13 +115,13 @@ export function Navbar() {
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
-                    <SearchIcon sx={{ color: 'text.secondary' }} />
+                    <SearchIcon sx={{ color: "text.secondary" }} />
                   </InputAdornment>
                 ),
                 sx: {
                   borderRadius: 6,
-                  bgcolor: 'rgba(0, 0, 0, 0.04)',
-                  '& fieldset': { border: 'none' },
+                  bgcolor: "rgba(0, 0, 0, 0.04)",
+                  "& fieldset": { border: "none" },
                 },
               }}
             />
@@ -137,9 +130,9 @@ export function Navbar() {
           <Box sx={{ flexGrow: 1 }} />
 
           {/* Right side actions */}
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             {/* Add Recipe button for chefs */}
-            {user?.role === 'chef' && (
+            {user?.role === "chef" && (
               <Button
                 component={Link}
                 to="/add-recipe"
@@ -147,9 +140,9 @@ export function Navbar() {
                 variant="outlined"
                 size="small"
                 sx={{
-                  display: { xs: 'none', sm: 'flex' },
-                  borderColor: 'primary.main',
-                  color: 'text.primary',
+                  display: { xs: "none", sm: "flex" },
+                  borderColor: "primary.main",
+                  color: "text.primary",
                 }}
               >
                 Add Recipe
@@ -179,8 +172,8 @@ export function Navbar() {
                   anchorEl={anchorEl}
                   open={Boolean(anchorEl)}
                   onClose={handleUserMenuClose}
-                  anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-                  transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                  anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+                  transformOrigin={{ vertical: "top", horizontal: "right" }}
                 >
                   <MenuItem disabled>
                     <Box>
@@ -188,16 +181,16 @@ export function Navbar() {
                         {user?.name}
                       </Typography>
                       <Typography variant="caption" color="text.secondary">
-                        {user?.role === 'chef' ? 'Chef' : 'Viewer'}
+                        {user?.role === "chef" ? "Chef" : "Viewer"}
                       </Typography>
                     </Box>
                   </MenuItem>
                   <Divider />
-                  {user?.role === 'chef' && (
+                  {user?.role === "chef" && (
                     <MenuItem
                       onClick={() => {
                         handleUserMenuClose();
-                        navigate('/add-recipe');
+                        navigate("/add-recipe");
                       }}
                     >
                       Add Recipe
@@ -213,8 +206,8 @@ export function Navbar() {
                   to="/auth"
                   startIcon={<PersonIcon />}
                   sx={{
-                    display: { xs: 'none', sm: 'flex' },
-                    color: 'text.primary',
+                    display: { xs: "none", sm: "flex" },
+                    color: "text.primary",
                   }}
                 >
                   Log In
@@ -224,7 +217,7 @@ export function Navbar() {
                   to="/auth"
                   variant="contained"
                   color="secondary"
-                  sx={{ display: { xs: 'none', sm: 'flex' } }}
+                  sx={{ display: { xs: "none", sm: "flex" } }}
                 >
                   Join the Mob
                 </Button>
@@ -233,7 +226,7 @@ export function Navbar() {
 
             {/* Mobile menu button */}
             <IconButton
-              sx={{ display: { md: 'none' } }}
+              sx={{ display: { md: "none" } }}
               onClick={() => setMobileOpen(true)}
             >
               <MenuIcon />
@@ -244,28 +237,31 @@ export function Navbar() {
         {/* Navigation links - desktop */}
         <Box
           sx={{
-            display: { xs: 'none', md: 'flex' },
+            display: { xs: "none", md: "flex" },
             gap: 3,
             px: 3,
             pb: 1.5,
           }}
         >
-          {navLinks.map((link) => (
-            <Typography
-              key={link.href}
-              component={Link}
-              to={link.href}
-              variant="body2"
-              sx={{
-                color: 'text.secondary',
-                textDecoration: 'none',
-                fontWeight: 500,
-                '&:hover': { color: 'text.primary' },
-              }}
-            >
-              {link.label}
-            </Typography>
-          ))}
+          <RenderComponent
+            if={Features["feature-nav-links"]}
+            then={navLinks.map((link) => (
+              <Typography
+                key={link.href}
+                component={Link}
+                to={link.href}
+                variant="body2"
+                sx={{
+                  color: "text.secondary",
+                  textDecoration: "none",
+                  fontWeight: 500,
+                  "&:hover": { color: "text.primary" },
+                }}
+              >
+                {link.label}
+              </Typography>
+            ))}
+          />
         </Box>
       </AppBar>
 
@@ -276,7 +272,7 @@ export function Navbar() {
         onClose={() => setMobileOpen(false)}
       >
         <Box sx={{ width: 280, p: 2 }}>
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
+          <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 2 }}>
             <IconButton onClick={() => setMobileOpen(false)}>
               <CloseIcon />
             </IconButton>
@@ -310,7 +306,7 @@ export function Navbar() {
             ))}
           </List>
 
-          <Box sx={{ mt: 2, display: 'flex', gap: 1 }}>
+          <Box sx={{ mt: 2, display: "flex", gap: 1 }}>
             {isAuthenticated ? (
               <Button
                 fullWidth

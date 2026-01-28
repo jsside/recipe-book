@@ -1,21 +1,21 @@
-import { ThemeProvider } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import theme from '@/theme/muiTheme';
-import { ShoppingListProvider } from '@/context/ShoppingListContext';
-import { AuthProvider } from '@/context/AuthContext';
-import { RecipeProvider } from '@/context/RecipeContext';
-import { Navbar } from '@/components/Navbar';
-import { Footer } from '@/components/Footer';
-import { ShoppingListDrawer } from '@/components/ShoppingListDrawer';
-import Index from './pages/Index';
-import RecipeDetail from './pages/RecipeDetail';
-import Recipes from './pages/Recipes';
-import Ingredients from './pages/Ingredients';
-import MealPlans from './pages/MealPlans';
-import Auth from './pages/Auth';
-import AddRecipe from './pages/AddRecipe';
-import NotFound from './pages/NotFound';
+import { ThemeProvider } from "@mui/material/styles";
+import CssBaseline from "@mui/material/CssBaseline";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import theme from "@/theme/common";
+import { ShoppingListProvider } from "@/context/ShoppingListContext";
+import { AuthProvider } from "@/context/AuthContext";
+import { RecipeProvider } from "@/context/RecipeContext";
+import { Navbar } from "@/components/Navbar";
+import { Footer } from "@/components/Footer";
+import { ShoppingListDrawer } from "@/components/ShoppingListDrawer";
+import Index from "./pages/Index";
+import RecipeDetail from "./pages/RecipeDetail";
+import Recipes from "./pages/Recipes";
+import Ingredients from "./pages/Ingredients";
+import MealPlans from "./pages/MealPlans";
+import Auth from "./pages/Auth";
+import AddRecipe from "./pages/AddRecipe";
+import NotFound from "./pages/NotFound";
 
 const App = () => (
   <ThemeProvider theme={theme}>
@@ -24,7 +24,13 @@ const App = () => (
       <RecipeProvider>
         <ShoppingListProvider>
           <BrowserRouter>
-            <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                minHeight: "100vh",
+              }}
+            >
               <Navbar />
               <main style={{ flex: 1 }}>
                 <Routes>

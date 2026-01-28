@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useNavigate, Navigate } from 'react-router-dom';
+import { useState } from "react";
+import { useNavigate, Navigate } from "react-router-dom";
 import {
   Container,
   Box,
@@ -16,15 +16,15 @@ import {
   Stack,
   Alert,
   IconButton,
-} from '@mui/material';
+} from "@mui/material";
 import {
   Add as AddIcon,
   Delete as DeleteIcon,
   ArrowBack as BackIcon,
-} from '@mui/icons-material';
-import { useAuth } from '@/context/AuthContext';
-import { useRecipes } from '@/context/RecipeContext';
-import { dietaryOptions, difficultyOptions, Ingredient } from '@/data/recipes';
+} from "@mui/icons-material";
+import { useAuth } from "@/context/AuthContext";
+import { useRecipes } from "@/context/RecipeContext";
+import { dietaryOptions, difficultyOptions, Ingredient } from "@/data/recipes";
 
 export default function AddRecipe() {
   const { user } = useAuth();
@@ -36,41 +36,50 @@ export default function AddRecipe() {
   const [success, setSuccess] = useState(false);
 
   // Form state
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [image, setImage] = useState('');
-  const [cookTime, setCookTime] = useState('');
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [image, setImage] = useState("");
+  const [cookTime, setCookTime] = useState("");
   const [servings, setServings] = useState(4);
-  const [difficulty, setDifficulty] = useState<'easy' | 'medium' | 'hard'>('easy');
+  const [difficulty, setDifficulty] = useState<"easy" | "medium" | "hard">(
+    "easy",
+  );
   const [categories, setCategories] = useState<string[]>([]);
   const [dietaryTags, setDietaryTags] = useState<string[]>([]);
-  const [videoUrl, setVideoUrl] = useState('');
-  const [tips, setTips] = useState('');
+  const [videoUrl, setVideoUrl] = useState("");
+  const [tips, setTips] = useState("");
 
   // Nutrition
-  const [calories, setCalories] = useState<number | ''>('');
-  const [protein, setProtein] = useState<number | ''>('');
-  const [carbs, setCarbs] = useState<number | ''>('');
-  const [fat, setFat] = useState<number | ''>('');
+  const [calories, setCalories] = useState<number | "">("");
+  const [protein, setProtein] = useState<number | "">("");
+  const [carbs, setCarbs] = useState<number | "">("");
+  const [fat, setFat] = useState<number | "">("");
 
   // Ingredients
-  const [ingredients, setIngredients] = useState<Omit<Ingredient, 'id'>[]>([
-    { name: '', amount: '', unit: '', category: '' },
+  const [ingredients, setIngredients] = useState<Omit<Ingredient, "id">[]>([
+    { name: "", amount: "", unit: "", category: "" },
   ]);
 
   // Instructions
-  const [instructions, setInstructions] = useState<string[]>(['']);
+  const [instructions, setInstructions] = useState<string[]>([""]);
 
   // Only chefs can add recipes
-  if (!user || user.role !== 'chef') {
+  if (!user || user.role !== "chef") {
     return <Navigate to="/" replace />;
   }
 
   const addIngredient = () => {
-    setIngredients([...ingredients, { name: '', amount: '', unit: '', category: '' }]);
+    setIngredients([
+      ...ingredients,
+      { name: "", amount: "", unit: "", category: "" },
+    ]);
   };
 
-  const updateIngredient = (index: number, field: keyof Omit<Ingredient, 'id'>, value: string) => {
+  const updateIngredient = (
+    index: number,
+    field: keyof Omit<Ingredient, "id">,
+    value: string,
+  ) => {
     const updated = [...ingredients];
     updated[index] = { ...updated[index], [field]: value };
     setIngredients(updated);
@@ -83,7 +92,7 @@ export default function AddRecipe() {
   };
 
   const addInstruction = () => {
-    setInstructions([...instructions, '']);
+    setInstructions([...instructions, ""]);
   };
 
   const updateInstruction = (index: number, value: string) => {
@@ -105,21 +114,23 @@ export default function AddRecipe() {
 
     // Validation
     if (!title.trim() || !description.trim() || !cookTime.trim()) {
-      setError('Please fill in all required fields');
+      setError("Please fill in all required fields");
       setLoading(false);
       return;
     }
 
-    const validIngredients = ingredients.filter(i => i.name.trim() && i.amount.trim());
+    const validIngredients = ingredients.filter(
+      (i) => i.name.trim() && i.amount.trim(),
+    );
     if (validIngredients.length === 0) {
-      setError('Please add at least one ingredient');
+      setError("Please add at least one ingredient");
       setLoading(false);
       return;
     }
 
-    const validInstructions = instructions.filter(i => i.trim());
+    const validInstructions = instructions.filter((i) => i.trim());
     if (validInstructions.length === 0) {
-      setError('Please add at least one instruction');
+      setError("Please add at least one instruction");
       setLoading(false);
       return;
     }
@@ -128,17 +139,21 @@ export default function AddRecipe() {
       addRecipe({
         title,
         description,
-        image: image || 'https://images.unsplash.com/photo-1495521821757-a1efb6729352?w=800&q=80',
+        image:
+          image ||
+          "https://images.unsplash.com/photo-1495521821757-a1efb6729352?w=800&q=80",
         cookTime,
         servings,
         difficulty,
-        category: categories.length > 0 ? categories : ['Dinner'],
+        category: categories.length > 0 ? categories : ["Dinner"],
         dietaryTags,
         videoUrl: videoUrl || undefined,
         tips: tips || undefined,
         chef: {
           name: user.name,
-          avatar: user.avatar || 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&q=80',
+          avatar:
+            user.avatar ||
+            "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&q=80",
         },
         isTopRated: false,
         ingredients: validIngredients.map((ing, idx) => ({
@@ -146,44 +161,44 @@ export default function AddRecipe() {
           id: String(idx + 1),
         })),
         instructions: validInstructions,
-        nutrition: calories || protein || carbs || fat
-          ? {
-              calories: calories || undefined,
-              protein: protein || undefined,
-              carbs: carbs || undefined,
-              fat: fat || undefined,
-            }
-          : undefined,
+        nutrition:
+          calories || protein || carbs || fat
+            ? {
+                calories: calories || undefined,
+                protein: protein || undefined,
+                carbs: carbs || undefined,
+                fat: fat || undefined,
+              }
+            : undefined,
       });
 
       setSuccess(true);
-      setTimeout(() => navigate('/recipes'), 1500);
+      setTimeout(() => navigate("/recipes"), 1500);
     } catch (err) {
-      setError('Failed to create recipe');
+      setError("Failed to create recipe");
     }
 
     setLoading(false);
   };
 
   const categoryOptions = [
-    'Dinner',
-    'Breakfast',
-    'Lunch',
-    'Dessert',
-    'Snack',
-    'High-protein dinners',
-    'Easy lunches',
-    'Make-ahead breakfasts',
-    'New recipes',
+    "Dinner",
+    "Breakfast",
+    "Lunch",
+    "Dessert",
+    "Snack",
+    "Packed lunches",
+    "Make-ahead breakfasts",
+    "New recipes",
   ];
 
   return (
-    <Box sx={{ minHeight: '100vh', py: 4, bgcolor: 'background.default' }}>
+    <Box sx={{ minHeight: "100vh", py: 4, bgcolor: "background.default" }}>
       <Container maxWidth="md">
         <Button
           startIcon={<BackIcon />}
           onClick={() => navigate(-1)}
-          sx={{ mb: 3, color: 'text.secondary' }}
+          sx={{ mb: 3, color: "text.secondary" }}
         >
           Back
         </Button>
@@ -269,10 +284,16 @@ export default function AddRecipe() {
                     <Select
                       value={difficulty}
                       label="Difficulty"
-                      onChange={(e) => setDifficulty(e.target.value as typeof difficulty)}
+                      onChange={(e) =>
+                        setDifficulty(e.target.value as typeof difficulty)
+                      }
                     >
                       {difficultyOptions.map((opt) => (
-                        <MenuItem key={opt} value={opt} sx={{ textTransform: 'capitalize' }}>
+                        <MenuItem
+                          key={opt}
+                          value={opt}
+                          sx={{ textTransform: "capitalize" }}
+                        >
                           {opt}
                         </MenuItem>
                       ))}
@@ -295,9 +316,13 @@ export default function AddRecipe() {
                       multiple
                       value={categories}
                       label="Categories"
-                      onChange={(e) => setCategories(e.target.value as string[])}
+                      onChange={(e) =>
+                        setCategories(e.target.value as string[])
+                      }
                       renderValue={(selected) => (
-                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                        <Box
+                          sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}
+                        >
                           {selected.map((value) => (
                             <Chip key={value} label={value} size="small" />
                           ))}
@@ -319,9 +344,13 @@ export default function AddRecipe() {
                       multiple
                       value={dietaryTags}
                       label="Dietary Tags"
-                      onChange={(e) => setDietaryTags(e.target.value as string[])}
+                      onChange={(e) =>
+                        setDietaryTags(e.target.value as string[])
+                      }
                       renderValue={(selected) => (
-                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                        <Box
+                          sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}
+                        >
                           {selected.map((value) => (
                             <Chip key={value} label={value} size="small" />
                           ))}
@@ -329,7 +358,11 @@ export default function AddRecipe() {
                       )}
                     >
                       {dietaryOptions.map((tag) => (
-                        <MenuItem key={tag} value={tag} sx={{ textTransform: 'capitalize' }}>
+                        <MenuItem
+                          key={tag}
+                          value={tag}
+                          sx={{ textTransform: "capitalize" }}
+                        >
                           {tag}
                         </MenuItem>
                       ))}
@@ -351,7 +384,9 @@ export default function AddRecipe() {
                       <TextField
                         label="Amount"
                         value={ing.amount}
-                        onChange={(e) => updateIngredient(index, 'amount', e.target.value)}
+                        onChange={(e) =>
+                          updateIngredient(index, "amount", e.target.value)
+                        }
                         fullWidth
                         size="small"
                       />
@@ -360,7 +395,9 @@ export default function AddRecipe() {
                       <TextField
                         label="Unit"
                         value={ing.unit}
-                        onChange={(e) => updateIngredient(index, 'unit', e.target.value)}
+                        onChange={(e) =>
+                          updateIngredient(index, "unit", e.target.value)
+                        }
                         fullWidth
                         size="small"
                         placeholder="g, ml, tbsp"
@@ -370,7 +407,9 @@ export default function AddRecipe() {
                       <TextField
                         label="Ingredient"
                         value={ing.name}
-                        onChange={(e) => updateIngredient(index, 'name', e.target.value)}
+                        onChange={(e) =>
+                          updateIngredient(index, "name", e.target.value)
+                        }
                         fullWidth
                         size="small"
                       />
@@ -379,14 +418,19 @@ export default function AddRecipe() {
                       <TextField
                         label="Category"
                         value={ing.category}
-                        onChange={(e) => updateIngredient(index, 'category', e.target.value)}
+                        onChange={(e) =>
+                          updateIngredient(index, "category", e.target.value)
+                        }
                         fullWidth
                         size="small"
                         placeholder="Pantry, Dairy"
                       />
                     </Grid>
                     <Grid size={{ xs: 1 }}>
-                      <IconButton onClick={() => removeIngredient(index)} size="small">
+                      <IconButton
+                        onClick={() => removeIngredient(index)}
+                        size="small"
+                      >
                         <DeleteIcon />
                       </IconButton>
                     </Grid>
@@ -396,7 +440,7 @@ export default function AddRecipe() {
                   startIcon={<AddIcon />}
                   onClick={addIngredient}
                   variant="outlined"
-                  sx={{ alignSelf: 'flex-start' }}
+                  sx={{ alignSelf: "flex-start" }}
                 >
                   Add Ingredient
                 </Button>
@@ -410,16 +454,21 @@ export default function AddRecipe() {
               </Typography>
               <Stack spacing={2}>
                 {instructions.map((inst, index) => (
-                  <Stack key={index} direction="row" spacing={2} alignItems="flex-start">
+                  <Stack
+                    key={index}
+                    direction="row"
+                    spacing={2}
+                    alignItems="flex-start"
+                  >
                     <Box
                       sx={{
                         width: 32,
                         height: 32,
-                        borderRadius: '50%',
-                        bgcolor: 'primary.main',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
+                        borderRadius: "50%",
+                        bgcolor: "primary.main",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
                         fontWeight: 600,
                         flexShrink: 0,
                         mt: 1,
@@ -435,7 +484,10 @@ export default function AddRecipe() {
                       rows={2}
                       placeholder={`Step ${index + 1}`}
                     />
-                    <IconButton onClick={() => removeInstruction(index)} size="small">
+                    <IconButton
+                      onClick={() => removeInstruction(index)}
+                      size="small"
+                    >
                       <DeleteIcon />
                     </IconButton>
                   </Stack>
@@ -444,7 +496,7 @@ export default function AddRecipe() {
                   startIcon={<AddIcon />}
                   onClick={addInstruction}
                   variant="outlined"
-                  sx={{ alignSelf: 'flex-start' }}
+                  sx={{ alignSelf: "flex-start" }}
                 >
                   Add Step
                 </Button>
@@ -490,7 +542,9 @@ export default function AddRecipe() {
                     label="Calories"
                     type="number"
                     value={calories}
-                    onChange={(e) => setCalories(e.target.value ? Number(e.target.value) : '')}
+                    onChange={(e) =>
+                      setCalories(e.target.value ? Number(e.target.value) : "")
+                    }
                     fullWidth
                     inputProps={{ min: 0 }}
                   />
@@ -500,7 +554,9 @@ export default function AddRecipe() {
                     label="Protein (g)"
                     type="number"
                     value={protein}
-                    onChange={(e) => setProtein(e.target.value ? Number(e.target.value) : '')}
+                    onChange={(e) =>
+                      setProtein(e.target.value ? Number(e.target.value) : "")
+                    }
                     fullWidth
                     inputProps={{ min: 0 }}
                   />
@@ -510,7 +566,9 @@ export default function AddRecipe() {
                     label="Carbs (g)"
                     type="number"
                     value={carbs}
-                    onChange={(e) => setCarbs(e.target.value ? Number(e.target.value) : '')}
+                    onChange={(e) =>
+                      setCarbs(e.target.value ? Number(e.target.value) : "")
+                    }
                     fullWidth
                     inputProps={{ min: 0 }}
                   />
@@ -520,7 +578,9 @@ export default function AddRecipe() {
                     label="Fat (g)"
                     type="number"
                     value={fat}
-                    onChange={(e) => setFat(e.target.value ? Number(e.target.value) : '')}
+                    onChange={(e) =>
+                      setFat(e.target.value ? Number(e.target.value) : "")
+                    }
                     fullWidth
                     inputProps={{ min: 0 }}
                   />
@@ -537,7 +597,7 @@ export default function AddRecipe() {
               disabled={loading}
               sx={{ py: 1.5 }}
             >
-              {loading ? 'Creating Recipe...' : 'Create Recipe'}
+              {loading ? "Creating Recipe..." : "Create Recipe"}
             </Button>
           </Stack>
         </form>

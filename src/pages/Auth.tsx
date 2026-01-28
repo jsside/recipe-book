@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Container,
   Box,
@@ -15,8 +15,8 @@ import {
   Select,
   MenuItem,
   Stack,
-} from '@mui/material';
-import { useAuth, UserRole } from '@/context/AuthContext';
+} from "@mui/material";
+import { useAuth, UserRole } from "@/context/AuthContext";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -41,18 +41,18 @@ export default function Auth() {
   const navigate = useNavigate();
 
   // Login form state
-  const [loginEmail, setLoginEmail] = useState('');
-  const [loginPassword, setLoginPassword] = useState('');
+  const [loginEmail, setLoginEmail] = useState("");
+  const [loginPassword, setLoginPassword] = useState("");
 
   // Signup form state
-  const [signupEmail, setSignupEmail] = useState('');
-  const [signupPassword, setSignupPassword] = useState('');
-  const [signupName, setSignupName] = useState('');
-  const [signupRole, setSignupRole] = useState<UserRole>('viewer');
+  const [signupEmail, setSignupEmail] = useState("");
+  const [signupPassword, setSignupPassword] = useState("");
+  const [signupName, setSignupName] = useState("");
+  const [signupRole, setSignupRole] = useState<UserRole>("viewer");
 
   // Redirect if already authenticated
   if (isAuthenticated) {
-    navigate('/');
+    navigate("/");
     return null;
   }
 
@@ -62,13 +62,13 @@ export default function Auth() {
     setLoading(true);
 
     const result = await login(loginEmail, loginPassword);
-    
+
     if (result.success) {
-      navigate('/');
+      navigate("/");
     } else {
-      setError(result.error || 'Login failed');
+      setError(result.error || "Login failed");
     }
-    
+
     setLoading(false);
   };
 
@@ -78,26 +78,31 @@ export default function Auth() {
     setLoading(true);
 
     if (!signupName.trim()) {
-      setError('Please enter your name');
+      setError("Please enter your name");
       setLoading(false);
       return;
     }
 
-    const result = await signup(signupEmail, signupPassword, signupName, signupRole);
-    
+    const result = await signup(
+      signupEmail,
+      signupPassword,
+      signupName,
+      signupRole,
+    );
+
     if (result.success) {
-      navigate('/');
+      navigate("/");
     } else {
-      setError(result.error || 'Signup failed');
+      setError(result.error || "Signup failed");
     }
-    
+
     setLoading(false);
   };
 
   return (
-    <Box sx={{ minHeight: '100vh', py: 8, bgcolor: 'background.default' }}>
+    <Box sx={{ minHeight: "100vh", py: 8, bgcolor: "background.default" }}>
       <Container maxWidth="sm">
-        <Box sx={{ textAlign: 'center', mb: 4 }}>
+        <Box sx={{ textAlign: "center", mb: 4 }}>
           <Typography
             variant="h3"
             fontFamily='"Fraunces", serif'
@@ -159,19 +164,21 @@ export default function Auth() {
                   disabled={loading}
                   fullWidth
                 >
-                  {loading ? 'Logging in...' : 'Log In'}
+                  {loading ? "Logging in..." : "Log In"}
                 </Button>
               </Stack>
             </form>
 
-            <Box sx={{ mt: 3, p: 2, bgcolor: 'rgba(0,0,0,0.04)', borderRadius: 2 }}>
+            <Box
+              sx={{ mt: 3, p: 2, bgcolor: "rgba(0,0,0,0.04)", borderRadius: 2 }}
+            >
               <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
                 Demo accounts:
               </Typography>
-              <Typography variant="body2" sx={{ fontFamily: 'monospace' }}>
+              <Typography variant="body2" sx={{ fontFamily: "monospace" }}>
                 Chef: chef@example.com / chef123
               </Typography>
-              <Typography variant="body2" sx={{ fontFamily: 'monospace' }}>
+              <Typography variant="body2" sx={{ fontFamily: "monospace" }}>
                 Viewer: viewer@example.com / viewer123
               </Typography>
             </Box>
@@ -238,7 +245,7 @@ export default function Auth() {
                   disabled={loading}
                   fullWidth
                 >
-                  {loading ? 'Creating account...' : 'Create Account'}
+                  {loading ? "Creating account..." : "Create Account"}
                 </Button>
               </Stack>
             </form>

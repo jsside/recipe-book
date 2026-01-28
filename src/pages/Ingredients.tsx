@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState } from "react";
 import {
   Container,
   Box,
@@ -6,30 +6,31 @@ import {
   Grid,
   TextField,
   InputAdornment,
-} from '@mui/material';
-import { Search as SearchIcon } from '@mui/icons-material';
-import { IngredientCard } from '@/components/IngredientCard';
-import { ingredientCategories } from '@/data/recipes';
+} from "@mui/material";
+import { Search as SearchIcon } from "@mui/icons-material";
+import { IngredientCard } from "@/components/IngredientCard";
+import { ingredientCategories } from "@/data/recipes";
 
 export default function Ingredients() {
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
 
-  const filteredIngredients = ingredientCategories.filter(ing =>
-    ing.name.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredIngredients = ingredientCategories.filter((ing) =>
+    ing.name.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   return (
-    <Box sx={{ minHeight: '100vh', py: 4 }}>
+    <Box sx={{ minHeight: "100vh", py: 4 }}>
       <Container maxWidth="lg">
         <Box sx={{ mb: 4, maxWidth: 600 }}>
           <Typography
             variant="h1"
-            sx={{ fontSize: { xs: '1.75rem', md: '2.25rem' }, mb: 1 }}
+            sx={{ fontSize: { xs: "1.75rem", md: "2.25rem" }, mb: 1 }}
           >
             Browse by Ingredient
           </Typography>
           <Typography color="text.secondary">
-            Find recipes based on what you have in your kitchen. Select an ingredient to see all recipes that feature it.
+            Find recipes based on what you have in your kitchen. Select an
+            ingredient to see all recipes that feature it.
           </Typography>
         </Box>
 
@@ -43,13 +44,13 @@ export default function Ingredients() {
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
-                <SearchIcon sx={{ color: 'text.secondary' }} />
+                <SearchIcon sx={{ color: "text.secondary" }} />
               </InputAdornment>
             ),
             sx: {
               borderRadius: 6,
-              bgcolor: 'rgba(0, 0, 0, 0.04)',
-              '& fieldset': { border: 'none' },
+              bgcolor: "rgba(0, 0, 0, 0.04)",
+              "& fieldset": { border: "none" },
             },
           }}
         />
@@ -63,7 +64,7 @@ export default function Ingredients() {
             ))}
           </Grid>
         ) : (
-          <Box sx={{ textAlign: 'center', py: 10 }}>
+          <Box sx={{ textAlign: "center", py: 10 }}>
             <Typography variant="h6" sx={{ mb: 1 }}>
               No ingredients found
             </Typography>

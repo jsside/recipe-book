@@ -2,7 +2,12 @@ import type { Config } from "tailwindcss";
 
 export default {
   darkMode: ["class"],
-  content: ["./pages/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}", "./app/**/*.{ts,tsx}", "./src/**/*.{ts,tsx}"],
+  content: [
+    "./pages/**/*.{ts,tsx}",
+    "./components/**/*.{ts,tsx}",
+    "./app/**/*.{ts,tsx}",
+    "./src/**/*.{ts,tsx}",
+  ],
   prefix: "",
   theme: {
     container: {
@@ -14,8 +19,8 @@ export default {
     },
     extend: {
       fontFamily: {
-        serif: ['Fraunces', 'serif'],
-        sans: ['Inter', 'sans-serif'],
+        serif: ["Fraunces", "serif"],
+        sans: ["Inter", "sans-serif"],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -71,8 +76,8 @@ export default {
         "3xl": "1.5rem",
       },
       boxShadow: {
-        'card': 'var(--shadow-card)',
-        'soft': '0 2px 8px -2px hsl(30 10% 15% / 0.08), 0 4px 16px -4px hsl(30 10% 15% / 0.12)',
+        card: "var(--shadow-card)",
+        soft: "0 2px 8px -2px hsl(30 10% 15% / 0.08), 0 4px 16px -4px hsl(30 10% 15% / 0.12)",
       },
       keyframes: {
         "accordion-down": {

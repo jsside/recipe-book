@@ -1,4 +1,4 @@
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link } from "react-router-dom";
 import {
   Container,
   Box,
@@ -13,7 +13,7 @@ import {
   Tooltip,
   Chip,
   Divider,
-} from '@mui/material';
+} from "@mui/material";
 import {
   ChevronLeft as BackIcon,
   Add as AddIcon,
@@ -24,11 +24,11 @@ import {
   Scale as ScaleIcon,
   Visibility as WakeLockIcon,
   VisibilityOff as WakeLockOffIcon,
-} from '@mui/icons-material';
-import { useRecipes } from '@/context/RecipeContext';
-import { useShoppingList } from '@/context/ShoppingListContext';
-import { useWakeLock } from '@/hooks/useWakeLock';
-import { useUnitConversion } from '@/hooks/useUnitConversion';
+} from "@mui/icons-material";
+import { useRecipes } from "@/context/RecipeContext";
+import { useShoppingList } from "@/context/ShoppingListContext";
+import { useWakeLock } from "@/hooks/useWakeLock";
+import { useUnitConversion } from "@/hooks/useUnitConversion";
 
 export default function RecipeDetail() {
   const { id } = useParams();
@@ -37,11 +37,11 @@ export default function RecipeDetail() {
   const { isActive, toggleWakeLock, isSupported } = useWakeLock();
   const { unitSystem, toggleUnitSystem, convertAmount } = useUnitConversion();
 
-  const recipe = getRecipeById(id || '');
+  const recipe = getRecipeById(id || "");
 
   if (!recipe) {
     return (
-      <Container sx={{ py: 10, textAlign: 'center' }}>
+      <Container sx={{ py: 10, textAlign: "center" }}>
         <Typography variant="h4" fontFamily='"Fraunces", serif' sx={{ mb: 2 }}>
           Recipe not found
         </Typography>
@@ -57,14 +57,14 @@ export default function RecipeDetail() {
   };
 
   return (
-    <Box sx={{ minHeight: '100vh', pb: 6 }}>
+    <Box sx={{ minHeight: "100vh", pb: 6 }}>
       {/* Back button */}
       <Container sx={{ py: 2 }}>
         <Button
           component={Link}
           to="/"
           startIcon={<BackIcon />}
-          sx={{ color: 'text.secondary' }}
+          sx={{ color: "text.secondary" }}
         >
           Back to recipes
         </Button>
@@ -80,9 +80,9 @@ export default function RecipeDetail() {
               src={recipe.image}
               alt={recipe.title}
               sx={{
-                width: '100%',
-                aspectRatio: '4/3',
-                objectFit: 'cover',
+                width: "100%",
+                aspectRatio: "4/3",
+                objectFit: "cover",
                 borderRadius: 4,
               }}
             />
@@ -101,39 +101,47 @@ export default function RecipeDetail() {
                     label={recipe.difficulty}
                     variant="outlined"
                     size="small"
-                    sx={{ textTransform: 'capitalize' }}
+                    sx={{ textTransform: "capitalize" }}
                   />
                 )}
-                {recipe.dietaryTags?.map(tag => (
+                {recipe.dietaryTags?.map((tag) => (
                   <Chip
                     key={tag}
                     label={tag}
                     variant="outlined"
                     size="small"
-                    sx={{ textTransform: 'capitalize' }}
+                    sx={{ textTransform: "capitalize" }}
                   />
                 ))}
               </Stack>
 
               <Typography
                 variant="h1"
-                sx={{ fontSize: { xs: '2rem', md: '2.5rem', lg: '3rem' } }}
+                sx={{ fontSize: { xs: "2rem", md: "2.5rem", lg: "3rem" } }}
               >
                 {recipe.title}
               </Typography>
 
-              <Typography variant="body1" color="text.secondary" sx={{ fontSize: '1.1rem' }}>
+              <Typography
+                variant="body1"
+                color="text.secondary"
+                sx={{ fontSize: "1.1rem" }}
+              >
                 {recipe.description}
               </Typography>
 
               <Stack direction="row" spacing={4}>
                 <Stack direction="row" alignItems="center" spacing={1}>
-                  <ClockIcon sx={{ color: 'text.secondary' }} />
-                  <Typography color="text.secondary">{recipe.cookTime}</Typography>
+                  <ClockIcon sx={{ color: "text.secondary" }} />
+                  <Typography color="text.secondary">
+                    {recipe.cookTime}
+                  </Typography>
                 </Stack>
                 <Stack direction="row" alignItems="center" spacing={1}>
-                  <PeopleIcon sx={{ color: 'text.secondary' }} />
-                  <Typography color="text.secondary">{recipe.servings} servings</Typography>
+                  <PeopleIcon sx={{ color: "text.secondary" }} />
+                  <Typography color="text.secondary">
+                    {recipe.servings} servings
+                  </Typography>
                 </Stack>
               </Stack>
 
@@ -173,8 +181,15 @@ export default function RecipeDetail() {
         <Grid container spacing={4}>
           {/* Method (Left) */}
           <Grid size={{ xs: 12, lg: 7 }}>
-            <Paper elevation={0} sx={{ p: 3, bgcolor: 'background.paper', borderRadius: 3 }}>
-              <Typography variant="h5" fontFamily='"Fraunces", serif' sx={{ mb: 3 }}>
+            <Paper
+              elevation={0}
+              sx={{ p: 3, bgcolor: "background.paper", borderRadius: 3 }}
+            >
+              <Typography
+                variant="h5"
+                fontFamily='"Fraunces", serif'
+                sx={{ mb: 3 }}
+              >
                 Method
               </Typography>
               <Stack spacing={3}>
@@ -184,18 +199,18 @@ export default function RecipeDetail() {
                       sx={{
                         width: 32,
                         height: 32,
-                        borderRadius: '50%',
-                        bgcolor: 'primary.main',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
+                        borderRadius: "50%",
+                        bgcolor: "primary.main",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
                         fontWeight: 600,
                         flexShrink: 0,
                       }}
                     >
                       {index + 1}
                     </Box>
-                    <Typography sx={{ pt: 0.5, fontSize: '1.1rem' }}>
+                    <Typography sx={{ pt: 0.5, fontSize: "1.1rem" }}>
                       {instruction}
                     </Typography>
                   </Stack>
@@ -206,7 +221,11 @@ export default function RecipeDetail() {
               {recipe.tips && (
                 <Box sx={{ mt: 4 }}>
                   <Divider sx={{ mb: 3 }} />
-                  <Typography variant="h6" fontFamily='"Fraunces", serif' sx={{ mb: 2 }}>
+                  <Typography
+                    variant="h6"
+                    fontFamily='"Fraunces", serif'
+                    sx={{ mb: 2 }}
+                  >
                     Chef's Tips
                   </Typography>
                   <Typography color="text.secondary">{recipe.tips}</Typography>
@@ -221,19 +240,26 @@ export default function RecipeDetail() {
               elevation={0}
               sx={{
                 p: 3,
-                bgcolor: 'background.paper',
+                bgcolor: "background.paper",
                 borderRadius: 3,
-                position: { lg: 'sticky' },
+                position: { lg: "sticky" },
                 top: { lg: 100 },
               }}
             >
-              <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 3 }}>
+              <Stack
+                direction="row"
+                justifyContent="space-between"
+                alignItems="center"
+                sx={{ mb: 3 }}
+              >
                 <Typography variant="h5" fontFamily='"Fraunces", serif'>
                   Ingredients
                 </Typography>
                 <Stack direction="row" spacing={1} alignItems="center">
                   {/* Unit toggle */}
-                  <Tooltip title={`Switch to ${unitSystem === 'metric' ? 'imperial' : 'metric'}`}>
+                  <Tooltip
+                    title={`Switch to ${unitSystem === "metric" ? "imperial" : "metric"}`}
+                  >
                     <IconButton onClick={toggleUnitSystem} size="small">
                       <ScaleIcon />
                     </IconButton>
@@ -242,16 +268,20 @@ export default function RecipeDetail() {
                     label={unitSystem}
                     size="small"
                     variant="outlined"
-                    sx={{ textTransform: 'capitalize' }}
+                    sx={{ textTransform: "capitalize" }}
                   />
-                  
+
                   {/* Wake lock toggle */}
                   {isSupported && (
-                    <Tooltip title={isActive ? 'Screen will stay on' : 'Keep screen awake'}>
+                    <Tooltip
+                      title={
+                        isActive ? "Screen will stay on" : "Keep screen awake"
+                      }
+                    >
                       <IconButton
                         onClick={toggleWakeLock}
                         size="small"
-                        color={isActive ? 'primary' : 'default'}
+                        color={isActive ? "primary" : "default"}
                       >
                         {isActive ? <WakeLockIcon /> : <WakeLockOffIcon />}
                       </IconButton>
@@ -266,18 +296,21 @@ export default function RecipeDetail() {
 
               <Stack spacing={1}>
                 {recipe.ingredients.map((ingredient) => {
-                  const converted = convertAmount(ingredient.amount, ingredient.unit);
+                  const converted = convertAmount(
+                    ingredient.amount,
+                    ingredient.unit,
+                  );
                   return (
                     <Box
                       key={ingredient.id}
                       sx={{
-                        display: 'flex',
-                        alignItems: 'center',
+                        display: "flex",
+                        alignItems: "center",
                         gap: 2,
                         p: 1.5,
                         borderRadius: 2,
-                        bgcolor: 'rgba(0, 0, 0, 0.02)',
-                        '&:hover': { bgcolor: 'rgba(0, 0, 0, 0.04)' },
+                        bgcolor: "rgba(0, 0, 0, 0.02)",
+                        "&:hover": { bgcolor: "rgba(0, 0, 0, 0.04)" },
                       }}
                     >
                       <Checkbox size="small" />
@@ -312,7 +345,9 @@ export default function RecipeDetail() {
                         <Typography variant="body2" color="text.secondary">
                           Calories
                         </Typography>
-                        <Typography fontWeight={500}>{recipe.nutrition.calories}</Typography>
+                        <Typography fontWeight={500}>
+                          {recipe.nutrition.calories}
+                        </Typography>
                       </Grid>
                     )}
                     {recipe.nutrition.protein && (
@@ -320,7 +355,9 @@ export default function RecipeDetail() {
                         <Typography variant="body2" color="text.secondary">
                           Protein
                         </Typography>
-                        <Typography fontWeight={500}>{recipe.nutrition.protein}g</Typography>
+                        <Typography fontWeight={500}>
+                          {recipe.nutrition.protein}g
+                        </Typography>
                       </Grid>
                     )}
                     {recipe.nutrition.carbs && (
@@ -328,7 +365,9 @@ export default function RecipeDetail() {
                         <Typography variant="body2" color="text.secondary">
                           Carbs
                         </Typography>
-                        <Typography fontWeight={500}>{recipe.nutrition.carbs}g</Typography>
+                        <Typography fontWeight={500}>
+                          {recipe.nutrition.carbs}g
+                        </Typography>
                       </Grid>
                     )}
                     {recipe.nutrition.fat && (
@@ -336,7 +375,9 @@ export default function RecipeDetail() {
                         <Typography variant="body2" color="text.secondary">
                           Fat
                         </Typography>
-                        <Typography fontWeight={500}>{recipe.nutrition.fat}g</Typography>
+                        <Typography fontWeight={500}>
+                          {recipe.nutrition.fat}g
+                        </Typography>
                       </Grid>
                     )}
                   </Grid>

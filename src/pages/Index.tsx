@@ -1,19 +1,13 @@
-import { useState, useMemo } from 'react';
-import { Link } from 'react-router-dom';
-import {
-  Container,
-  Box,
-  Typography,
-  Grid,
-  Button,
-} from '@mui/material';
-import { ArrowForward as ArrowIcon } from '@mui/icons-material';
-import { HeroSection } from '@/components/HeroSection';
-import { CategoryChips } from '@/components/CategoryChips';
-import { RecipeCard } from '@/components/RecipeCard';
-import { IngredientCard } from '@/components/IngredientCard';
-import { useRecipes } from '@/context/RecipeContext';
-import { ingredientCategories } from '@/data/recipes';
+import { useState, useMemo } from "react";
+import { Link } from "react-router-dom";
+import { Container, Box, Typography, Grid, Button } from "@mui/material";
+import { ArrowForward as ArrowIcon } from "@mui/icons-material";
+import { HeroSection } from "@/components/HeroSection";
+import { CategoryChips } from "@/components/CategoryChips";
+import { RecipeCard } from "@/components/RecipeCard";
+import { IngredientCard } from "@/components/IngredientCard";
+import { useRecipes } from "@/context/RecipeContext";
+import { ingredientCategories } from "@/data/recipes";
 
 const Index = () => {
   const { recipes } = useRecipes();
@@ -21,17 +15,19 @@ const Index = () => {
 
   const filteredRecipes = useMemo(() => {
     if (!selectedCategory) {
-      return recipes.filter(r => r.category.includes('Dinner'));
+      return recipes.filter((r) => r.category.includes("Dinner"));
     }
-    return recipes.filter(r =>
-      r.category.some(cat =>
-        cat.toLowerCase().includes(selectedCategory.toLowerCase().replace(', sorted', ''))
-      )
+    return recipes.filter((r) =>
+      r.category.some((cat) =>
+        cat
+          .toLowerCase()
+          .includes(selectedCategory.toLowerCase().replace(", sorted", "")),
+      ),
     );
   }, [selectedCategory, recipes]);
 
   return (
-    <Box sx={{ minHeight: '100vh' }}>
+    <Box sx={{ minHeight: "100vh" }}>
       <HeroSection />
 
       {/* Recipe Section */}
@@ -50,15 +46,15 @@ const Index = () => {
             ))}
           </Grid>
 
-          <Box sx={{ textAlign: 'center', mt: 4 }}>
+          <Box sx={{ textAlign: "center", mt: 4 }}>
             <Button
               component={Link}
               to="/recipes"
               variant="outlined"
               endIcon={<ArrowIcon />}
               sx={{
-                borderColor: 'text.primary',
-                color: 'text.primary',
+                borderColor: "text.primary",
+                color: "text.primary",
                 px: 4,
               }}
             >
@@ -73,22 +69,22 @@ const Index = () => {
         component="section"
         sx={{
           py: { xs: 6, md: 8 },
-          bgcolor: 'background.paper',
+          bgcolor: "background.paper",
         }}
       >
         <Container maxWidth="lg">
           <Box
             sx={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
               mb: 4,
             }}
           >
             <Box>
               <Typography
                 variant="h2"
-                sx={{ fontSize: { xs: '1.75rem', md: '2.25rem' }, mb: 1 }}
+                sx={{ fontSize: { xs: "1.75rem", md: "2.25rem" }, mb: 1 }}
               >
                 Browse by Ingredient
               </Typography>
@@ -100,7 +96,7 @@ const Index = () => {
               component={Link}
               to="/ingredients"
               endIcon={<ArrowIcon />}
-              sx={{ display: { xs: 'none', md: 'flex' } }}
+              sx={{ display: { xs: "none", md: "flex" } }}
             >
               View all
             </Button>
@@ -121,15 +117,15 @@ const Index = () => {
         component="section"
         sx={{
           py: { xs: 8, md: 12 },
-          textAlign: 'center',
-          bgcolor: 'primary.main',
+          textAlign: "center",
+          bgcolor: "primary.main",
         }}
       >
         <Container maxWidth="sm">
           <Typography
             variant="h2"
             sx={{
-              fontSize: { xs: '1.75rem', md: '2.5rem' },
+              fontSize: { xs: "1.75rem", md: "2.5rem" },
               mb: 3,
             }}
           >

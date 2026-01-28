@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect } from "react";
 
 export function useWakeLock() {
   const [isSupported, setIsSupported] = useState(false);
@@ -6,28 +6,28 @@ export function useWakeLock() {
   const [wakeLock, setWakeLock] = useState<WakeLockSentinel | null>(null);
 
   useEffect(() => {
-    setIsSupported('wakeLock' in navigator);
+    setIsSupported("wakeLock" in navigator);
   }, []);
 
   const requestWakeLock = useCallback(async () => {
-    if (!('wakeLock' in navigator)) {
-      console.warn('Wake Lock API not supported');
+    if (!("wakeLock" in navigator)) {
+      console.warn("Wake Lock API not supported");
       return false;
     }
 
     try {
-      const sentinel = await navigator.wakeLock.request('screen');
+      const sentinel = await navigator.wakeLock.request("screen");
       setWakeLock(sentinel);
       setIsActive(true);
 
-      sentinel.addEventListener('release', () => {
+      sentinel.addEventListener("release", () => {
         setIsActive(false);
         setWakeLock(null);
       });
 
       return true;
     } catch (err) {
-      console.error('Failed to request wake lock:', err);
+      console.error("Failed to request wake lock:", err);
       return false;
     }
   }, []);
@@ -51,14 +51,14 @@ export function useWakeLock() {
   // Re-request wake lock when page becomes visible again
   useEffect(() => {
     const handleVisibilityChange = async () => {
-      if (document.visibilityState === 'visible' && isActive && !wakeLock) {
+      if (document.visibilityState === "visible" && isActive && !wakeLock) {
         await requestWakeLock();
       }
     };
 
-    document.addEventListener('visibilitychange', handleVisibilityChange);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
     return () => {
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
   }, [isActive, wakeLock, requestWakeLock]);
 

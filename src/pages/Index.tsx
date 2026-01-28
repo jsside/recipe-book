@@ -1,120 +1,156 @@
 import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight } from 'lucide-react';
+import {
+  Container,
+  Box,
+  Typography,
+  Grid,
+  Button,
+} from '@mui/material';
+import { ArrowForward as ArrowIcon } from '@mui/icons-material';
 import { HeroSection } from '@/components/HeroSection';
 import { CategoryChips } from '@/components/CategoryChips';
 import { RecipeCard } from '@/components/RecipeCard';
 import { IngredientCard } from '@/components/IngredientCard';
-import { recipes, ingredientCategories } from '@/data/recipes';
-import { Button } from '@/components/ui/button';
+import { useRecipes } from '@/context/RecipeContext';
+import { ingredientCategories } from '@/data/recipes';
 
 const Index = () => {
-  const [activeCategory, setActiveCategory] = useState('Dinner, sorted');
+  const { recipes } = useRecipes();
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
   const filteredRecipes = useMemo(() => {
-    if (activeCategory === 'Dinner, sorted') {
+    if (!selectedCategory) {
       return recipes.filter(r => r.category.includes('Dinner'));
     }
-    return recipes.filter(r => 
-      r.category.some(cat => 
-        cat.toLowerCase().includes(activeCategory.toLowerCase().replace(', sorted', ''))
+    return recipes.filter(r =>
+      r.category.some(cat =>
+        cat.toLowerCase().includes(selectedCategory.toLowerCase().replace(', sorted', ''))
       )
     );
-  }, [activeCategory]);
+  }, [selectedCategory, recipes]);
 
   return (
-    <div className="min-h-screen">
+    <Box sx={{ minHeight: '100vh' }}>
       <HeroSection />
 
       {/* Recipe Section */}
-      <section className="py-8 md:py-12">
-        <div className="container space-y-6">
+      <Box component="section" sx={{ py: { xs: 4, md: 6 } }}>
+        <Container maxWidth="lg">
           <CategoryChips
-            activeCategory={activeCategory}
-            onCategoryChange={setActiveCategory}
+            selectedCategory={selectedCategory}
+            onCategoryChange={setSelectedCategory}
           />
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
-            {filteredRecipes.slice(0, 10).map((recipe, index) => (
-              <div
-                key={recipe.id}
-                className="animate-fade-in"
-                style={{ animationDelay: `${index * 50}ms` }}
-              >
+          <Grid container spacing={3} sx={{ mt: 2 }}>
+            {filteredRecipes.slice(0, 10).map((recipe) => (
+              <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={recipe.id}>
                 <RecipeCard recipe={recipe} />
-              </div>
+              </Grid>
             ))}
-          </div>
+          </Grid>
 
-          <div className="text-center pt-4">
-            <Link to="/recipes">
-              <Button variant="outline" className="btn-outline">
-                View all recipes
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </section>
+          <Box sx={{ textAlign: 'center', mt: 4 }}>
+            <Button
+              component={Link}
+              to="/recipes"
+              variant="outlined"
+              endIcon={<ArrowIcon />}
+              sx={{
+                borderColor: 'text.primary',
+                color: 'text.primary',
+                px: 4,
+              }}
+            >
+              View all recipes
+            </Button>
+          </Box>
+        </Container>
+      </Box>
 
       {/* Ingredients Section */}
-      <section className="py-12 md:py-16 bg-card">
-        <div className="container">
-          <div className="flex items-center justify-between mb-8">
-            <div>
-              <h2 className="font-serif text-3xl md:text-4xl font-bold mb-2">
-                Browse by Ingredient
-              </h2>
-              <p className="text-muted-foreground">
-                Find recipes based on what you have in your kitchen
-              </p>
-            </div>
-            <Link to="/ingredients" className="hidden md:block">
-              <Button variant="ghost" className="gap-2">
-                View all
-                <ArrowRight className="h-4 w-4" />
-              </Button>
-            </Link>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {ingredientCategories.slice(0, 8).map((ingredient, index) => (
-              <div
-                key={ingredient.id}
-                className="animate-fade-in"
-                style={{ animationDelay: `${index * 50}ms` }}
+      <Box
+        component="section"
+        sx={{
+          py: { xs: 6, md: 8 },
+          bgcolor: 'background.paper',
+        }}
+      >
+        <Container maxWidth="lg">
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              mb: 4,
+            }}
+          >
+            <Box>
+              <Typography
+                variant="h2"
+                sx={{ fontSize: { xs: '1.75rem', md: '2.25rem' }, mb: 1 }}
               >
-                <IngredientCard ingredient={ingredient} />
-              </div>
-            ))}
-          </div>
+                Browse by Ingredient
+              </Typography>
+              <Typography color="text.secondary">
+                Find recipes based on what you have in your kitchen
+              </Typography>
+            </Box>
+            <Button
+              component={Link}
+              to="/ingredients"
+              endIcon={<ArrowIcon />}
+              sx={{ display: { xs: 'none', md: 'flex' } }}
+            >
+              View all
+            </Button>
+          </Box>
 
-          <div className="text-center pt-6 md:hidden">
-            <Link to="/ingredients">
-              <Button variant="ghost" className="gap-2">
-                View all ingredients
-                <ArrowRight className="h-4 w-4" />
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </section>
+          <Grid container spacing={3}>
+            {ingredientCategories.slice(0, 8).map((ingredient) => (
+              <Grid size={{ xs: 6, sm: 4, md: 3 }} key={ingredient.id}>
+                <IngredientCard ingredient={ingredient} />
+              </Grid>
+            ))}
+          </Grid>
+        </Container>
+      </Box>
 
       {/* CTA Section */}
-      <section className="py-16 md:py-24 hero-section">
-        <div className="container text-center max-w-2xl mx-auto">
-          <h2 className="font-serif text-3xl md:text-4xl lg:text-5xl font-bold mb-6">
+      <Box
+        component="section"
+        sx={{
+          py: { xs: 8, md: 12 },
+          textAlign: 'center',
+          bgcolor: 'primary.main',
+        }}
+      >
+        <Container maxWidth="sm">
+          <Typography
+            variant="h2"
+            sx={{
+              fontSize: { xs: '1.75rem', md: '2.5rem' },
+              mb: 3,
+            }}
+          >
             Ready to transform your meal prep?
-          </h2>
-          <p className="text-lg text-muted-foreground mb-8">
-            Join thousands of home cooks who save time and eat better with our meal planning tools.
-          </p>
-          <Button className="btn-primary text-base">
-            Start Your Free Trial
+          </Typography>
+          <Typography color="text.secondary" sx={{ mb: 4 }}>
+            Join thousands of home cooks who save time and eat better.
+          </Typography>
+          <Button
+            component={Link}
+            to="/auth"
+            variant="contained"
+            color="secondary"
+            size="large"
+            sx={{ px: 4 }}
+          >
+            Get Started
           </Button>
-        </div>
-      </section>
-    </div>
+        </Container>
+      </Box>
+    </Box>
   );
 };
 

@@ -1,35 +1,46 @@
-import { Lock, SlidersHorizontal } from 'lucide-react';
+import { Box, Chip, Stack } from '@mui/material';
 import { categories } from '@/data/recipes';
-import { Button } from '@/components/ui/button';
 
 interface CategoryChipsProps {
-  activeCategory: string;
-  onCategoryChange: (category: string) => void;
+  selectedCategory: string | null;
+  onCategoryChange: (category: string | null) => void;
 }
 
-export function CategoryChips({ activeCategory, onCategoryChange }: CategoryChipsProps) {
+export function CategoryChips({ selectedCategory, onCategoryChange }: CategoryChipsProps) {
   return (
-    <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide">
+    <Stack
+      direction="row"
+      spacing={1}
+      sx={{
+        overflowX: 'auto',
+        py: 2,
+        px: 1,
+        '&::-webkit-scrollbar': { display: 'none' },
+        scrollbarWidth: 'none',
+      }}
+    >
+      <Chip
+        label="All"
+        onClick={() => onCategoryChange(null)}
+        color={selectedCategory === null ? 'primary' : 'default'}
+        sx={{
+          fontWeight: 500,
+          bgcolor: selectedCategory === null ? 'primary.main' : 'background.paper',
+        }}
+      />
       {categories.map((category) => (
-        <button
+        <Chip
           key={category}
+          label={category}
           onClick={() => onCategoryChange(category)}
-          className={`category-chip whitespace-nowrap flex items-center gap-1.5 ${
-            activeCategory === category ? 'category-chip-active' : 'category-chip-inactive'
-          }`}
-        >
-          {category}
-        </button>
+          color={selectedCategory === category ? 'primary' : 'default'}
+          sx={{
+            fontWeight: 500,
+            bgcolor: selectedCategory === category ? 'primary.main' : 'background.paper',
+            flexShrink: 0,
+          }}
+        />
       ))}
-      
-      <button className="category-chip category-chip-inactive whitespace-nowrap flex items-center gap-1.5">
-        <Lock className="h-3.5 w-3.5" />
-        Your saved recipes
-      </button>
-
-      <Button variant="ghost" size="icon" className="shrink-0 ml-auto">
-        <SlidersHorizontal className="h-5 w-5" />
-      </Button>
-    </div>
+    </Stack>
   );
 }

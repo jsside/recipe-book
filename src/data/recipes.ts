@@ -7,13 +7,23 @@ export interface Recipe {
     name: string;
     avatar: string;
   };
-  isFree: boolean;
   isTopRated: boolean;
   category: string[];
   ingredients: Ingredient[];
   servings: number;
   instructions: string[];
   description: string;
+  // Extended fields
+  difficulty?: 'easy' | 'medium' | 'hard';
+  dietaryTags?: string[];
+  videoUrl?: string;
+  nutrition?: {
+    calories?: number;
+    protein?: number;
+    carbs?: number;
+    fat?: number;
+  };
+  tips?: string;
 }
 
 export interface Ingredient {
@@ -49,11 +59,13 @@ export const recipes: Recipe[] = [
     image: 'https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?w=800&q=80',
     cookTime: '15 mins',
     chef: { name: 'Elena Silcock', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&q=80' },
-    isFree: true,
     isTopRated: false,
     category: ['Dinner', 'New recipes', 'Easy lunches'],
     servings: 4,
     description: 'A vibrant and flavorful pasta salad with all the punchy flavors of classic puttanesca.',
+    difficulty: 'easy',
+    dietaryTags: ['vegetarian'],
+    nutrition: { calories: 420, protein: 12, carbs: 58, fat: 16 },
     ingredients: [
       { id: '1', name: 'Fusilli pasta', amount: '400', unit: 'g', category: 'Pasta' },
       { id: '2', name: 'Cherry tomatoes', amount: '300', unit: 'g', category: 'Vegetables' },
@@ -76,11 +88,13 @@ export const recipes: Recipe[] = [
     image: 'https://images.unsplash.com/photo-1595295333158-4742f28fbd85?w=800&q=80',
     cookTime: '25 mins',
     chef: { name: 'Marcus Chen', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&q=80' },
-    isFree: true,
     isTopRated: true,
     category: ['High-protein dinners', 'Dinner'],
     servings: 4,
     description: 'Creamy rigatoni with tender broccoli and a hint of lemon zest.',
+    difficulty: 'easy',
+    dietaryTags: ['vegetarian'],
+    nutrition: { calories: 480, protein: 18, carbs: 62, fat: 18 },
     ingredients: [
       { id: '1', name: 'Rigatoni', amount: '400', unit: 'g', category: 'Pasta' },
       { id: '2', name: 'Broccoli', amount: '2', unit: 'heads', category: 'Vegetables' },
@@ -103,11 +117,13 @@ export const recipes: Recipe[] = [
     image: 'https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=800&q=80',
     cookTime: '20 mins',
     chef: { name: 'Sophie Williams', avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&q=80' },
-    isFree: false,
     isTopRated: true,
     category: ['High-protein dinners', 'Dinner'],
     servings: 2,
     description: 'Perfectly glazed salmon with a sweet and savory honey soy coating.',
+    difficulty: 'medium',
+    dietaryTags: ['gluten-free', 'high-protein'],
+    nutrition: { calories: 380, protein: 32, carbs: 18, fat: 20 },
     ingredients: [
       { id: '1', name: 'Salmon fillets', amount: '2', unit: '', category: 'Seafood' },
       { id: '2', name: 'Honey', amount: '3', unit: 'tbsp', category: 'Pantry' },
@@ -130,11 +146,13 @@ export const recipes: Recipe[] = [
     image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=800&q=80',
     cookTime: '30 mins',
     chef: { name: 'James Oliver', avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&q=80' },
-    isFree: true,
     isTopRated: false,
     category: ['Packed lunches', 'High-protein dinners'],
     servings: 4,
     description: 'A colorful grain bowl loaded with Mediterranean flavors and grilled chicken.',
+    difficulty: 'medium',
+    dietaryTags: ['high-protein', 'gluten-free'],
+    nutrition: { calories: 520, protein: 38, carbs: 42, fat: 22 },
     ingredients: [
       { id: '1', name: 'Chicken breast', amount: '500', unit: 'g', category: 'Poultry' },
       { id: '2', name: 'Quinoa', amount: '200', unit: 'g', category: 'Grains' },
@@ -157,11 +175,13 @@ export const recipes: Recipe[] = [
     image: 'https://images.unsplash.com/photo-1517673400267-0251440c45dc?w=800&q=80',
     cookTime: '5 mins + overnight',
     chef: { name: 'Emily Rose', avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&q=80' },
-    isFree: true,
     isTopRated: false,
     category: ['Make-ahead breakfasts', 'New recipes'],
     servings: 2,
     description: 'Creamy overnight oats topped with fresh berries and a drizzle of honey.',
+    difficulty: 'easy',
+    dietaryTags: ['vegetarian', 'high-fiber'],
+    nutrition: { calories: 320, protein: 12, carbs: 52, fat: 8 },
     ingredients: [
       { id: '1', name: 'Rolled oats', amount: '100', unit: 'g', category: 'Grains' },
       { id: '2', name: 'Milk', amount: '200', unit: 'ml', category: 'Dairy' },
@@ -184,11 +204,13 @@ export const recipes: Recipe[] = [
     image: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800&q=80',
     cookTime: '25 mins',
     chef: { name: 'David Kim', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&q=80' },
-    isFree: false,
     isTopRated: true,
     category: ['Dinner', 'High-protein dinners'],
     servings: 4,
     description: 'Quick and delicious Korean-inspired beef bowls with gochujang sauce.',
+    difficulty: 'medium',
+    dietaryTags: ['high-protein'],
+    nutrition: { calories: 580, protein: 35, carbs: 55, fat: 24 },
     ingredients: [
       { id: '1', name: 'Beef mince', amount: '500', unit: 'g', category: 'Beef' },
       { id: '2', name: 'Gochujang paste', amount: '3', unit: 'tbsp', category: 'Pantry' },
@@ -211,11 +233,13 @@ export const recipes: Recipe[] = [
     image: 'https://images.unsplash.com/photo-1455619452474-d2be8b1e70cd?w=800&q=80',
     cookTime: '35 mins',
     chef: { name: 'Priya Sharma', avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&q=80' },
-    isFree: true,
     isTopRated: false,
     category: ['Dinner', 'New recipes'],
     servings: 4,
     description: 'Aromatic Thai green curry with tender chicken and vegetables.',
+    difficulty: 'medium',
+    dietaryTags: ['gluten-free', 'dairy-free'],
+    nutrition: { calories: 450, protein: 28, carbs: 22, fat: 28 },
     ingredients: [
       { id: '1', name: 'Chicken thighs', amount: '600', unit: 'g', category: 'Poultry' },
       { id: '2', name: 'Green curry paste', amount: '4', unit: 'tbsp', category: 'Pantry' },
@@ -238,11 +262,13 @@ export const recipes: Recipe[] = [
     image: 'https://images.unsplash.com/photo-1525351484163-7529414344d8?w=800&q=80',
     cookTime: '15 mins',
     chef: { name: 'Lisa Green', avatar: 'https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?w=100&q=80' },
-    isFree: true,
     isTopRated: true,
     category: ['Make-ahead breakfasts', 'Easy lunches'],
     servings: 2,
     description: 'Classic avocado toast elevated with perfectly poached eggs.',
+    difficulty: 'easy',
+    dietaryTags: ['vegetarian', 'high-protein'],
+    nutrition: { calories: 380, protein: 16, carbs: 28, fat: 24 },
     ingredients: [
       { id: '1', name: 'Sourdough bread', amount: '4', unit: 'slices', category: 'Bread' },
       { id: '2', name: 'Ripe avocados', amount: '2', unit: '', category: 'Vegetables' },
@@ -268,3 +294,15 @@ export const categories = [
   'Packed lunches',
   'Make-ahead breakfasts',
 ];
+
+export const dietaryOptions = [
+  'vegetarian',
+  'vegan',
+  'gluten-free',
+  'dairy-free',
+  'high-protein',
+  'low-carb',
+  'high-fiber',
+];
+
+export const difficultyOptions = ['easy', 'medium', 'hard'] as const;

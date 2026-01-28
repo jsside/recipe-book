@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { Card, CardContent, CardMedia, Typography, Box } from '@mui/material';
 import { IngredientCategory } from '@/data/recipes';
 
 interface IngredientCardProps {
@@ -7,25 +8,49 @@ interface IngredientCardProps {
 
 export function IngredientCard({ ingredient }: IngredientCardProps) {
   return (
-    <Link
+    <Card
+      component={Link}
       to={`/recipes?ingredient=${encodeURIComponent(ingredient.name)}`}
-      className="ingredient-card group flex items-center gap-4 hover:bg-secondary/80"
+      sx={{
+        textDecoration: 'none',
+        display: 'block',
+        transition: 'all 0.3s ease',
+        '&:hover': {
+          transform: 'translateY(-4px)',
+          boxShadow: '0 10px 20px -5px rgba(31, 26, 20, 0.15)',
+        },
+        '&:hover .ingredient-image': {
+          transform: 'scale(1.05)',
+        },
+      }}
     >
-      <div className="h-16 w-16 rounded-xl overflow-hidden shrink-0">
-        <img
-          src={ingredient.image}
+      <Box sx={{ position: 'relative', overflow: 'hidden' }}>
+        <CardMedia
+          component="img"
+          image={ingredient.image}
           alt={ingredient.name}
-          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+          className="ingredient-image"
+          sx={{
+            aspectRatio: '1',
+            objectFit: 'cover',
+            transition: 'transform 0.5s ease',
+          }}
         />
-      </div>
-      <div>
-        <h3 className="font-semibold group-hover:text-primary transition-colors">
+      </Box>
+
+      <CardContent sx={{ textAlign: 'center' }}>
+        <Typography
+          variant="h6"
+          fontFamily='"Fraunces", serif'
+          fontWeight={600}
+          sx={{ mb: 0.5 }}
+        >
           {ingredient.name}
-        </h3>
-        <p className="text-sm text-muted-foreground">
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
           {ingredient.recipeCount} recipes
-        </p>
-      </div>
-    </Link>
+        </Typography>
+      </CardContent>
+    </Card>
   );
 }

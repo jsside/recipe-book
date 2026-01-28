@@ -1,14 +1,50 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Search, ShoppingCart, Menu, X, User } from 'lucide-react';
+import {
+  AppBar,
+  Toolbar,
+  Box,
+  IconButton,
+  Button,
+  TextField,
+  InputAdornment,
+  Badge,
+  Drawer,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemText,
+  Typography,
+  Avatar,
+  Menu,
+  MenuItem,
+  Divider,
+} from '@mui/material';
+import {
+  Search as SearchIcon,
+  ShoppingCart as CartIcon,
+  Menu as MenuIcon,
+  Close as CloseIcon,
+  Person as PersonIcon,
+  Add as AddIcon,
+} from '@mui/icons-material';
 import { useShoppingList } from '@/context/ShoppingListContext';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { useAuth } from '@/context/AuthContext';
+
+const navLinks = [
+  { label: 'All Recipes', href: '/recipes' },
+  { label: 'Weeknight Dinner', href: '/recipes?category=Dinner' },
+  { label: 'Easy Lunches', href: '/recipes?category=Easy lunches' },
+  { label: 'Ingredients', href: '/ingredients' },
+  { label: 'Plan & Batch', href: '/meal-plans' },
+];
 
 export function Navbar() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const { setIsOpen, itemCount } = useShoppingList();
+  const { user, isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
 
   const handleSearch = (e: React.FormEvent) => {
@@ -18,130 +54,300 @@ export function Navbar() {
     }
   };
 
-  const navLinks = [
-    { label: 'All Recipes', href: '/recipes' },
-    { label: 'Weeknight Dinner', href: '/recipes?category=Dinner' },
-    { label: 'Easy Lunches', href: '/recipes?category=Easy lunches' },
-    { label: 'Ingredients', href: '/ingredients' },
-    { label: 'Plan & Batch', href: '/meal-plans' },
-  ];
+  const handleUserMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleUserMenuClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleLogout = () => {
+    logout();
+    handleUserMenuClose();
+    navigate('/');
+  };
 
   return (
     <>
       {/* Top banner */}
-      <div className="bg-foreground text-background text-center py-2 text-sm font-medium">
-        Start Your Free Trial
-      </div>
+      <Box
+        sx={{
+          bgcolor: 'secondary.main',
+          color: 'secondary.contrastText',
+          textAlign: 'center',
+          py: 1,
+          fontSize: '0.875rem',
+          fontWeight: 500,
+        }}
+      >
+        Welcome to MOB Kitchen
+      </Box>
 
       {/* Main navbar */}
-      <nav className="sticky top-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border">
-        <div className="container mx-auto">
-          <div className="flex items-center justify-between h-16 gap-4">
-            {/* Logo */}
-            <Link to="/" className="flex items-center gap-2 shrink-0">
-              <span className="font-serif text-2xl font-bold text-foreground">mob</span>
-              <span className="hidden sm:inline text-muted-foreground">|</span>
-              <span className="hidden sm:inline text-muted-foreground text-sm">Love cooking</span>
-            </Link>
+      <AppBar position="sticky" color="transparent" elevation={0}>
+        <Toolbar sx={{ gap: 2 }}>
+          {/* Logo */}
+          <Typography
+            component={Link}
+            to="/"
+            sx={{
+              fontFamily: '"Fraunces", serif',
+              fontSize: '1.5rem',
+              fontWeight: 700,
+              color: 'text.primary',
+              textDecoration: 'none',
+              flexShrink: 0,
+            }}
+          >
+            mob
+          </Typography>
 
-            {/* Search bar - desktop */}
-            <form onSubmit={handleSearch} className="hidden md:flex flex-1 max-w-md">
-              <div className="relative w-full">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  type="search"
-                  placeholder="Search for recipes, ingredients, etc..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="search-input w-full pl-10"
-                />
-              </div>
-            </form>
+          {/* Search bar - desktop */}
+          <Box
+            component="form"
+            onSubmit={handleSearch}
+            sx={{
+              display: { xs: 'none', md: 'flex' },
+              flex: 1,
+              maxWidth: 400,
+            }}
+          >
+            <TextField
+              size="small"
+              placeholder="Search recipes..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              fullWidth
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon sx={{ color: 'text.secondary' }} />
+                  </InputAdornment>
+                ),
+                sx: {
+                  borderRadius: 6,
+                  bgcolor: 'rgba(0, 0, 0, 0.04)',
+                  '& fieldset': { border: 'none' },
+                },
+              }}
+            />
+          </Box>
 
-            {/* Right side actions */}
-            <div className="flex items-center gap-2">
+          <Box sx={{ flexGrow: 1 }} />
+
+          {/* Right side actions */}
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            {/* Add Recipe button for chefs */}
+            {user?.role === 'chef' && (
               <Button
-                variant="ghost"
-                size="icon"
-                className="relative"
-                onClick={() => setIsOpen(true)}
+                component={Link}
+                to="/add-recipe"
+                startIcon={<AddIcon />}
+                variant="outlined"
+                size="small"
+                sx={{
+                  display: { xs: 'none', sm: 'flex' },
+                  borderColor: 'primary.main',
+                  color: 'text.primary',
+                }}
               >
-                <ShoppingCart className="h-5 w-5" />
-                {itemCount > 0 && (
-                  <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-primary text-primary-foreground text-xs flex items-center justify-center font-medium">
-                    {itemCount}
-                  </span>
-                )}
+                Add Recipe
               </Button>
+            )}
 
-              <Button variant="ghost" className="hidden sm:flex gap-2">
-                <User className="h-4 w-4" />
-                Log In
-              </Button>
+            {/* Shopping cart */}
+            <IconButton onClick={() => setIsOpen(true)}>
+              <Badge badgeContent={itemCount} color="primary">
+                <CartIcon />
+              </Badge>
+            </IconButton>
 
-              <Button className="hidden sm:flex btn-primary">
-                Join the Mob
-              </Button>
-
-              <Button
-                variant="ghost"
-                size="icon"
-                className="md:hidden"
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
-              >
-                {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-              </Button>
-            </div>
-          </div>
-
-          {/* Navigation links - desktop */}
-          <div className="hidden md:flex items-center gap-6 pb-3">
-            {navLinks.map((link) => (
-              <Link key={link.href} to={link.href} className="nav-link text-sm">
-                {link.label}
-              </Link>
-            ))}
-          </div>
-        </div>
-
-        {/* Mobile menu */}
-        {isMenuOpen && (
-          <div className="md:hidden border-t border-border animate-slide-up">
-            <div className="container py-4 space-y-4">
-              <form onSubmit={handleSearch}>
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    type="search"
-                    placeholder="Search recipes..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="search-input w-full pl-10"
-                  />
-                </div>
-              </form>
-              
-              <div className="flex flex-col gap-2">
-                {navLinks.map((link) => (
-                  <Link
-                    key={link.href}
-                    to={link.href}
-                    className="nav-link py-2"
-                    onClick={() => setIsMenuOpen(false)}
+            {/* Auth buttons */}
+            {isAuthenticated ? (
+              <>
+                <IconButton onClick={handleUserMenuOpen}>
+                  <Avatar
+                    src={user?.avatar}
+                    alt={user?.name}
+                    sx={{ width: 32, height: 32 }}
                   >
-                    {link.label}
-                  </Link>
-                ))}
-              </div>
+                    {user?.name?.charAt(0)}
+                  </Avatar>
+                </IconButton>
+                <Menu
+                  anchorEl={anchorEl}
+                  open={Boolean(anchorEl)}
+                  onClose={handleUserMenuClose}
+                  anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                  transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                >
+                  <MenuItem disabled>
+                    <Box>
+                      <Typography variant="body2" fontWeight={600}>
+                        {user?.name}
+                      </Typography>
+                      <Typography variant="caption" color="text.secondary">
+                        {user?.role === 'chef' ? 'Chef' : 'Viewer'}
+                      </Typography>
+                    </Box>
+                  </MenuItem>
+                  <Divider />
+                  {user?.role === 'chef' && (
+                    <MenuItem
+                      onClick={() => {
+                        handleUserMenuClose();
+                        navigate('/add-recipe');
+                      }}
+                    >
+                      Add Recipe
+                    </MenuItem>
+                  )}
+                  <MenuItem onClick={handleLogout}>Log Out</MenuItem>
+                </Menu>
+              </>
+            ) : (
+              <>
+                <Button
+                  component={Link}
+                  to="/auth"
+                  startIcon={<PersonIcon />}
+                  sx={{
+                    display: { xs: 'none', sm: 'flex' },
+                    color: 'text.primary',
+                  }}
+                >
+                  Log In
+                </Button>
+                <Button
+                  component={Link}
+                  to="/auth"
+                  variant="contained"
+                  color="secondary"
+                  sx={{ display: { xs: 'none', sm: 'flex' } }}
+                >
+                  Join the Mob
+                </Button>
+              </>
+            )}
 
-              <div className="flex gap-2 pt-2">
-                <Button variant="outline" className="flex-1">Log In</Button>
-                <Button className="flex-1 btn-primary">Join</Button>
-              </div>
-            </div>
-          </div>
-        )}
-      </nav>
+            {/* Mobile menu button */}
+            <IconButton
+              sx={{ display: { md: 'none' } }}
+              onClick={() => setMobileOpen(true)}
+            >
+              <MenuIcon />
+            </IconButton>
+          </Box>
+        </Toolbar>
+
+        {/* Navigation links - desktop */}
+        <Box
+          sx={{
+            display: { xs: 'none', md: 'flex' },
+            gap: 3,
+            px: 3,
+            pb: 1.5,
+          }}
+        >
+          {navLinks.map((link) => (
+            <Typography
+              key={link.href}
+              component={Link}
+              to={link.href}
+              variant="body2"
+              sx={{
+                color: 'text.secondary',
+                textDecoration: 'none',
+                fontWeight: 500,
+                '&:hover': { color: 'text.primary' },
+              }}
+            >
+              {link.label}
+            </Typography>
+          ))}
+        </Box>
+      </AppBar>
+
+      {/* Mobile drawer */}
+      <Drawer
+        anchor="right"
+        open={mobileOpen}
+        onClose={() => setMobileOpen(false)}
+      >
+        <Box sx={{ width: 280, p: 2 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
+            <IconButton onClick={() => setMobileOpen(false)}>
+              <CloseIcon />
+            </IconButton>
+          </Box>
+
+          <TextField
+            size="small"
+            placeholder="Search recipes..."
+            fullWidth
+            sx={{ mb: 2 }}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon />
+                </InputAdornment>
+              ),
+            }}
+          />
+
+          <List>
+            {navLinks.map((link) => (
+              <ListItem key={link.href} disablePadding>
+                <ListItemButton
+                  component={Link}
+                  to={link.href}
+                  onClick={() => setMobileOpen(false)}
+                >
+                  <ListItemText primary={link.label} />
+                </ListItemButton>
+              </ListItem>
+            ))}
+          </List>
+
+          <Box sx={{ mt: 2, display: 'flex', gap: 1 }}>
+            {isAuthenticated ? (
+              <Button
+                fullWidth
+                variant="outlined"
+                onClick={() => {
+                  logout();
+                  setMobileOpen(false);
+                }}
+              >
+                Log Out
+              </Button>
+            ) : (
+              <>
+                <Button
+                  component={Link}
+                  to="/auth"
+                  fullWidth
+                  variant="outlined"
+                  onClick={() => setMobileOpen(false)}
+                >
+                  Log In
+                </Button>
+                <Button
+                  component={Link}
+                  to="/auth"
+                  fullWidth
+                  variant="contained"
+                  color="secondary"
+                  onClick={() => setMobileOpen(false)}
+                >
+                  Join
+                </Button>
+              </>
+            )}
+          </Box>
+        </Box>
+      </Drawer>
     </>
   );
 }

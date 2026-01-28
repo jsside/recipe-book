@@ -1,83 +1,101 @@
-import { Check } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-
-const heroImages = [
-  'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=600&q=80',
-  'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600&q=80',
-  'https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=600&q=80',
-  'https://images.unsplash.com/photo-1455619452474-d2be8b1e70cd?w=600&q=80',
-];
-
-const features = [
-  'Unlimited access to 3000+ recipes',
-  'Plan your meals with ease',
-  'Organise and save your favourite recipes',
-];
+import { Box, Container, Typography, Grid, Button, Stack } from '@mui/material';
+import { Link } from 'react-router-dom';
 
 export function HeroSection() {
   return (
-    <section className="hero-section py-12 md:py-20">
-      <div className="container">
-        <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
-          {/* Left content */}
-          <div className="space-y-6 animate-fade-in">
-            <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold leading-tight text-balance">
-              Your home for easy, delicious meal prep recipes
-            </h1>
-            
-            <ul className="space-y-3">
-              {features.map((feature) => (
-                <li key={feature} className="flex items-center gap-3 text-foreground/80">
-                  <div className="h-5 w-5 rounded-full bg-primary flex items-center justify-center shrink-0">
-                    <Check className="h-3 w-3 text-primary-foreground" />
-                  </div>
-                  <span>{feature}</span>
-                </li>
+    <Box
+      sx={{
+        bgcolor: 'background.paper',
+        py: { xs: 6, md: 10 },
+        borderBottom: 1,
+        borderColor: 'divider',
+      }}
+    >
+      <Container maxWidth="lg">
+        <Grid container spacing={4} alignItems="center">
+          <Grid size={{ xs: 12, md: 6 }}>
+            <Typography
+              variant="h1"
+              sx={{
+                fontSize: { xs: '2.5rem', md: '3.5rem' },
+                fontWeight: 700,
+                lineHeight: 1.1,
+                mb: 3,
+              }}
+            >
+              Cook with confidence
+            </Typography>
+            <Typography
+              variant="body1"
+              sx={{
+                fontSize: '1.125rem',
+                color: 'text.secondary',
+                mb: 4,
+                maxWidth: 480,
+              }}
+            >
+              Discover thousands of delicious recipes, build your shopping list,
+              and plan your meals for the week ahead.
+            </Typography>
+            <Stack direction="row" spacing={2}>
+              <Button
+                component={Link}
+                to="/recipes"
+                variant="contained"
+                color="secondary"
+                size="large"
+                sx={{ px: 4 }}
+              >
+                Explore Recipes
+              </Button>
+              <Button
+                component={Link}
+                to="/auth"
+                variant="outlined"
+                size="large"
+                sx={{
+                  px: 4,
+                  borderColor: 'text.primary',
+                  color: 'text.primary',
+                }}
+              >
+                Get Started
+              </Button>
+            </Stack>
+          </Grid>
+
+          <Grid size={{ xs: 12, md: 6 }}>
+            <Box
+              sx={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(2, 1fr)',
+                gap: 2,
+              }}
+            >
+              {[
+                'https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?w=400&q=80',
+                'https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=400&q=80',
+                'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&q=80',
+                'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400&q=80',
+              ].map((src, index) => (
+                <Box
+                  key={index}
+                  component="img"
+                  src={src}
+                  alt={`Food ${index + 1}`}
+                  sx={{
+                    width: '100%',
+                    aspectRatio: '1',
+                    objectFit: 'cover',
+                    borderRadius: 3,
+                    transform: index % 2 === 1 ? 'translateY(16px)' : 'none',
+                  }}
+                />
               ))}
-            </ul>
-
-            <Button className="btn-primary text-base">
-              Start Your Free Trial
-            </Button>
-          </div>
-
-          {/* Right image collage */}
-          <div className="relative grid grid-cols-2 gap-4 animate-slide-up">
-            <div className="space-y-4">
-              <div className="aspect-square rounded-3xl overflow-hidden">
-                <img
-                  src={heroImages[0]}
-                  alt="Delicious food"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <div className="aspect-[4/3] rounded-3xl overflow-hidden">
-                <img
-                  src={heroImages[1]}
-                  alt="Delicious food"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-            </div>
-            <div className="space-y-4 pt-8">
-              <div className="aspect-[4/3] rounded-3xl overflow-hidden">
-                <img
-                  src={heroImages[2]}
-                  alt="Delicious food"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <div className="aspect-square rounded-3xl overflow-hidden">
-                <img
-                  src={heroImages[3]}
-                  alt="Delicious food"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
+            </Box>
+          </Grid>
+        </Grid>
+      </Container>
+    </Box>
   );
 }

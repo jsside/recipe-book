@@ -1,9 +1,18 @@
 import { Link } from 'react-router-dom';
-import { Clock, Plus } from 'lucide-react';
+import {
+  Card,
+  CardContent,
+  CardMedia,
+  Typography,
+  IconButton,
+  Avatar,
+  Box,
+  Chip,
+  Stack,
+} from '@mui/material';
+import { Add as AddIcon, AccessTime as ClockIcon } from '@mui/icons-material';
 import { Recipe } from '@/data/recipes';
 import { useShoppingList } from '@/context/ShoppingListContext';
-import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 interface RecipeCardProps {
   recipe: Recipe;
@@ -19,50 +28,116 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
   };
 
   return (
-    <Link to={`/recipe/${recipe.id}`} className="recipe-card group block">
-      <div className="relative aspect-[4/3] overflow-hidden">
-        <img
-          src={recipe.image}
+    <Card
+      component={Link}
+      to={`/recipe/${recipe.id}`}
+      sx={{
+        textDecoration: 'none',
+        display: 'block',
+        transition: 'all 0.3s ease',
+        '&:hover': {
+          transform: 'translateY(-4px)',
+          boxShadow: '0 10px 20px -5px rgba(31, 26, 20, 0.15)',
+        },
+        '&:hover .add-button': {
+          opacity: 1,
+        },
+        '&:hover .recipe-image': {
+          transform: 'scale(1.05)',
+        },
+      }}
+    >
+      <Box sx={{ position: 'relative', overflow: 'hidden' }}>
+        <CardMedia
+          component="img"
+          image={recipe.image}
           alt={recipe.title}
-          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-          loading="lazy"
+          className="recipe-image"
+          sx={{
+            aspectRatio: '4/3',
+            objectFit: 'cover',
+            transition: 'transform 0.5s ease',
+          }}
         />
-        
+
         {/* Badges */}
-        <div className="absolute top-3 left-3 flex gap-2">
-          {recipe.isFree && <span className="badge-free">Free</span>}
-          {recipe.isTopRated && <span className="badge-top">Top 50</span>}
-        </div>
+        <Stack
+          direction="row"
+          spacing={1}
+          sx={{ position: 'absolute', top: 12, left: 12 }}
+        >
+          {recipe.isTopRated && (
+            <Chip
+              label="Top 50"
+              size="small"
+              sx={{
+                bgcolor: 'warning.main',
+                color: 'white',
+                fontWeight: 600,
+                fontSize: '0.75rem',
+              }}
+            />
+          )}
+        </Stack>
 
         {/* Add to list button */}
-        <Button
-          size="icon"
-          variant="secondary"
-          className="absolute top-3 right-3 h-8 w-8 rounded-full opacity-0 group-hover:opacity-100 transition-opacity bg-card/90 hover:bg-card"
+        <IconButton
+          className="add-button"
           onClick={handleAddToList}
+          sx={{
+            position: 'absolute',
+            top: 12,
+            right: 12,
+            bgcolor: 'rgba(255, 255, 255, 0.9)',
+            opacity: 0,
+            transition: 'opacity 0.2s ease',
+            '&:hover': {
+              bgcolor: 'white',
+            },
+          }}
+          size="small"
         >
-          <Plus className="h-4 w-4" />
-        </Button>
-      </div>
+          <AddIcon fontSize="small" />
+        </IconButton>
+      </Box>
 
-      <div className="p-4 space-y-3">
-        <h3 className="font-serif font-semibold text-lg leading-tight line-clamp-2 group-hover:text-primary transition-colors">
+      <CardContent sx={{ p: 2 }}>
+        <Typography
+          variant="h6"
+          component="h3"
+          sx={{
+            fontFamily: '"Fraunces", serif',
+            fontWeight: 600,
+            fontSize: '1.1rem',
+            lineHeight: 1.3,
+            mb: 1,
+            display: '-webkit-box',
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: 'vertical',
+            overflow: 'hidden',
+          }}
+        >
           {recipe.title}
-        </h3>
+        </Typography>
 
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <Clock className="h-4 w-4" />
-          <span>{recipe.cookTime}</span>
-        </div>
+        <Stack direction="row" alignItems="center" spacing={0.5} sx={{ mb: 1.5 }}>
+          <ClockIcon sx={{ fontSize: 16, color: 'text.secondary' }} />
+          <Typography variant="body2" color="text.secondary">
+            {recipe.cookTime}
+          </Typography>
+        </Stack>
 
-        <div className="flex items-center gap-2">
-          <Avatar className="h-6 w-6">
-            <AvatarImage src={recipe.chef.avatar} alt={recipe.chef.name} />
-            <AvatarFallback>{recipe.chef.name.charAt(0)}</AvatarFallback>
-          </Avatar>
-          <span className="text-sm text-muted-foreground">{recipe.chef.name}</span>
-        </div>
-      </div>
-    </Link>
+        <Stack direction="row" alignItems="center" spacing={1}>
+          <Avatar
+            src={recipe.chef.avatar}
+            alt={recipe.chef.name}
+            sx={{ width: 24, height: 24 }}
+          />
+          <Typography variant="body2" color="text.secondary">
+            {recipe.chef.name}
+          </Typography>
+        </Stack>
+      </CardContent>
+    </Card>
   );
 }

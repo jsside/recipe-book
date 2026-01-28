@@ -1,34 +1,40 @@
 import { useState, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Search, SlidersHorizontal } from 'lucide-react';
+import {
+  Container,
+  Box,
+  Typography,
+  Grid,
+  TextField,
+  InputAdornment,
+  Button,
+} from '@mui/material';
+import { Search as SearchIcon, FilterList as FilterIcon } from '@mui/icons-material';
 import { RecipeCard } from '@/components/RecipeCard';
 import { CategoryChips } from '@/components/CategoryChips';
-import { recipes, categories } from '@/data/recipes';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
+import { useRecipes } from '@/context/RecipeContext';
 
 export default function Recipes() {
+  const { recipes } = useRecipes();
   const [searchParams] = useSearchParams();
   const categoryParam = searchParams.get('category') || '';
   const ingredientParam = searchParams.get('ingredient') || '';
-  
+
   const [searchQuery, setSearchQuery] = useState('');
-  const [activeCategory, setActiveCategory] = useState(
-    categoryParam || 'Dinner, sorted'
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(
+    categoryParam || null
   );
 
   const filteredRecipes = useMemo(() => {
     let filtered = recipes;
 
     // Filter by category
-    if (activeCategory && activeCategory !== 'Dinner, sorted') {
+    if (selectedCategory) {
       filtered = filtered.filter(r =>
         r.category.some(cat =>
-          cat.toLowerCase().includes(activeCategory.toLowerCase())
+          cat.toLowerCase().includes(selectedCategory.toLowerCase())
         )
       );
-    } else if (activeCategory === 'Dinner, sorted') {
-      filtered = filtered.filter(r => r.category.includes('Dinner'));
     }
 
     // Filter by ingredient
@@ -52,69 +58,93 @@ export default function Recipes() {
     }
 
     return filtered;
-  }, [activeCategory, ingredientParam, searchQuery]);
+  }, [selectedCategory, ingredientParam, searchQuery, recipes]);
 
   return (
-    <div className="min-h-screen py-8">
-      <div className="container space-y-8">
+    <Box sx={{ minHeight: '100vh', py: 4 }}>
+      <Container maxWidth="lg">
         {/* Header */}
-        <div className="space-y-4">
-          <h1 className="font-serif text-3xl md:text-4xl font-bold">
+        <Box sx={{ mb: 4 }}>
+          <Typography
+            variant="h1"
+            sx={{ fontSize: { xs: '1.75rem', md: '2.25rem' }, mb: 1 }}
+          >
             {ingredientParam ? `${ingredientParam} Recipes` : 'All Recipes'}
-          </h1>
-          <p className="text-muted-foreground">
+          </Typography>
+          <Typography color="text.secondary">
             {filteredRecipes.length} recipes found
-          </p>
-        </div>
+          </Typography>
+        </Box>
 
         {/* Search and filters */}
-        <div className="flex flex-col sm:flex-row gap-4">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              type="search"
-              placeholder="Search recipes..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="search-input pl-10"
-            />
-          </div>
-          <Button variant="outline" className="gap-2">
-            <SlidersHorizontal className="h-4 w-4" />
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: { xs: 'column', sm: 'row' },
+            gap: 2,
+            mb: 3,
+          }}
+        >
+          <TextField
+            size="small"
+            placeholder="Search recipes..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            fullWidth
+            sx={{ flex: 1 }}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon sx={{ color: 'text.secondary' }} />
+                </InputAdornment>
+              ),
+              sx: {
+                borderRadius: 6,
+                bgcolor: 'rgba(0, 0, 0, 0.04)',
+                '& fieldset': { border: 'none' },
+              },
+            }}
+          />
+          <Button
+            variant="outlined"
+            startIcon={<FilterIcon />}
+            sx={{
+              borderColor: 'divider',
+              color: 'text.primary',
+            }}
+          >
             Filters
           </Button>
-        </div>
+        </Box>
 
         {/* Category chips */}
         {!ingredientParam && (
           <CategoryChips
-            activeCategory={activeCategory}
-            onCategoryChange={setActiveCategory}
+            selectedCategory={selectedCategory}
+            onCategoryChange={setSelectedCategory}
           />
         )}
 
         {/* Recipe grid */}
         {filteredRecipes.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {filteredRecipes.map((recipe, index) => (
-              <div
-                key={recipe.id}
-                className="animate-fade-in"
-                style={{ animationDelay: `${index * 50}ms` }}
-              >
+          <Grid container spacing={3} sx={{ mt: 1 }}>
+            {filteredRecipes.map((recipe) => (
+              <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={recipe.id}>
                 <RecipeCard recipe={recipe} />
-              </div>
+              </Grid>
             ))}
-          </div>
+          </Grid>
         ) : (
-          <div className="text-center py-20">
-            <h3 className="font-serif text-xl font-medium mb-2">No recipes found</h3>
-            <p className="text-muted-foreground">
+          <Box sx={{ textAlign: 'center', py: 10 }}>
+            <Typography variant="h6" sx={{ mb: 1 }}>
+              No recipes found
+            </Typography>
+            <Typography color="text.secondary">
               Try adjusting your search or filters
-            </p>
-          </div>
+            </Typography>
+          </Box>
         )}
-      </div>
-    </div>
+      </Container>
+    </Box>
   );
 }

@@ -1,25 +1,54 @@
 import { useParams, Link } from 'react-router-dom';
-import { Clock, Users, ChevronLeft, Plus, Heart, Share2, Printer } from 'lucide-react';
-import { recipes } from '@/data/recipes';
+import {
+  Container,
+  Box,
+  Typography,
+  Grid,
+  Button,
+  Avatar,
+  Checkbox,
+  Paper,
+  Stack,
+  IconButton,
+  Tooltip,
+  Chip,
+  Divider,
+} from '@mui/material';
+import {
+  ChevronLeft as BackIcon,
+  Add as AddIcon,
+  Share as ShareIcon,
+  Print as PrintIcon,
+  AccessTime as ClockIcon,
+  People as PeopleIcon,
+  Scale as ScaleIcon,
+  Visibility as WakeLockIcon,
+  VisibilityOff as WakeLockOffIcon,
+} from '@mui/icons-material';
+import { useRecipes } from '@/context/RecipeContext';
 import { useShoppingList } from '@/context/ShoppingListContext';
-import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Checkbox } from '@/components/ui/checkbox';
+import { useWakeLock } from '@/hooks/useWakeLock';
+import { useUnitConversion } from '@/hooks/useUnitConversion';
 
 export default function RecipeDetail() {
   const { id } = useParams();
+  const { getRecipeById } = useRecipes();
   const { addIngredients } = useShoppingList();
-  
-  const recipe = recipes.find(r => r.id === id);
+  const { isActive, toggleWakeLock, isSupported } = useWakeLock();
+  const { unitSystem, toggleUnitSystem, convertAmount } = useUnitConversion();
+
+  const recipe = getRecipeById(id || '');
 
   if (!recipe) {
     return (
-      <div className="container py-20 text-center">
-        <h1 className="font-serif text-3xl font-bold mb-4">Recipe not found</h1>
-        <Link to="/">
-          <Button>Back to home</Button>
-        </Link>
-      </div>
+      <Container sx={{ py: 10, textAlign: 'center' }}>
+        <Typography variant="h4" fontFamily='"Fraunces", serif' sx={{ mb: 2 }}>
+          Recipe not found
+        </Typography>
+        <Button component={Link} to="/" variant="contained">
+          Back to home
+        </Button>
+      </Container>
     );
   }
 
@@ -28,140 +57,295 @@ export default function RecipeDetail() {
   };
 
   return (
-    <div className="min-h-screen pb-12">
+    <Box sx={{ minHeight: '100vh', pb: 6 }}>
       {/* Back button */}
-      <div className="container py-4">
-        <Link
+      <Container sx={{ py: 2 }}>
+        <Button
+          component={Link}
           to="/"
-          className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+          startIcon={<BackIcon />}
+          sx={{ color: 'text.secondary' }}
         >
-          <ChevronLeft className="h-4 w-4" />
           Back to recipes
-        </Link>
-      </div>
+        </Button>
+      </Container>
 
-      {/* Hero */}
-      <div className="container">
-        <div className="grid lg:grid-cols-2 gap-8 lg:gap-12">
+      {/* Hero section */}
+      <Container>
+        <Grid container spacing={4}>
           {/* Image */}
-          <div className="aspect-[4/3] lg:aspect-square rounded-3xl overflow-hidden">
-            <img
+          <Grid size={{ xs: 12, lg: 6 }}>
+            <Box
+              component="img"
               src={recipe.image}
               alt={recipe.title}
-              className="w-full h-full object-cover"
+              sx={{
+                width: '100%',
+                aspectRatio: '4/3',
+                objectFit: 'cover',
+                borderRadius: 4,
+              }}
             />
-          </div>
+          </Grid>
 
           {/* Content */}
-          <div className="space-y-6">
-            <div className="flex gap-2">
-              {recipe.isFree && <span className="badge-free">Free</span>}
-              {recipe.isTopRated && <span className="badge-top">Top 50</span>}
-            </div>
-
-            <h1 className="font-serif text-3xl md:text-4xl lg:text-5xl font-bold">
-              {recipe.title}
-            </h1>
-
-            <p className="text-lg text-muted-foreground">
-              {recipe.description}
-            </p>
-
-            <div className="flex items-center gap-6 text-muted-foreground">
-              <div className="flex items-center gap-2">
-                <Clock className="h-5 w-5" />
-                <span>{recipe.cookTime}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Users className="h-5 w-5" />
-                <span>{recipe.servings} servings</span>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3">
-              <Avatar className="h-10 w-10">
-                <AvatarImage src={recipe.chef.avatar} alt={recipe.chef.name} />
-                <AvatarFallback>{recipe.chef.name.charAt(0)}</AvatarFallback>
-              </Avatar>
-              <div>
-                <p className="font-medium">{recipe.chef.name}</p>
-                <p className="text-sm text-muted-foreground">Recipe creator</p>
-              </div>
-            </div>
-
-            <div className="flex flex-wrap gap-3 pt-4">
-              <Button onClick={handleAddAllToList} className="btn-primary gap-2">
-                <Plus className="h-4 w-4" />
-                Add to Shopping List
-              </Button>
-              <Button variant="outline" size="icon">
-                <Heart className="h-4 w-4" />
-              </Button>
-              <Button variant="outline" size="icon">
-                <Share2 className="h-4 w-4" />
-              </Button>
-              <Button variant="outline" size="icon">
-                <Printer className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Ingredients & Instructions */}
-      <div className="container mt-12">
-        <div className="grid lg:grid-cols-3 gap-8 lg:gap-12">
-          {/* Ingredients */}
-          <div className="lg:col-span-1">
-            <div className="sticky top-24 space-y-4">
-              <div className="flex items-center justify-between">
-                <h2 className="font-serif text-2xl font-bold">Ingredients</h2>
-                <span className="text-sm text-muted-foreground">
-                  {recipe.servings} servings
-                </span>
-              </div>
-
-              <ul className="space-y-3">
-                {recipe.ingredients.map((ingredient) => (
-                  <li
-                    key={ingredient.id}
-                    className="flex items-center gap-3 p-3 rounded-lg bg-muted/50"
-                  >
-                    <Checkbox />
-                    <span>
-                      {ingredient.amount} {ingredient.unit} {ingredient.name}
-                    </span>
-                  </li>
+          <Grid size={{ xs: 12, lg: 6 }}>
+            <Stack spacing={3}>
+              {/* Badges */}
+              <Stack direction="row" spacing={1}>
+                {recipe.isTopRated && (
+                  <Chip label="Top 50" color="warning" size="small" />
+                )}
+                {recipe.difficulty && (
+                  <Chip
+                    label={recipe.difficulty}
+                    variant="outlined"
+                    size="small"
+                    sx={{ textTransform: 'capitalize' }}
+                  />
+                )}
+                {recipe.dietaryTags?.map(tag => (
+                  <Chip
+                    key={tag}
+                    label={tag}
+                    variant="outlined"
+                    size="small"
+                    sx={{ textTransform: 'capitalize' }}
+                  />
                 ))}
-              </ul>
+              </Stack>
+
+              <Typography
+                variant="h1"
+                sx={{ fontSize: { xs: '2rem', md: '2.5rem', lg: '3rem' } }}
+              >
+                {recipe.title}
+              </Typography>
+
+              <Typography variant="body1" color="text.secondary" sx={{ fontSize: '1.1rem' }}>
+                {recipe.description}
+              </Typography>
+
+              <Stack direction="row" spacing={4}>
+                <Stack direction="row" alignItems="center" spacing={1}>
+                  <ClockIcon sx={{ color: 'text.secondary' }} />
+                  <Typography color="text.secondary">{recipe.cookTime}</Typography>
+                </Stack>
+                <Stack direction="row" alignItems="center" spacing={1}>
+                  <PeopleIcon sx={{ color: 'text.secondary' }} />
+                  <Typography color="text.secondary">{recipe.servings} servings</Typography>
+                </Stack>
+              </Stack>
+
+              <Stack direction="row" alignItems="center" spacing={2}>
+                <Avatar src={recipe.chef.avatar} alt={recipe.chef.name} />
+                <Box>
+                  <Typography fontWeight={500}>{recipe.chef.name}</Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Recipe creator
+                  </Typography>
+                </Box>
+              </Stack>
+
+              <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  startIcon={<AddIcon />}
+                  onClick={handleAddAllToList}
+                >
+                  Add to Shopping List
+                </Button>
+                <IconButton>
+                  <ShareIcon />
+                </IconButton>
+                <IconButton onClick={() => window.print()}>
+                  <PrintIcon />
+                </IconButton>
+              </Stack>
+            </Stack>
+          </Grid>
+        </Grid>
+      </Container>
+
+      {/* Method and Ingredients - Side by Side */}
+      <Container sx={{ mt: 6 }}>
+        <Grid container spacing={4}>
+          {/* Method (Left) */}
+          <Grid size={{ xs: 12, lg: 7 }}>
+            <Paper elevation={0} sx={{ p: 3, bgcolor: 'background.paper', borderRadius: 3 }}>
+              <Typography variant="h5" fontFamily='"Fraunces", serif' sx={{ mb: 3 }}>
+                Method
+              </Typography>
+              <Stack spacing={3}>
+                {recipe.instructions.map((instruction, index) => (
+                  <Stack key={index} direction="row" spacing={2}>
+                    <Box
+                      sx={{
+                        width: 32,
+                        height: 32,
+                        borderRadius: '50%',
+                        bgcolor: 'primary.main',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontWeight: 600,
+                        flexShrink: 0,
+                      }}
+                    >
+                      {index + 1}
+                    </Box>
+                    <Typography sx={{ pt: 0.5, fontSize: '1.1rem' }}>
+                      {instruction}
+                    </Typography>
+                  </Stack>
+                ))}
+              </Stack>
+
+              {/* Tips section */}
+              {recipe.tips && (
+                <Box sx={{ mt: 4 }}>
+                  <Divider sx={{ mb: 3 }} />
+                  <Typography variant="h6" fontFamily='"Fraunces", serif' sx={{ mb: 2 }}>
+                    Chef's Tips
+                  </Typography>
+                  <Typography color="text.secondary">{recipe.tips}</Typography>
+                </Box>
+              )}
+            </Paper>
+          </Grid>
+
+          {/* Ingredients (Right) */}
+          <Grid size={{ xs: 12, lg: 5 }}>
+            <Paper
+              elevation={0}
+              sx={{
+                p: 3,
+                bgcolor: 'background.paper',
+                borderRadius: 3,
+                position: { lg: 'sticky' },
+                top: { lg: 100 },
+              }}
+            >
+              <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 3 }}>
+                <Typography variant="h5" fontFamily='"Fraunces", serif'>
+                  Ingredients
+                </Typography>
+                <Stack direction="row" spacing={1} alignItems="center">
+                  {/* Unit toggle */}
+                  <Tooltip title={`Switch to ${unitSystem === 'metric' ? 'imperial' : 'metric'}`}>
+                    <IconButton onClick={toggleUnitSystem} size="small">
+                      <ScaleIcon />
+                    </IconButton>
+                  </Tooltip>
+                  <Chip
+                    label={unitSystem}
+                    size="small"
+                    variant="outlined"
+                    sx={{ textTransform: 'capitalize' }}
+                  />
+                  
+                  {/* Wake lock toggle */}
+                  {isSupported && (
+                    <Tooltip title={isActive ? 'Screen will stay on' : 'Keep screen awake'}>
+                      <IconButton
+                        onClick={toggleWakeLock}
+                        size="small"
+                        color={isActive ? 'primary' : 'default'}
+                      >
+                        {isActive ? <WakeLockIcon /> : <WakeLockOffIcon />}
+                      </IconButton>
+                    </Tooltip>
+                  )}
+                </Stack>
+              </Stack>
+
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                {recipe.servings} servings
+              </Typography>
+
+              <Stack spacing={1}>
+                {recipe.ingredients.map((ingredient) => {
+                  const converted = convertAmount(ingredient.amount, ingredient.unit);
+                  return (
+                    <Box
+                      key={ingredient.id}
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 2,
+                        p: 1.5,
+                        borderRadius: 2,
+                        bgcolor: 'rgba(0, 0, 0, 0.02)',
+                        '&:hover': { bgcolor: 'rgba(0, 0, 0, 0.04)' },
+                      }}
+                    >
+                      <Checkbox size="small" />
+                      <Typography>
+                        {converted.amount} {converted.unit} {ingredient.name}
+                      </Typography>
+                    </Box>
+                  );
+                })}
+              </Stack>
 
               <Button
+                fullWidth
+                variant="outlined"
+                startIcon={<AddIcon />}
                 onClick={handleAddAllToList}
-                variant="outline"
-                className="w-full gap-2"
+                sx={{ mt: 3 }}
               >
-                <Plus className="h-4 w-4" />
                 Add all to list
               </Button>
-            </div>
-          </div>
 
-          {/* Instructions */}
-          <div className="lg:col-span-2 space-y-4">
-            <h2 className="font-serif text-2xl font-bold">Method</h2>
-            <ol className="space-y-6">
-              {recipe.instructions.map((instruction, index) => (
-                <li key={index} className="flex gap-4">
-                  <span className="h-8 w-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-semibold shrink-0">
-                    {index + 1}
-                  </span>
-                  <p className="text-lg pt-1">{instruction}</p>
-                </li>
-              ))}
-            </ol>
-          </div>
-        </div>
-      </div>
-    </div>
+              {/* Nutrition info */}
+              {recipe.nutrition && (
+                <Box sx={{ mt: 3 }}>
+                  <Divider sx={{ mb: 2 }} />
+                  <Typography variant="subtitle2" sx={{ mb: 2 }}>
+                    Nutrition per serving
+                  </Typography>
+                  <Grid container spacing={1}>
+                    {recipe.nutrition.calories && (
+                      <Grid size={{ xs: 6 }}>
+                        <Typography variant="body2" color="text.secondary">
+                          Calories
+                        </Typography>
+                        <Typography fontWeight={500}>{recipe.nutrition.calories}</Typography>
+                      </Grid>
+                    )}
+                    {recipe.nutrition.protein && (
+                      <Grid size={{ xs: 6 }}>
+                        <Typography variant="body2" color="text.secondary">
+                          Protein
+                        </Typography>
+                        <Typography fontWeight={500}>{recipe.nutrition.protein}g</Typography>
+                      </Grid>
+                    )}
+                    {recipe.nutrition.carbs && (
+                      <Grid size={{ xs: 6 }}>
+                        <Typography variant="body2" color="text.secondary">
+                          Carbs
+                        </Typography>
+                        <Typography fontWeight={500}>{recipe.nutrition.carbs}g</Typography>
+                      </Grid>
+                    )}
+                    {recipe.nutrition.fat && (
+                      <Grid size={{ xs: 6 }}>
+                        <Typography variant="body2" color="text.secondary">
+                          Fat
+                        </Typography>
+                        <Typography fontWeight={500}>{recipe.nutrition.fat}g</Typography>
+                      </Grid>
+                    )}
+                  </Grid>
+                </Box>
+              )}
+            </Paper>
+          </Grid>
+        </Grid>
+      </Container>
+    </Box>
   );
 }

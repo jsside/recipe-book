@@ -13,6 +13,7 @@ export interface Recipe {
   servings: number;
   instructions: string[];
   description: string;
+  created_at?: string;
   // Extended fields
   difficulty?: "easy" | "medium" | "hard";
   dietaryTags?: string[];

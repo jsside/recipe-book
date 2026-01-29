@@ -15,6 +15,7 @@ import Ingredients from "./pages/Ingredients";
 import MealPlans from "./pages/MealPlans";
 import Auth from "./pages/Auth";
 import AddRecipe from "./pages/AddRecipe";
+import ChefProfile from "./pages/ChefProfile";
 import NotFound from "./pages/NotFound";
 
 const App = () => (
@@ -41,6 +42,7 @@ const App = () => (
                   <Route path="/meal-plans" element={<MealPlans />} />
                   <Route path="/auth" element={<Auth />} />
                   <Route path="/add-recipe" element={<AddRecipe />} />
+                  <Route path="/chef/:name" element={<ChefProfile />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </main>

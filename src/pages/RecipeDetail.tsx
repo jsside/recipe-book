@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import {
   Container,
@@ -20,7 +21,6 @@ import {
   Share as ShareIcon,
   Print as PrintIcon,
   AccessTime as ClockIcon,
-  People as PeopleIcon,
   Scale as ScaleIcon,
   Visibility as WakeLockIcon,
   VisibilityOff as WakeLockOffIcon,
@@ -29,6 +29,12 @@ import { useRecipes } from "@/context/RecipeContext";
 import { useShoppingList } from "@/context/ShoppingListContext";
 import { useWakeLock } from "@/hooks/useWakeLock";
 import { useUnitConversion } from "@/hooks/useUnitConversion";
+import { useServingsAdjuster } from "@/hooks/useServingsAdjuster";
+import { parseInstructionWithIngredients } from "@/utils/ingredientParser";
+import { getRecipeCategories } from "@/utils/recipeHelpers";
+import RenderComponent from "@/components/helpers/renderComponent";
+import ServingsAdjuster from "@/components/ServingsAdjuster";
+import InstructionStep from "@/components/InstructionStep";
 
 export default function RecipeDetail() {
   const { id } = useParams();
@@ -36,8 +42,16 @@ export default function RecipeDetail() {
   const { addIngredients } = useShoppingList();
   const { isActive, toggleWakeLock, isSupported } = useWakeLock();
   const { unitSystem, toggleUnitSystem, convertAmount } = useUnitConversion();
+  const [activeStep, setActiveStep] = useState<number | null>(null);
 
   const recipe = getRecipeById(id || "");
+
+  const {
+    adjustedServings,
+    incrementServings,
+    decrementServings,
+    scaleIngredient,
+  } = useServingsAdjuster(recipe?.servings || 4);
 
   if (!recipe) {
     return (
@@ -53,8 +67,15 @@ export default function RecipeDetail() {
   }
 
   const handleAddAllToList = () => {
-    addIngredients(recipe.ingredients, recipe.id, recipe.title);
+    // Scale ingredients before adding
+    const scaledIngredients = recipe.ingredients.map((ing) => ({
+      ...ing,
+      ...scaleIngredient(ing),
+    }));
+    addIngredients(scaledIngredients, recipe.id, recipe.title);
   };
+
+  const categories = getRecipeCategories(recipe);
 
   return (
     <Box sx={{ minHeight: "100vh", pb: 6 }}>
@@ -92,18 +113,26 @@ export default function RecipeDetail() {
           <Grid size={{ xs: 12, lg: 6 }}>
             <Stack spacing={3}>
               {/* Badges */}
-              <Stack direction="row" spacing={1}>
-                {recipe.isTopRated && (
-                  <Chip label="Top 50" color="warning" size="small" />
-                )}
-                {recipe.difficulty && (
-                  <Chip
-                    label={recipe.difficulty}
-                    variant="outlined"
-                    size="small"
-                    sx={{ textTransform: "capitalize" }}
-                  />
-                )}
+              <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+                <RenderComponent
+                  if={recipe.isTopRated}
+                  then={<Chip label="Top 50" color="warning" size="small" />}
+                />
+                <RenderComponent
+                  if={categories.includes("New recipes")}
+                  then={<Chip label="New" color="success" size="small" />}
+                />
+                <RenderComponent
+                  if={!!recipe.difficulty}
+                  then={
+                    <Chip
+                      label={recipe.difficulty}
+                      variant="outlined"
+                      size="small"
+                      sx={{ textTransform: "capitalize" }}
+                    />
+                  }
+                />
                 {recipe.dietaryTags?.map((tag) => (
                   <Chip
                     key={tag}
@@ -130,22 +159,33 @@ export default function RecipeDetail() {
                 {recipe.description}
               </Typography>
 
-              <Stack direction="row" spacing={4}>
-                <Stack direction="row" alignItems="center" spacing={1}>
-                  <ClockIcon sx={{ color: "text.secondary" }} />
-                  <Typography color="text.secondary">
-                    {recipe.cookTime}
-                  </Typography>
-                </Stack>
-                <Stack direction="row" alignItems="center" spacing={1}>
-                  <PeopleIcon sx={{ color: "text.secondary" }} />
-                  <Typography color="text.secondary">
-                    {recipe.servings} servings
-                  </Typography>
-                </Stack>
+              {/* Cook time */}
+              <Stack direction="row" alignItems="center" spacing={1}>
+                <ClockIcon sx={{ color: "text.secondary" }} />
+                <Typography color="text.secondary">
+                  {recipe.cookTime} cook
+                </Typography>
               </Stack>
 
-              <Stack direction="row" alignItems="center" spacing={2}>
+              {/* Chef info - clickable */}
+              <Stack
+                component={Link}
+                to={`/chef/${encodeURIComponent(recipe.chef.name)}`}
+                direction="row"
+                alignItems="center"
+                spacing={2}
+                sx={{
+                  textDecoration: "none",
+                  color: "inherit",
+                  p: 1.5,
+                  mx: -1.5,
+                  borderRadius: 2,
+                  transition: "background-color 0.2s ease",
+                  "&:hover": {
+                    bgcolor: "rgba(0, 0, 0, 0.04)",
+                  },
+                }}
+              >
                 <Avatar src={recipe.chef.avatar} alt={recipe.chef.name} />
                 <Box>
                   <Typography fontWeight={500}>{recipe.chef.name}</Typography>
@@ -192,45 +232,42 @@ export default function RecipeDetail() {
               >
                 Method
               </Typography>
-              <Stack spacing={3}>
+              <Stack spacing={1}>
                 {recipe.instructions.map((instruction, index) => (
-                  <Stack key={index} direction="row" spacing={2}>
-                    <Box
-                      sx={{
-                        width: 32,
-                        height: 32,
-                        borderRadius: "50%",
-                        bgcolor: "primary.main",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        fontWeight: 600,
-                        flexShrink: 0,
-                      }}
-                    >
-                      {index + 1}
-                    </Box>
-                    <Typography sx={{ pt: 0.5, fontSize: "1.1rem" }}>
-                      {instruction}
-                    </Typography>
-                  </Stack>
+                  <InstructionStep
+                    key={index}
+                    stepNumber={index + 1}
+                    instruction={parseInstructionWithIngredients(
+                      instruction,
+                      recipe.ingredients,
+                      convertAmount,
+                      scaleIngredient
+                    )}
+                    isActive={activeStep === index}
+                    onClick={() =>
+                      setActiveStep(activeStep === index ? null : index)
+                    }
+                  />
                 ))}
               </Stack>
 
               {/* Tips section */}
-              {recipe.tips && (
-                <Box sx={{ mt: 4 }}>
-                  <Divider sx={{ mb: 3 }} />
-                  <Typography
-                    variant="h6"
-                    fontFamily='"Fraunces", serif'
-                    sx={{ mb: 2 }}
-                  >
-                    Chef's Tips
-                  </Typography>
-                  <Typography color="text.secondary">{recipe.tips}</Typography>
-                </Box>
-              )}
+              <RenderComponent
+                if={!!recipe.tips}
+                then={
+                  <Box sx={{ mt: 4 }}>
+                    <Divider sx={{ mb: 3 }} />
+                    <Typography
+                      variant="h6"
+                      fontFamily='"Fraunces", serif'
+                      sx={{ mb: 2 }}
+                    >
+                      Chef's Tips
+                    </Typography>
+                    <Typography color="text.secondary">{recipe.tips}</Typography>
+                  </Box>
+                }
+              />
             </Paper>
           </Grid>
 
@@ -272,34 +309,44 @@ export default function RecipeDetail() {
                   />
 
                   {/* Wake lock toggle */}
-                  {isSupported && (
-                    <Tooltip
-                      title={
-                        isActive ? "Screen will stay on" : "Keep screen awake"
-                      }
-                    >
-                      <IconButton
-                        onClick={toggleWakeLock}
-                        size="small"
-                        color={isActive ? "primary" : "default"}
+                  <RenderComponent
+                    if={isSupported}
+                    then={
+                      <Tooltip
+                        title={
+                          isActive ? "Screen will stay on" : "Keep screen awake"
+                        }
                       >
-                        {isActive ? <WakeLockIcon /> : <WakeLockOffIcon />}
-                      </IconButton>
-                    </Tooltip>
-                  )}
+                        <IconButton
+                          onClick={toggleWakeLock}
+                          size="small"
+                          color={isActive ? "primary" : "default"}
+                        >
+                          <RenderComponent
+                            if={isActive}
+                            then={<WakeLockIcon />}
+                            else={<WakeLockOffIcon />}
+                          />
+                        </IconButton>
+                      </Tooltip>
+                    }
+                  />
                 </Stack>
               </Stack>
 
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                {recipe.servings} servings
-              </Typography>
+              {/* Servings adjuster */}
+              <Box sx={{ mb: 3 }}>
+                <ServingsAdjuster
+                  servings={adjustedServings}
+                  onIncrement={incrementServings}
+                  onDecrement={decrementServings}
+                />
+              </Box>
 
               <Stack spacing={1}>
                 {recipe.ingredients.map((ingredient) => {
-                  const converted = convertAmount(
-                    ingredient.amount,
-                    ingredient.unit,
-                  );
+                  const scaled = scaleIngredient(ingredient);
+                  const converted = convertAmount(scaled.amount, scaled.unit);
                   return (
                     <Box
                       key={ingredient.id}
@@ -333,56 +380,71 @@ export default function RecipeDetail() {
               </Button>
 
               {/* Nutrition info */}
-              {recipe.nutrition && (
-                <Box sx={{ mt: 3 }}>
-                  <Divider sx={{ mb: 2 }} />
-                  <Typography variant="subtitle2" sx={{ mb: 2 }}>
-                    Nutrition per serving
-                  </Typography>
-                  <Grid container spacing={1}>
-                    {recipe.nutrition.calories && (
-                      <Grid size={{ xs: 6 }}>
-                        <Typography variant="body2" color="text.secondary">
-                          Calories
-                        </Typography>
-                        <Typography fontWeight={500}>
-                          {recipe.nutrition.calories}
-                        </Typography>
-                      </Grid>
-                    )}
-                    {recipe.nutrition.protein && (
-                      <Grid size={{ xs: 6 }}>
-                        <Typography variant="body2" color="text.secondary">
-                          Protein
-                        </Typography>
-                        <Typography fontWeight={500}>
-                          {recipe.nutrition.protein}g
-                        </Typography>
-                      </Grid>
-                    )}
-                    {recipe.nutrition.carbs && (
-                      <Grid size={{ xs: 6 }}>
-                        <Typography variant="body2" color="text.secondary">
-                          Carbs
-                        </Typography>
-                        <Typography fontWeight={500}>
-                          {recipe.nutrition.carbs}g
-                        </Typography>
-                      </Grid>
-                    )}
-                    {recipe.nutrition.fat && (
-                      <Grid size={{ xs: 6 }}>
-                        <Typography variant="body2" color="text.secondary">
-                          Fat
-                        </Typography>
-                        <Typography fontWeight={500}>
-                          {recipe.nutrition.fat}g
-                        </Typography>
-                      </Grid>
-                    )}
-                  </Grid>
-                </Box>
-              )}
+              <RenderComponent
+                if={!!recipe.nutrition}
+                then={
+                  <Box sx={{ mt: 3 }}>
+                    <Divider sx={{ mb: 2 }} />
+                    <Typography variant="subtitle2" sx={{ mb: 2 }}>
+                      Nutrition per serving
+                    </Typography>
+                    <Grid container spacing={1}>
+                      <RenderComponent
+                        if={!!recipe.nutrition?.calories}
+                        then={
+                          <Grid size={{ xs: 6 }}>
+                            <Typography variant="body2" color="text.secondary">
+                              Calories
+                            </Typography>
+                            <Typography fontWeight={500}>
+                              {recipe.nutrition?.calories}
+                            </Typography>
+                          </Grid>
+                        }
+                      />
+                      <RenderComponent
+                        if={!!recipe.nutrition?.protein}
+                        then={
+                          <Grid size={{ xs: 6 }}>
+                            <Typography variant="body2" color="text.secondary">
+                              Protein
+                            </Typography>
+                            <Typography fontWeight={500}>
+                              {recipe.nutrition?.protein}g
+                            </Typography>
+                          </Grid>
+                        }
+                      />
+                      <RenderComponent
+                        if={!!recipe.nutrition?.carbs}
+                        then={
+                          <Grid size={{ xs: 6 }}>
+                            <Typography variant="body2" color="text.secondary">
+                              Carbs
+                            </Typography>
+                            <Typography fontWeight={500}>
+                              {recipe.nutrition?.carbs}g
+                            </Typography>
+                          </Grid>
+                        }
+                      />
+                      <RenderComponent
+                        if={!!recipe.nutrition?.fat}
+                        then={
+                          <Grid size={{ xs: 6 }}>
+                            <Typography variant="body2" color="text.secondary">
+                              Fat
+                            </Typography>
+                            <Typography fontWeight={500}>
+                              {recipe.nutrition?.fat}g
+                            </Typography>
+                          </Grid>
+                        }
+                      />
+                    </Grid>
+                  </Box>
+                }
+              />
             </Paper>
           </Grid>
         </Grid>

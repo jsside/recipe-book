@@ -1,3 +1,4 @@
+import { SITE_NAME } from "@/app/constants";
 import React, { createContext, useContext, useState, useCallback } from "react";
 
 export type UserRole = "chef" | "viewer";
@@ -52,7 +53,7 @@ const mockUsers: (User & { password: string })[] = [
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(() => {
-    const stored = localStorage.getItem("mob_user");
+    const stored = localStorage.getItem(`${SITE_NAME}_user`);
     return stored ? JSON.parse(stored) : null;
   });
 
@@ -71,7 +72,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (foundUser) {
         const { password: _, ...userWithoutPassword } = foundUser;
         setUser(userWithoutPassword);
-        localStorage.setItem("mob_user", JSON.stringify(userWithoutPassword));
+        localStorage.setItem(`${SITE_NAME}_user`, JSON.stringify(userWithoutPassword));
         return { success: true };
       }
 
@@ -105,7 +106,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       mockUsers.push({ ...newUser, password });
       setUser(newUser);
-      localStorage.setItem("mob_user", JSON.stringify(newUser));
+      localStorage.setItem(`${SITE_NAME}_user`, JSON.stringify(newUser));
 
       return { success: true };
     },
@@ -114,7 +115,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const logout = useCallback(() => {
     setUser(null);
-    localStorage.removeItem("mob_user");
+    localStorage.removeItem(`${SITE_NAME}_user`);
   }, []);
 
   return (

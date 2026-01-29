@@ -7,10 +7,16 @@ export interface UseServingsAdjusterReturn {
   incrementServings: () => void;
   decrementServings: () => void;
   setServings: (value: number) => void;
-  scaleIngredient: (ingredient: Ingredient) => { amount: string; unit: string; name: string };
+  scaleIngredient: (ingredient: Ingredient) => {
+    amount: string;
+    unit: string;
+    name: string;
+  };
 }
 
-export function useServingsAdjuster(originalServings: number): UseServingsAdjusterReturn {
+export function useServingsAdjuster(
+  originalServings: number,
+): UseServingsAdjusterReturn {
   const [adjustedServings, setAdjustedServings] = useState(originalServings);
 
   const scaleFactor = useMemo(() => {
@@ -32,7 +38,7 @@ export function useServingsAdjuster(originalServings: number): UseServingsAdjust
   const scaleIngredient = useCallback(
     (ingredient: Ingredient) => {
       const originalAmount = parseFloat(ingredient.amount);
-      
+
       if (isNaN(originalAmount)) {
         return {
           amount: ingredient.amount,
@@ -42,7 +48,7 @@ export function useServingsAdjuster(originalServings: number): UseServingsAdjust
       }
 
       const scaledAmount = originalAmount * scaleFactor;
-      
+
       // Format the number nicely (remove trailing zeros, max 2 decimal places)
       let formattedAmount: string;
       if (scaledAmount === Math.floor(scaledAmount)) {
@@ -57,7 +63,7 @@ export function useServingsAdjuster(originalServings: number): UseServingsAdjust
         name: ingredient.name,
       };
     },
-    [scaleFactor]
+    [scaleFactor],
   );
 
   return {

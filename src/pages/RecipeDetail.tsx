@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import {
   Container,
@@ -25,7 +25,6 @@ import {
   Visibility as WakeLockIcon,
   VisibilityOff as WakeLockOffIcon,
 } from "@mui/icons-material";
-import { useRecipes } from "@/context/RecipeContext";
 import { useShoppingList } from "@/context/ShoppingListContext";
 import { useWakeLock } from "@/hooks/useWakeLock";
 import { useUnitConversion } from "@/hooks/useUnitConversion";
@@ -33,12 +32,36 @@ import { useServingsAdjuster } from "@/hooks/useServingsAdjuster";
 import { parseInstructionWithIngredients } from "@/utils/ingredientParser";
 import { getRecipeCategories } from "@/utils/recipeHelpers";
 import RenderComponent from "@/components/helpers/renderComponent";
-import ServingsAdjuster from "@/components/ServingsAdjuster";
-import InstructionStep from "@/components/InstructionStep";
+import ServingsAdjuster from "@/components/custom/ServingsAdjuster";
+import InstructionStep from "@/components/custom/InstructionStep";
+import { useListRecipes } from "@/hooks/useListRecipes";
 
 export default function RecipeDetail() {
   const { id } = useParams();
-  const { getRecipeById } = useRecipes();
+  const {
+    data: recipes = [],
+    isLoading,
+    refetch,
+    isError,
+    error,
+  } = useListRecipes();
+
+  const getRecipeById = useCallback(
+    (id: string) => {
+      return recipes.find((recipe) => recipe.id === id);
+    },
+    [recipes],
+  );
+
+  const getRecipesByChef = useCallback(
+    (chefName: string) => {
+      return recipes.filter(
+        (recipe) => recipe.chef?.name?.toLowerCase() === chefName.toLowerCase(),
+      );
+    },
+    [recipes],
+  );
+
   const { addIngredients } = useShoppingList();
   const { isActive, toggleWakeLock, isSupported } = useWakeLock();
   const { unitSystem, toggleUnitSystem, convertAmount } = useUnitConversion();
@@ -241,7 +264,7 @@ export default function RecipeDetail() {
                       instruction,
                       recipe.ingredients,
                       convertAmount,
-                      scaleIngredient
+                      scaleIngredient,
                     )}
                     isActive={activeStep === index}
                     onClick={() =>
@@ -250,24 +273,6 @@ export default function RecipeDetail() {
                   />
                 ))}
               </Stack>
-
-              {/* Tips section */}
-              <RenderComponent
-                if={!!recipe.tips}
-                then={
-                  <Box sx={{ mt: 4 }}>
-                    <Divider sx={{ mb: 3 }} />
-                    <Typography
-                      variant="h6"
-                      fontFamily='"Fraunces", serif'
-                      sx={{ mb: 2 }}
-                    >
-                      Chef's Tips
-                    </Typography>
-                    <Typography color="text.secondary">{recipe.tips}</Typography>
-                  </Box>
-                }
-              />
             </Paper>
           </Grid>
 
@@ -294,6 +299,13 @@ export default function RecipeDetail() {
                 </Typography>
                 <Stack direction="row" spacing={1} alignItems="center">
                   {/* Unit toggle */}
+                  <Chip
+                    label={unitSystem}
+                    size="small"
+                    variant="outlined"
+                    sx={{ textTransform: "capitalize" }}
+                  />
+
                   <Tooltip
                     title={`Switch to ${unitSystem === "metric" ? "imperial" : "metric"}`}
                   >
@@ -301,12 +313,6 @@ export default function RecipeDetail() {
                       <ScaleIcon />
                     </IconButton>
                   </Tooltip>
-                  <Chip
-                    label={unitSystem}
-                    size="small"
-                    variant="outlined"
-                    sx={{ textTransform: "capitalize" }}
-                  />
 
                   {/* Wake lock toggle */}
                   <RenderComponent

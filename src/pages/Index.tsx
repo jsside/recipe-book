@@ -2,15 +2,23 @@ import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { Container, Box, Typography, Grid, Button } from "@mui/material";
 import { ArrowForward as ArrowIcon } from "@mui/icons-material";
-import { HeroSection } from "@/components/HeroSection";
-import { CategoryChips } from "@/components/CategoryChips";
-import { RecipeCard } from "@/components/RecipeCard";
-import { IngredientCard } from "@/components/IngredientCard";
-import { useRecipes } from "@/context/RecipeContext";
+import { HeroSection } from "@/components/custom/HeroSection";
+import { CategoryChips } from "@/components/custom/CategoryChips";
+import { RecipeCard } from "@/components/custom/RecipeCard";
+import { IngredientCard } from "@/components/custom/IngredientCard";
 import { ingredientCategories } from "@/data/recipes";
+import { useListRecipes } from "@/hooks/useListRecipes";
+import RenderComponent from "@/components/helpers/renderComponent";
+import { Features } from "@/features";
 
 const Index = () => {
-  const { recipes } = useRecipes();
+  const {
+    data: recipes = [],
+    isLoading,
+    refetch,
+    isError,
+    error,
+  } = useListRecipes();
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
   const filteredRecipes = useMemo(() => {
@@ -65,7 +73,9 @@ const Index = () => {
       </Box>
 
       {/* Ingredients Section */}
-      <Box
+        <RenderComponent
+        if={Features["feature-recipe-by-ingredient"]}
+        then={ <Box
         component="section"
         sx={{
           py: { xs: 6, md: 8 },
@@ -110,9 +120,11 @@ const Index = () => {
             ))}
           </Grid>
         </Container>
-      </Box>
+      </Box>}
+        />
+     
 
-      {/* CTA Section */}
+      {/* Chefs Section */}
       <Box
         component="section"
         sx={{
@@ -129,21 +141,12 @@ const Index = () => {
               mb: 3,
             }}
           >
-            Ready to transform your meal prep?
+            Highlighted chefs
           </Typography>
           <Typography color="text.secondary" sx={{ mb: 4 }}>
-            Join thousands of home cooks who save time and eat better.
+            Meet the chefs
           </Typography>
-          <Button
-            component={Link}
-            to="/auth"
-            variant="contained"
-            color="secondary"
-            size="large"
-            sx={{ px: 4 }}
-          >
-            Get Started
-          </Button>
+        {/* TODO: add scrollable chefs list */}
         </Container>
       </Box>
     </Box>

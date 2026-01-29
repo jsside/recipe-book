@@ -17,6 +17,7 @@ import {
   Stack,
 } from "@mui/material";
 import { useAuth, UserRole } from "@/context/AuthContext";
+import { SITE_NAME } from "@/app/constants";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -109,10 +110,10 @@ export default function Auth() {
             fontWeight={700}
             sx={{ mb: 1 }}
           >
-            mob
+             {SITE_NAME}
           </Typography>
           <Typography color="text.secondary">
-            Join the cooking community
+            Join the recipe index
           </Typography>
         </Box>
 

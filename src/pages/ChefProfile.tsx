@@ -6,25 +6,32 @@ import {
   Grid,
   Avatar,
   Button,
-  Stack,
   Paper,
   Skeleton,
 } from "@mui/material";
 import { ChevronLeft as BackIcon } from "@mui/icons-material";
-import { useRecipes } from "@/context/RecipeContext";
-import { RecipeCard } from "@/components/RecipeCard";
+
+import { RecipeCard } from "@/components/custom/RecipeCard";
+import { useListRecipes } from "@/hooks/useListRecipes";
 
 export default function ChefProfile() {
   const { name } = useParams<{ name: string }>();
-  const { recipes } = useRecipes();
-  
+
+  const {
+    data: recipes = [],
+    isLoading,
+    refetch,
+    isError,
+    error,
+  } = useListRecipes();
+
   const decodedName = decodeURIComponent(name || "");
-  
+
   // Find all recipes by this chef
   const chefRecipes = recipes.filter(
-    (recipe) => recipe.chef?.name?.toLowerCase() === decodedName.toLowerCase()
+    (recipe) => recipe.chef?.name?.toLowerCase() === decodedName.toLowerCase(),
   );
-  
+
   // Get chef info from first recipe
   const chefInfo = chefRecipes.length > 0 ? chefRecipes[0].chef : null;
 
@@ -88,7 +95,8 @@ export default function ChefProfile() {
                   Recipe creator
                 </Typography>
                 <Typography variant="h6" sx={{ mt: 2 }}>
-                  {chefRecipes.length} {chefRecipes.length === 1 ? "Recipe" : "Recipes"}
+                  {chefRecipes.length}{" "}
+                  {chefRecipes.length === 1 ? "Recipe" : "Recipes"}
                 </Typography>
               </Box>
             </>
@@ -106,11 +114,7 @@ export default function ChefProfile() {
 
       {/* Recipes Grid */}
       <Container>
-        <Typography
-          variant="h5"
-          fontFamily='"Fraunces", serif'
-          sx={{ mb: 3 }}
-        >
+        <Typography variant="h5" fontFamily='"Fraunces", serif' sx={{ mb: 3 }}>
           Recipes by {chefInfo?.name || decodedName}
         </Typography>
 

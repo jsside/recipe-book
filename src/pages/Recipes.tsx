@@ -13,12 +13,19 @@ import {
   Search as SearchIcon,
   FilterList as FilterIcon,
 } from "@mui/icons-material";
-import { RecipeCard } from "@/components/RecipeCard";
-import { CategoryChips } from "@/components/CategoryChips";
-import { useRecipes } from "@/context/RecipeContext";
+import { RecipeCard } from "@/components/custom/RecipeCard";
+import { CategoryChips } from "@/components/custom/CategoryChips";
+import { useListRecipes } from "@/hooks/useListRecipes";
 
 export default function Recipes() {
-  const { recipes } = useRecipes();
+  const {
+    data: recipes = [],
+    isLoading,
+    refetch,
+    isError,
+    error,
+  } = useListRecipes();
+
   const [searchParams] = useSearchParams();
   const categoryParam = searchParams.get("category") || "";
   const ingredientParam = searchParams.get("ingredient") || "";

@@ -18,17 +18,17 @@ import {
   IconButton,
 } from "@mui/material";
 import {
-  Add as AddIcon,
+  Create as CreateIcon,
   Delete as DeleteIcon,
   ArrowBack as BackIcon,
 } from "@mui/icons-material";
 import { useAuth } from "@/context/AuthContext";
-import { useRecipes } from "@/context/RecipeContext";
 import { dietaryOptions, difficultyOptions, Ingredient } from "@/data/recipes";
+import { useAddRecipe } from "@/hooks/useAddRecipe";
 
 export default function AddRecipe() {
   const { user } = useAuth();
-  const { addRecipe } = useRecipes();
+  const addRecipe = useAddRecipe();
   const navigate = useNavigate();
 
   const [loading, setLoading] = useState(false);
@@ -47,7 +47,6 @@ export default function AddRecipe() {
   const [categories, setCategories] = useState<string[]>([]);
   const [dietaryTags, setDietaryTags] = useState<string[]>([]);
   const [videoUrl, setVideoUrl] = useState("");
-  const [tips, setTips] = useState("");
 
   // Nutrition
   const [calories, setCalories] = useState<number | "">("");
@@ -63,12 +62,12 @@ export default function AddRecipe() {
   // Instructions
   const [instructions, setInstructions] = useState<string[]>([""]);
 
-  // Only chefs can add recipes
+  // Only chefs can create recipes
   if (!user || user.role !== "chef") {
     return <Navigate to="/" replace />;
   }
 
-  const addIngredient = () => {
+  const createIngredient = () => {
     setIngredients([
       ...ingredients,
       { name: "", amount: "", unit: "", category: "" },
@@ -91,7 +90,7 @@ export default function AddRecipe() {
     }
   };
 
-  const addInstruction = () => {
+  const createInstruction = () => {
     setInstructions([...instructions, ""]);
   };
 
@@ -123,14 +122,14 @@ export default function AddRecipe() {
       (i) => i.name.trim() && i.amount.trim(),
     );
     if (validIngredients.length === 0) {
-      setError("Please add at least one ingredient");
+      setError("Please create at least one ingredient");
       setLoading(false);
       return;
     }
 
     const validInstructions = instructions.filter((i) => i.trim());
     if (validInstructions.length === 0) {
-      setError("Please add at least one instruction");
+      setError("Please create at least one instruction");
       setLoading(false);
       return;
     }
@@ -148,7 +147,7 @@ export default function AddRecipe() {
         category: categories.length > 0 ? categories : ["Dinner"],
         dietaryTags,
         videoUrl: videoUrl || undefined,
-        tips: tips || undefined,
+
         chef: {
           name: user.name,
           avatar:
@@ -437,12 +436,12 @@ export default function AddRecipe() {
                   </Grid>
                 ))}
                 <Button
-                  startIcon={<AddIcon />}
-                  onClick={addIngredient}
+                  startIcon={<CreateIcon />}
+                  onClick={createIngredient}
                   variant="outlined"
                   sx={{ alignSelf: "flex-start" }}
                 >
-                  Add Ingredient
+                  Create Ingredient
                 </Button>
               </Stack>
             </Paper>
@@ -493,12 +492,12 @@ export default function AddRecipe() {
                   </Stack>
                 ))}
                 <Button
-                  startIcon={<AddIcon />}
-                  onClick={addInstruction}
+                  startIcon={<CreateIcon />}
+                  onClick={createInstruction}
                   variant="outlined"
                   sx={{ alignSelf: "flex-start" }}
                 >
-                  Add Step
+                  Create Step
                 </Button>
               </Stack>
             </Paper>
@@ -506,7 +505,7 @@ export default function AddRecipe() {
             {/* Extra Info */}
             <Paper elevation={0} sx={{ p: 3, borderRadius: 3 }}>
               <Typography variant="h6" sx={{ mb: 3 }}>
-                Additional Information
+                Createitional Information
               </Typography>
               <Grid container spacing={3}>
                 <Grid size={{ xs: 12 }}>
@@ -516,16 +515,6 @@ export default function AddRecipe() {
                     onChange={(e) => setVideoUrl(e.target.value)}
                     fullWidth
                     placeholder="https://youtube.com/..."
-                  />
-                </Grid>
-                <Grid size={{ xs: 12 }}>
-                  <TextField
-                    label="Chef's Tips (optional)"
-                    value={tips}
-                    onChange={(e) => setTips(e.target.value)}
-                    fullWidth
-                    multiline
-                    rows={3}
                   />
                 </Grid>
               </Grid>

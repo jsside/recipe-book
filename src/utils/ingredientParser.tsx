@@ -9,8 +9,15 @@ import { Ingredient } from "@/data/recipes";
 export function parseInstructionWithIngredients(
   instruction: string,
   ingredients: Ingredient[],
-  convertAmount?: (amount: string, unit: string) => { amount: string; unit: string },
-  scaleIngredient?: (ingredient: Ingredient) => { amount: string; unit: string; name: string }
+  convertAmount?: (
+    amount: string,
+    unit: string,
+  ) => { amount: string; unit: string },
+  scaleIngredient?: (ingredient: Ingredient) => {
+    amount: string;
+    unit: string;
+    name: string;
+  },
 ): React.ReactNode {
   if (!ingredients.length) {
     return instruction;
@@ -18,12 +25,12 @@ export function parseInstructionWithIngredients(
 
   // Sort ingredients by name length (longest first) to avoid partial matches
   const sortedIngredients = [...ingredients].sort(
-    (a, b) => b.name.length - a.name.length
+    (a, b) => b.name.length - a.name.length,
   );
 
   // Create a regex pattern for all ingredient names (case-insensitive)
   const ingredientNames = sortedIngredients.map((ing) =>
-    ing.name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+    ing.name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"),
   );
   const pattern = new RegExp(`\\b(${ingredientNames.join("|")})\\b`, "gi");
 
@@ -44,10 +51,13 @@ export function parseInstructionWithIngredients(
 
     const matchedName = match[0];
     const ingredient = sortedIngredients.find(
-      (ing) => ing.name.toLowerCase() === matchedName.toLowerCase()
+      (ing) => ing.name.toLowerCase() === matchedName.toLowerCase(),
     );
 
-    if (ingredient && !mentionedIngredients.has(ingredient.name.toLowerCase())) {
+    if (
+      ingredient &&
+      !mentionedIngredients.has(ingredient.name.toLowerCase())
+    ) {
       mentionedIngredients.add(ingredient.name.toLowerCase());
 
       // Get scaled and converted amounts
@@ -73,10 +83,7 @@ export function parseInstructionWithIngredients(
 
       parts.push(
         <React.Fragment key={`${ingredient.id}-${match.index}`}>
-          <Typography
-            component="span"
-            sx={{ fontWeight: 700 }}
-          >
+          <Typography component="span" sx={{ fontWeight: 700 }}>
             {matchedName}
           </Typography>
           <Typography
@@ -86,7 +93,7 @@ export function parseInstructionWithIngredients(
             {" "}
             ({measurement})
           </Typography>
-        </React.Fragment>
+        </React.Fragment>,
       );
     } else {
       // Already mentioned or not found, just bold the name
@@ -97,7 +104,7 @@ export function parseInstructionWithIngredients(
           key={`bold-${match.index}`}
         >
           {matchedName}
-        </Typography>
+        </Typography>,
       );
     }
 

@@ -8,7 +8,7 @@ import {
   InputAdornment,
 } from "@mui/material";
 import { Search as SearchIcon } from "@mui/icons-material";
-import { IngredientCard } from "@/components/IngredientCard";
+import { IngredientCard } from "@/components/custom/IngredientCard";
 import { ingredientCategories } from "@/data/recipes";
 
 export default function Ingredients() {

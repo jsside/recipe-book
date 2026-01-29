@@ -47,7 +47,7 @@ export default function RecipeDetail() {
   } = useListRecipes();
 
   const getRecipeById = useCallback(
-    (id: string) => {
+    (id: number) => {
       return recipes.find((recipe) => recipe.id === id);
     },
     [recipes],
@@ -67,7 +67,7 @@ export default function RecipeDetail() {
   const { unitSystem, toggleUnitSystem, convertAmount } = useUnitConversion();
   const [activeStep, setActiveStep] = useState<number | null>(null);
 
-  const recipe = getRecipeById(id || "");
+  const recipe = getRecipeById(parseFloat(id));
 
   const {
     adjustedServings,

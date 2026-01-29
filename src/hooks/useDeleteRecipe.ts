@@ -3,7 +3,7 @@ import { Recipe } from "@/data/recipes";
 import { supabase } from "@/db/supabaseClient";
 import { LIST_RECIPES_KEY } from "./useListRecipes";
 
-const deleteRecipeFn = async (id: string): Promise<void> => {
+const deleteRecipeFn = async (id: number): Promise<void> => {
   const { error } = await supabase.from("recipes").delete().eq("id", id);
 
   if (error) throw error;
@@ -17,7 +17,7 @@ const deleteRecipeFn = async (id: string): Promise<void> => {
 export function useDeleteRecipe() {
   const queryClient = useQueryClient();
 
-  const mutation = useMutation<void, Error, string>({
+  const mutation = useMutation<void, Error, number>({
     mutationFn: deleteRecipeFn,
     onSuccess: (_, deletedId) => {
       queryClient.setQueryData<Recipe[]>([LIST_RECIPES_KEY], (old = []) =>

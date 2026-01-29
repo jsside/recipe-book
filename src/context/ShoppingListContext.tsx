@@ -3,7 +3,7 @@ import { Ingredient } from "@/data/recipes";
 
 interface ShoppingItem extends Ingredient {
   checked: boolean;
-  recipeId: string;
+  recipeId: number;
   recipeTitle: string;
 }
 
@@ -11,11 +11,11 @@ interface ShoppingListContextType {
   items: ShoppingItem[];
   addIngredients: (
     ingredients: Ingredient[],
-    recipeId: string,
+    recipeId: number,
     recipeTitle: string,
   ) => void;
-  removeItem: (itemId: string, recipeId: string) => void;
-  toggleItem: (itemId: string, recipeId: string) => void;
+  removeItem: (itemId: string, recipeId: number) => void;
+  toggleItem: (itemId: string, recipeId: number) => void;
   clearList: () => void;
   clearChecked: () => void;
   isOpen: boolean;
@@ -36,7 +36,7 @@ export function ShoppingListProvider({
   const [isOpen, setIsOpen] = useState(false);
 
   const addIngredients = useCallback(
-    (ingredients: Ingredient[], recipeId: string, recipeTitle: string) => {
+    (ingredients: Ingredient[], recipeId: number, recipeTitle: string) => {
       setItems((prev) => {
         const newItems = ingredients.map((ing) => ({
           ...ing,
@@ -61,7 +61,7 @@ export function ShoppingListProvider({
     [],
   );
 
-  const removeItem = useCallback((itemId: string, recipeId: string) => {
+  const removeItem = useCallback((itemId: string, recipeId: number) => {
     setItems((prev) =>
       prev.filter(
         (item) => !(item.id === itemId && item.recipeId === recipeId),
@@ -69,7 +69,7 @@ export function ShoppingListProvider({
     );
   }, []);
 
-  const toggleItem = useCallback((itemId: string, recipeId: string) => {
+  const toggleItem = useCallback((itemId: string, recipeId: number) => {
     setItems((prev) =>
       prev.map((item) =>
         item.id === itemId && item.recipeId === recipeId

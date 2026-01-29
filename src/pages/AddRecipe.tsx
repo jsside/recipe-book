@@ -28,6 +28,7 @@ import { useAddRecipe } from "@/hooks/useAddRecipe";
 
 export default function AddRecipe() {
   const { user } = useAuth();
+  
   const addRecipe = useAddRecipe();
   const navigate = useNavigate();
 

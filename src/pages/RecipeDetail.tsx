@@ -138,11 +138,7 @@ export default function RecipeDetail() {
               {/* Badges */}
               <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
                 <RenderComponent
-                  if={recipe.isTopRated}
-                  then={<Chip label="Top 50" color="warning" size="small" />}
-                />
-                <RenderComponent
-                  if={categories.includes("New recipes")}
+                  if={categories.includes("New")}
                   then={<Chip label="New" color="success" size="small" />}
                 />
                 <RenderComponent

@@ -13,9 +13,13 @@ import {
 import { Add as AddIcon, AccessTime as ClockIcon } from "@mui/icons-material";
 import { useShoppingList } from "@/context/ShoppingListContext";
 import { RecipeCardProps } from "./interfaces";
+import { getRecipeCategories } from "@/utils/recipeHelpers";
+import RenderComponent from "@/components/helpers/renderComponent";
 
 export function RecipeCard({ recipe }: RecipeCardProps) {
   const { addIngredients } = useShoppingList();
+    const categories = getRecipeCategories(recipe);
+  
 
   const handleAddToList = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -62,18 +66,11 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
           spacing={1}
           sx={{ position: "absolute", top: 12, left: 12 }}
         >
-          {recipe.isTopRated && (
-            <Chip
-              label="Top 50"
-              size="small"
-              sx={{
-                bgcolor: "warning.main",
-                color: "white",
-                fontWeight: 600,
-                fontSize: "0.75rem",
-              }}
-            />
-          )}
+          
+           <RenderComponent
+                            if={categories.includes("New")}
+                            then={<Chip label="New" color="success" size="small" />}
+                          />
         </Stack>
 
         {/* Add to list button */}

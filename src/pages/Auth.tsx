@@ -113,7 +113,7 @@ export default function Auth() {
              {SITE_NAME}
           </Typography>
           <Typography color="text.secondary">
-            Join the recipe index
+            Have a seat at the table. We'll make you a plate.
           </Typography>
         </Box>
 

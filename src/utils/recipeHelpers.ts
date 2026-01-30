@@ -19,17 +19,12 @@ export function isNewRecipe(recipe: Recipe): boolean {
 export function getRecipeCategories(recipe: Recipe): string[] {
   const categories = [...(recipe.category || [])];
 
-  // Remove manual "New recipes" category if present
-  const filteredCategories = categories.filter(
-    (cat) => cat.toLowerCase() !== "new recipes",
-  );
-
-  // Add "New recipes" automatically if recipe is less than 30 days old
+  // Add "New" automatically if recipe is less than 30 days old
   if (isNewRecipe(recipe)) {
-    return ["New recipes", ...filteredCategories];
+    return ["New", ...categories];
   }
 
-  return filteredCategories;
+  return categories;
 }
 
 /**

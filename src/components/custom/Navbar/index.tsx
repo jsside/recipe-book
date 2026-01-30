@@ -218,7 +218,7 @@ export function Navbar() {
                   color="secondary"
                   sx={{ display: { xs: "none", sm: "flex" } }}
                 >
-                  Join the Mob
+                  Join the table
                 </Button>
               </>
             )}

@@ -37,6 +37,7 @@ const Index = () => {
   return (
     <Box sx={{ minHeight: "100vh" }}>
       <HeroSection />
+      {/* Latest Recipes Section */}
 
       {/* Recipe Section */}
       <Box component="section" sx={{ py: { xs: 4, md: 6 } }}>

@@ -7,7 +7,6 @@ export interface Recipe {
     name: string;
     avatar: string;
   };
-  isTopRated: boolean;
   category: string[];
   ingredients: Ingredient[];
   servings: number;

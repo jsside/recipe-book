@@ -27,7 +27,7 @@ export function HeroSection() {
                 mb: 3,
               }}
             >
-              Cook with confidence
+              Shared plates
             </Typography>
             <Typography
               variant="body1"
@@ -38,7 +38,8 @@ export function HeroSection() {
                 maxWidth: 480,
               }}
             >
-              Discover thousands of delicious recipes, build your shopping list,
+              Make a plate for your friends by sharing your favorite recipes. 
+              Here to lurk? Welcome! Build your shopping list,
               and plan your meals for the week ahead.
             </Typography>
             <Stack direction="row" spacing={2}>
@@ -50,7 +51,7 @@ export function HeroSection() {
                 size="large"
                 sx={{ px: 4 }}
               >
-                Explore Recipes
+                Explore recipes
               </Button>
               <RenderComponent
               if={!isAuthenticated}
@@ -66,7 +67,7 @@ export function HeroSection() {
                   color: "text.primary",
                 }}
               >
-                Get Started
+                Join the table
               </Button>
               }
               />

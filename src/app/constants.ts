@@ -1,1 +1,1 @@
-export const SITE_NAME = "That";
+export const SITE_NAME = "Plates";

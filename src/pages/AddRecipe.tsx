@@ -155,7 +155,6 @@ export default function AddRecipe() {
             user.avatar ||
             "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&q=80",
         },
-        isTopRated: false,
         ingredients: validIngredients.map((ing, idx) => ({
           ...ing,
           id: String(idx + 1),

@@ -125,31 +125,6 @@ const Index = () => {
         />
      
 
-      {/* Chefs Section */}
-      <Box
-        component="section"
-        sx={{
-          py: { xs: 8, md: 12 },
-          textAlign: "center",
-          bgcolor: "primary.main",
-        }}
-      >
-        <Container maxWidth="sm">
-          <Typography
-            variant="h2"
-            sx={{
-              fontSize: { xs: "1.75rem", md: "2.5rem" },
-              mb: 3,
-            }}
-          >
-            Highlighted chefs
-          </Typography>
-          <Typography color="text.secondary" sx={{ mb: 4 }}>
-            Meet the chefs
-          </Typography>
-        {/* TODO: add scrollable chefs list */}
-        </Container>
-      </Box>
     </Box>
   );
 };

@@ -100,11 +100,11 @@ export const ingredientCategories: IngredientCategory[] = [
 ];
 
 export const categories = [
-  "Dinner, sorted",
-  "New recipes",
-
-  "Packed lunches",
-  "Make-ahead breakfasts",
+  "Dinner",
+  "Lunch",
+  "Breakfast",
+  "Quick meals",
+  "Vegetarian",
 ];
 
 export const dietaryOptions = [

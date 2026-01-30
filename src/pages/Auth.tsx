@@ -101,23 +101,23 @@ export default function Auth() {
   };
 
   return (
-    <Box sx={{ minHeight: "100vh", py: 8, bgcolor: "background.default" }}>
+    <Box sx={{ minHeight: "100vh", py: 8 }}>
       <Container maxWidth="sm">
-        <Box sx={{ textAlign: "center", mb: 4 }}>
+        <Box sx={{ textAlign: "center", mb: 5 }}>
           <Typography
             variant="h3"
             fontFamily='"Fraunces", serif'
-            fontWeight={700}
+            fontWeight={500}
             sx={{ mb: 1 }}
           >
-             {SITE_NAME}
+            {SITE_NAME}
           </Typography>
           <Typography color="text.secondary">
-            Have a seat at the table. We'll make you a plate.
+            Have a seat at the table.
           </Typography>
         </Box>
 
-        <Paper elevation={0} sx={{ p: 4, borderRadius: 3 }}>
+        <Paper elevation={0} sx={{ p: 4, borderRadius: 2, border: 1, borderColor: "divider" }}>
           <Tabs
             value={tabValue}
             onChange={(_, newValue) => {
@@ -160,10 +160,14 @@ export default function Auth() {
                 <Button
                   type="submit"
                   variant="contained"
-                  color="secondary"
                   size="large"
                   disabled={loading}
                   fullWidth
+                  sx={{
+                    bgcolor: "text.primary",
+                    color: "background.default",
+                    "&:hover": { bgcolor: "text.secondary" },
+                  }}
                 >
                   {loading ? "Logging in..." : "Log In"}
                 </Button>
@@ -171,7 +175,7 @@ export default function Auth() {
             </form>
 
             <Box
-              sx={{ mt: 3, p: 2, bgcolor: "rgba(0,0,0,0.04)", borderRadius: 2 }}
+              sx={{ mt: 3, p: 2, bgcolor: "secondary.main", borderRadius: 1 }}
             >
               <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
                 Demo accounts:
@@ -241,10 +245,14 @@ export default function Auth() {
                 <Button
                   type="submit"
                   variant="contained"
-                  color="secondary"
                   size="large"
                   disabled={loading}
                   fullWidth
+                  sx={{
+                    bgcolor: "text.primary",
+                    color: "background.default",
+                    "&:hover": { bgcolor: "text.secondary" },
+                  }}
                 >
                   {loading ? "Creating account..." : "Create Account"}
                 </Button>

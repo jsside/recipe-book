@@ -5,12 +5,11 @@ import {
   CardMedia,
   Typography,
   IconButton,
-  Avatar,
   Box,
   Chip,
   Stack,
 } from "@mui/material";
-import { Add as AddIcon, AccessTime as ClockIcon } from "@mui/icons-material";
+import { Add as AddIcon } from "@mui/icons-material";
 import { useShoppingList } from "@/context/ShoppingListContext";
 import { RecipeCardProps } from "./interfaces";
 import { getRecipeCategories } from "@/utils/recipeHelpers";
@@ -34,16 +33,16 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
       sx={{
         textDecoration: "none",
         display: "block",
-        transition: "all 0.3s ease",
+        transition: "all 0.2s ease",
+        border: "none",
         "&:hover": {
-          transform: "translateY(-4px)",
-          boxShadow: "0 10px 20px -5px rgba(31, 26, 20, 0.15)",
+          transform: "translateY(-2px)",
         },
         "&:hover .add-button": {
           opacity: 1,
         },
         "&:hover .recipe-image": {
-          transform: "scale(1.05)",
+          transform: "scale(1.02)",
         },
       }}
     >
@@ -54,9 +53,10 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
           alt={recipe.title}
           className="recipe-image"
           sx={{
-            aspectRatio: "4/3",
+            aspectRatio: "4/5",
             objectFit: "cover",
-            transition: "transform 0.5s ease",
+            transition: "transform 0.4s ease",
+            borderRadius: 2,
           }}
         />
 
@@ -94,15 +94,15 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
         </IconButton>
       </Box>
 
-      <CardContent sx={{ p: 2 }}>
+      <CardContent sx={{ p: 2.5 }}>
         <Typography
           variant="h6"
           component="h3"
           sx={{
             fontFamily: '"Fraunces", serif',
-            fontWeight: 600,
-            fontSize: "1.1rem",
-            lineHeight: 1.3,
+            fontWeight: 500,
+            fontSize: "1rem",
+            lineHeight: 1.4,
             mb: 1,
             display: "-webkit-box",
             WebkitLineClamp: 2,
@@ -113,27 +113,21 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
           {recipe.title}
         </Typography>
 
-        <Stack
-          direction="row"
-          alignItems="center"
-          spacing={0.5}
-          sx={{ mb: 1.5 }}
-        >
-          <ClockIcon sx={{ fontSize: 16, color: "text.secondary" }} />
-          <Typography variant="body2" color="text.secondary">
-            {recipe.cookTime}
-          </Typography>
-        </Stack>
-
-        <Stack direction="row" alignItems="center" spacing={1}>
-          <Avatar
-            src={recipe.chef.avatar}
-            alt={recipe.chef.name}
-            sx={{ width: 24, height: 24 }}
-          />
-          <Typography variant="body2" color="text.secondary">
-            {recipe.chef.name}
-          </Typography>
+        <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+          {recipe.category.slice(0, 2).map((cat) => (
+            <Typography
+              key={cat}
+              variant="caption"
+              sx={{
+                color: "text.secondary",
+                "&:not(:last-child)::after": {
+                  content: '","',
+                },
+              }}
+            >
+              {cat}
+            </Typography>
+          ))}
         </Stack>
       </CardContent>
     </Card>

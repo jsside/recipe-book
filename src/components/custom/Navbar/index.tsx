@@ -78,15 +78,15 @@ export function Navbar() {
     <>
       {/* Main navbar */}
       <AppBar position="sticky" color="transparent" elevation={0}>
-        <Toolbar sx={{ gap: 2 }}>
+        <Toolbar sx={{ gap: 2, py: 1 }}>
           {/* Logo */}
           <Typography
             component={Link}
             to="/"
             sx={{
               fontFamily: '"Fraunces", serif',
-              fontSize: "1.5rem",
-              fontWeight: 700,
+              fontSize: "1.25rem",
+              fontWeight: 500,
               color: "text.primary",
               textDecoration: "none",
               flexShrink: 0,
@@ -136,11 +136,9 @@ export function Navbar() {
                 component={Link}
                 to="/add-recipe"
                 startIcon={<AddIcon />}
-                variant="outlined"
                 size="small"
                 sx={{
                   display: { xs: "none", sm: "flex" },
-                  borderColor: "primary.main",
                   color: "text.primary",
                 }}
               >
@@ -199,28 +197,17 @@ export function Navbar() {
                 </Menu>
               </>
             ) : (
-              <>
-                <Button
-                  component={Link}
-                  to="/auth"
-                  startIcon={<PersonIcon />}
-                  sx={{
-                    display: { xs: "none", sm: "flex" },
-                    color: "text.primary",
-                  }}
-                >
-                  Log In
-                </Button>
-                <Button
-                  component={Link}
-                  to="/auth"
-                  variant="contained"
-                  color="secondary"
-                  sx={{ display: { xs: "none", sm: "flex" } }}
-                >
-                  Join the table
-                </Button>
-              </>
+              <Button
+                component={Link}
+                to="/auth"
+                size="small"
+                sx={{
+                  display: { xs: "none", sm: "flex" },
+                  color: "text.primary",
+                }}
+              >
+                Log In
+              </Button>
             )}
 
             {/* Mobile menu button */}

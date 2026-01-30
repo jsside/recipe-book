@@ -19,17 +19,27 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           textTransform: "none",
-          borderRadius: 24,
+          borderRadius: 8,
           fontWeight: 500,
+          boxShadow: "none",
+          "&:hover": {
+            boxShadow: "none",
+          },
         },
         containedPrimary: {
           "&:hover": {
-            backgroundColor: "#b8c95f",
+            backgroundColor: "#1e7a1e",
           },
         },
         containedSecondary: {
           "&:hover": {
-            backgroundColor: "#2f2a24",
+            backgroundColor: "#333333",
+          },
+        },
+        outlined: {
+          borderWidth: 1,
+          "&:hover": {
+            borderWidth: 1,
           },
         },
       },
@@ -37,16 +47,16 @@ const theme = createTheme({
     MuiCard: {
       styleOverrides: {
         root: {
-          borderRadius: 16,
-          boxShadow:
-            "0 2px 8px -2px rgba(31, 26, 20, 0.08), 0 4px 16px -4px rgba(31, 26, 20, 0.12)",
+          borderRadius: 12,
+          boxShadow: "none",
+          border: "1px solid rgba(0, 0, 0, 0.06)",
         },
       },
     },
     MuiChip: {
       styleOverrides: {
         root: {
-          borderRadius: 24,
+          borderRadius: 6,
           fontWeight: 500,
         },
       },
@@ -54,17 +64,34 @@ const theme = createTheme({
     MuiDrawer: {
       styleOverrides: {
         paper: {
-          borderRadius: "16px 0 0 16px",
+          borderRadius: 0,
         },
       },
     },
     MuiAppBar: {
       styleOverrides: {
         root: {
-          backgroundColor: "rgba(249, 247, 244, 0.95)",
+          backgroundColor: "rgba(248, 247, 244, 0.98)",
           backdropFilter: "blur(8px)",
           boxShadow: "none",
-          borderBottom: "1px solid rgba(31, 26, 20, 0.1)",
+          borderBottom: "1px solid rgba(0, 0, 0, 0.06)",
+        },
+      },
+    },
+    MuiPaper: {
+      styleOverrides: {
+        root: {
+          backgroundImage: "none",
+        },
+        elevation0: {
+          boxShadow: "none",
+        },
+      },
+    },
+    MuiAlert: {
+      styleOverrides: {
+        root: {
+          borderRadius: 8,
         },
       },
     },

@@ -1,27 +1,27 @@
 export const THEME_COLORS = {
   primary: {
-    main: "#C8D96F", // Lime accent
-    contrastText: "#1f1a14",
+    main: "#228B22", // Forest green like cabagges.world
+    contrastText: "#ffffff",
   },
   secondary: {
-    main: "#1f1a14", // Dark foreground
-    contrastText: "#f9f7f4",
+    main: "#1a1a1a", // Near black
+    contrastText: "#f8f8f8",
   },
   background: {
-    default: "#f9f7f4", // Warm cream
+    default: "#f8f7f4", // Clean off-white
     paper: "#ffffff",
   },
   text: {
-    primary: "#1f1a14",
-    secondary: "#6b6560",
+    primary: "#1a1a1a",
+    secondary: "#737373",
   },
   error: {
-    main: "#ef4444",
+    main: "#dc2626",
   },
   warning: {
     main: "#f59e0b",
   },
   success: {
-    main: "#10b981",
+    main: "#228B22", // Match primary
   },
 };

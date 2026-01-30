@@ -8,7 +8,7 @@ import {
   IconButton,
 } from "@mui/material";
 import { Link } from "react-router-dom";
-import { Instagram, Twitter, YouTube, Facebook } from "@mui/icons-material";
+import { Instagram, Twitter, YouTube } from "@mui/icons-material";
 import { SITE_NAME } from "@/app/constants";
 
 export function Footer() {
@@ -37,10 +37,10 @@ export function Footer() {
     <Box
       component="footer"
       sx={{
-        bgcolor: "secondary.main",
-        color: "secondary.contrastText",
         py: 6,
         mt: "auto",
+        borderTop: 1,
+        borderColor: "divider",
       }}
     >
       <Container maxWidth="lg">
@@ -48,29 +48,25 @@ export function Footer() {
           {/* Logo and social */}
           <Grid size={{ xs: 12, md: 4 }}>
             <Typography
-              variant="h4"
+              variant="h5"
               fontFamily='"Fraunces", serif'
-              fontWeight={700}
+              fontWeight={500}
               sx={{ mb: 2 }}
             >
               {SITE_NAME}
             </Typography>
-            <Typography variant="body2" sx={{ mb: 3, opacity: 0.8 }}>
-              Cooking made simple. Discover delicious recipes and cook with
-              confidence.
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+              Share and discover delicious recipes.
             </Typography>
-            <Stack direction="row" spacing={1}>
-              <IconButton sx={{ color: "inherit" }}>
-                <Instagram />
+            <Stack direction="row" spacing={0.5}>
+              <IconButton size="small" sx={{ color: "text.secondary" }}>
+                <Instagram fontSize="small" />
               </IconButton>
-              <IconButton sx={{ color: "inherit" }}>
-                <Twitter />
+              <IconButton size="small" sx={{ color: "text.secondary" }}>
+                <Twitter fontSize="small" />
               </IconButton>
-              <IconButton sx={{ color: "inherit" }}>
-                <YouTube />
-              </IconButton>
-              <IconButton sx={{ color: "inherit" }}>
-                <Facebook />
+              <IconButton size="small" sx={{ color: "text.secondary" }}>
+                <YouTube fontSize="small" />
               </IconButton>
             </Stack>
           </Grid>
@@ -78,7 +74,11 @@ export function Footer() {
           {/* Links */}
           {Object.entries(footerLinks).map(([title, links]) => (
             <Grid size={{ xs: 6, sm: 4, md: 2 }} key={title}>
-              <Typography variant="subtitle2" fontWeight={600} sx={{ mb: 2 }}>
+              <Typography
+                variant="body2"
+                fontWeight={500}
+                sx={{ mb: 2, color: "text.primary" }}
+              >
                 {title}
               </Typography>
               <Stack spacing={1}>
@@ -88,11 +88,10 @@ export function Footer() {
                     component={Link}
                     to={link.href}
                     sx={{
-                      color: "inherit",
-                      opacity: 0.8,
+                      color: "text.secondary",
                       textDecoration: "none",
                       fontSize: "0.875rem",
-                      "&:hover": { opacity: 1 },
+                      "&:hover": { color: "text.primary" },
                     }}
                   >
                     {link.label}
@@ -108,12 +107,12 @@ export function Footer() {
             mt: 6,
             pt: 3,
             borderTop: 1,
-            borderColor: "rgba(255, 255, 255, 0.1)",
+            borderColor: "divider",
             textAlign: "center",
           }}
         >
-          <Typography variant="body2" sx={{ opacity: 0.6 }}>
-            © {new Date().getFullYear()} MOB Kitchen. All rights reserved.
+          <Typography variant="body2" color="text.secondary">
+            © {new Date().getFullYear()} {SITE_NAME}. All rights reserved.
           </Typography>
         </Box>
       </Container>

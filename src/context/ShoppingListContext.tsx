@@ -1,5 +1,7 @@
-import React, { createContext, useContext, useState, useCallback } from "react";
+import React, { createContext, useContext, useState, useCallback, useEffect } from "react";
 import { Ingredient } from "@/data/recipes";
+import { useAuth } from "./AuthContext";
+import { SITE_NAME } from "@/app/constants";
 
 interface ShoppingItem extends Ingredient {
   checked: boolean;
@@ -27,13 +29,34 @@ const ShoppingListContext = createContext<ShoppingListContextType | undefined>(
   undefined,
 );
 
+// Get storage key based on user
+const getStorageKey = (userId: string | null) =>
+  userId ? `${SITE_NAME}_shopping_list_${userId}` : `${SITE_NAME}_shopping_list_guest`;
+
 export function ShoppingListProvider({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const [items, setItems] = useState<ShoppingItem[]>([]);
+  const { user } = useAuth();
+  const storageKey = getStorageKey(user?.id || null);
+
+  const [items, setItems] = useState<ShoppingItem[]>(() => {
+    const stored = localStorage.getItem(storageKey);
+    return stored ? JSON.parse(stored) : [];
+  });
   const [isOpen, setIsOpen] = useState(false);
+
+  // Persist items to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem(storageKey, JSON.stringify(items));
+  }, [items, storageKey]);
+
+  // Load items when user changes
+  useEffect(() => {
+    const stored = localStorage.getItem(storageKey);
+    setItems(stored ? JSON.parse(stored) : []);
+  }, [storageKey]);
 
   const addIngredients = useCallback(
     (ingredients: Ingredient[], recipeId: number, recipeTitle: string) => {

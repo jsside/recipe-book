@@ -23,18 +23,19 @@ import {
   ArrowBack as BackIcon,
 } from "@mui/icons-material";
 import { useAuth } from "@/context/AuthContext";
+import { useNotification } from "@/context/NotificationContext";
 import { dietaryOptions, difficultyOptions, Ingredient } from "@/data/recipes";
 import { useAddRecipe } from "@/hooks/useAddRecipe";
 
 export default function AddRecipe() {
   const { user } = useAuth();
+  const { showNotification } = useNotification();
   
   const addRecipe = useAddRecipe();
   const navigate = useNavigate();
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
 
   // Form state
   const [title, setTitle] = useState("");
@@ -171,10 +172,11 @@ export default function AddRecipe() {
             : undefined,
       });
 
-      setSuccess(true);
-      setTimeout(() => navigate("/recipes"), 1500);
+      showNotification("Recipe created successfully!", "success");
+      setTimeout(() => navigate("/recipes"), 1000);
     } catch (err) {
       setError("Failed to create recipe");
+      showNotification("Failed to create recipe", "error");
     }
 
     setLoading(false);
@@ -209,12 +211,6 @@ export default function AddRecipe() {
         {error && (
           <Alert severity="error" sx={{ mb: 3 }}>
             {error}
-          </Alert>
-        )}
-
-        {success && (
-          <Alert severity="success" sx={{ mb: 3 }}>
-            Recipe created successfully! Redirecting...
           </Alert>
         )}
 

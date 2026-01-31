@@ -1,6 +1,19 @@
 import React from "react";
 import { Typography } from "@mui/material";
-import { Ingredient } from "@/data/recipes";
+import { Ingredient, IngredientGroup } from "@/data/recipes";
+
+/**
+ * Get all ingredients from either the legacy flat array or the new grouped structure
+ */
+export function getAllIngredients(
+  ingredientGroups?: IngredientGroup[],
+  ingredients?: Ingredient[]
+): Ingredient[] {
+  if (ingredientGroups && ingredientGroups.length > 0) {
+    return ingredientGroups.flatMap((group) => group.items);
+  }
+  return ingredients || [];
+}
 
 /**
  * Parse instruction text and bold ingredient names with their measurements in parentheses.
@@ -11,13 +24,13 @@ export function parseInstructionWithIngredients(
   ingredients: Ingredient[],
   convertAmount?: (
     amount: string,
-    unit: string,
+    unit: string
   ) => { amount: string; unit: string },
   scaleIngredient?: (ingredient: Ingredient) => {
     amount: string;
     unit: string;
     name: string;
-  },
+  }
 ): React.ReactNode {
   if (!ingredients.length) {
     return instruction;
@@ -25,12 +38,12 @@ export function parseInstructionWithIngredients(
 
   // Sort ingredients by name length (longest first) to avoid partial matches
   const sortedIngredients = [...ingredients].sort(
-    (a, b) => b.name.length - a.name.length,
+    (a, b) => b.name.length - a.name.length
   );
 
   // Create a regex pattern for all ingredient names (case-insensitive)
   const ingredientNames = sortedIngredients.map((ing) =>
-    ing.name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"),
+    ing.name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
   );
   const pattern = new RegExp(`\\b(${ingredientNames.join("|")})\\b`, "gi");
 
@@ -51,7 +64,7 @@ export function parseInstructionWithIngredients(
 
     const matchedName = match[0];
     const ingredient = sortedIngredients.find(
-      (ing) => ing.name.toLowerCase() === matchedName.toLowerCase(),
+      (ing) => ing.name.toLowerCase() === matchedName.toLowerCase()
     );
 
     if (
@@ -81,6 +94,11 @@ export function parseInstructionWithIngredients(
         ? `${displayAmount} ${displayUnit}`
         : displayAmount;
 
+      // Include preparation if available
+      const prepText = ingredient.preparation
+        ? `, ${ingredient.preparation}`
+        : "";
+
       parts.push(
         <React.Fragment key={`${ingredient.id}-${match.index}`}>
           <Typography component="span" sx={{ fontWeight: 700 }}>
@@ -91,9 +109,10 @@ export function parseInstructionWithIngredients(
             sx={{ color: "text.secondary", fontWeight: 400 }}
           >
             {" "}
-            ({measurement})
+            ({measurement}
+            {prepText})
           </Typography>
-        </React.Fragment>,
+        </React.Fragment>
       );
     } else {
       // Already mentioned or not found, just bold the name
@@ -104,7 +123,7 @@ export function parseInstructionWithIngredients(
           key={`bold-${match.index}`}
         >
           {matchedName}
-        </Typography>,
+        </Typography>
       );
     }
 

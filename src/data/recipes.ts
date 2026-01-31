@@ -8,9 +8,9 @@ export interface Recipe {
     avatar: string;
   };
   category: string[];
-  ingredients: Ingredient[];
+  ingredientGroups: IngredientGroup[];
   servings: number;
-  instructions: string[];
+  instructionGroups: InstructionGroup[];
   description: string;
   createdAt?: string;
   // Extended fields
@@ -23,6 +23,14 @@ export interface Recipe {
     carbs?: number;
     fat?: number;
   };
+  // Legacy support
+  ingredients?: Ingredient[];
+  instructions?: string[];
+}
+
+export interface IngredientGroup {
+  heading?: string;
+  items: Ingredient[];
 }
 
 export interface Ingredient {
@@ -30,7 +38,19 @@ export interface Ingredient {
   name: string;
   amount: string;
   unit: string;
-  category: string;
+  preparation?: string;
+  note?: string;
+  category?: string;
+}
+
+export interface InstructionGroup {
+  heading?: string;
+  steps: InstructionStep[];
+}
+
+export interface InstructionStep {
+  text: string;
+  timer?: number; // in minutes
 }
 
 export interface IngredientCategory {

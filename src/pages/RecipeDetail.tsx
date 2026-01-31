@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useState, useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
 import {
   Container,
@@ -25,34 +25,33 @@ import {
   Scale as ScaleIcon,
   Visibility as WakeLockIcon,
   VisibilityOff as WakeLockOffIcon,
+  Timer as TimerIcon,
 } from "@mui/icons-material";
 import { useShoppingList } from "@/context/ShoppingListContext";
 import { useWakeLock } from "@/hooks/useWakeLock";
 import { useUnitConversion } from "@/hooks/useUnitConversion";
 import { useServingsAdjuster } from "@/hooks/useServingsAdjuster";
 import { useShare } from "@/hooks/useShare";
-import { parseInstructionWithIngredients } from "@/utils/ingredientParser";
+import {
+  parseInstructionWithIngredients,
+  getAllIngredients,
+} from "@/utils/ingredientParser";
 import { getRecipeCategories } from "@/utils/recipeHelpers";
 import RenderComponent from "@/components/helpers/renderComponent";
 import ServingsAdjuster from "@/components/custom/ServingsAdjuster";
 import InstructionStep from "@/components/custom/InstructionStep";
 import { useListRecipes } from "@/hooks/useListRecipes";
+import { InstructionStep as InstructionStepType } from "@/data/recipes";
 
 export default function RecipeDetail() {
   const { id } = useParams();
-  const {
-    data: recipes = [],
-    isLoading,
-    refetch,
-    isError,
-    error,
-  } = useListRecipes();
+  const { data: recipes = [] } = useListRecipes();
 
   const getRecipeById = useCallback(
     (id: number) => {
       return recipes.find((recipe) => recipe.id === id);
     },
-    [recipes],
+    [recipes]
   );
 
   const { addIngredients } = useShoppingList();
@@ -71,6 +70,43 @@ export default function RecipeDetail() {
     scaleIngredient,
   } = useServingsAdjuster(recipe?.servings || 4);
 
+  // Get all ingredients (supports both legacy and grouped structure)
+  const allIngredients = useMemo(() => {
+    if (!recipe) return [];
+    return getAllIngredients(recipe.ingredientGroups, recipe.ingredients);
+  }, [recipe]);
+
+  // Get all instructions (supports both legacy and grouped structure)
+  const allInstructions = useMemo(() => {
+    if (!recipe) return [];
+    if (recipe.instructionGroups && recipe.instructionGroups.length > 0) {
+      return recipe.instructionGroups;
+    }
+    // Legacy support: convert flat instructions to grouped format
+    if (recipe.instructions && recipe.instructions.length > 0) {
+      return [
+        {
+          heading: undefined,
+          steps: recipe.instructions.map((text) => ({ text, timer: undefined })),
+        },
+      ];
+    }
+    return [];
+  }, [recipe]);
+
+  // Get all ingredient groups for display
+  const ingredientGroups = useMemo(() => {
+    if (!recipe) return [];
+    if (recipe.ingredientGroups && recipe.ingredientGroups.length > 0) {
+      return recipe.ingredientGroups;
+    }
+    // Legacy support: wrap in single group
+    if (recipe.ingredients && recipe.ingredients.length > 0) {
+      return [{ heading: undefined, items: recipe.ingredients }];
+    }
+    return [];
+  }, [recipe]);
+
   if (!recipe) {
     return (
       <Container sx={{ py: 10, textAlign: "center" }}>
@@ -85,7 +121,7 @@ export default function RecipeDetail() {
   }
 
   const handleAddAllToList = () => {
-    const scaledIngredients = recipe.ingredients.map((ing) => ({
+    const scaledIngredients = allIngredients.map((ing) => ({
       ...ing,
       ...scaleIngredient(ing),
     }));
@@ -109,8 +145,11 @@ export default function RecipeDetail() {
     recipe.nutrition?.calories ||
       recipe.nutrition?.protein ||
       recipe.nutrition?.carbs ||
-      recipe.nutrition?.fat,
+      recipe.nutrition?.fat
   );
+
+  // Calculate global step number
+  let globalStepIndex = 0;
 
   return (
     <Box sx={{ minHeight: "100vh", pb: 6 }}>
@@ -263,22 +302,71 @@ export default function RecipeDetail() {
               >
                 Method
               </Typography>
-              <Stack spacing={1}>
-                {recipe.instructions.map((instruction, index) => (
-                  <InstructionStep
-                    key={index}
-                    stepNumber={index + 1}
-                    instruction={parseInstructionWithIngredients(
-                      instruction,
-                      recipe.ingredients,
-                      convertAmount,
-                      scaleIngredient,
-                    )}
-                    isActive={activeStep === index}
-                    onClick={() =>
-                      setActiveStep(activeStep === index ? null : index)
-                    }
-                  />
+              <Stack spacing={3}>
+                {allInstructions.map((group, groupIndex) => (
+                  <Box key={groupIndex}>
+                    <RenderComponent
+                      if={!!group.heading}
+                      then={
+                        <Typography
+                          variant="subtitle1"
+                          fontWeight={600}
+                          sx={{ mb: 2, color: "text.primary" }}
+                        >
+                          {group.heading}
+                        </Typography>
+                      }
+                    />
+                    <Stack spacing={1}>
+                      {group.steps.map((step, stepIndex) => {
+                        const currentGlobalIndex = globalStepIndex++;
+                        return (
+                          <Box key={stepIndex}>
+                            <InstructionStep
+                              stepNumber={currentGlobalIndex + 1}
+                              instruction={
+                                <Stack
+                                  direction="row"
+                                  spacing={1}
+                                  alignItems="flex-start"
+                                  flexWrap="wrap"
+                                >
+                                  <Box sx={{ flex: 1 }}>
+                                    {parseInstructionWithIngredients(
+                                      step.text,
+                                      allIngredients,
+                                      convertAmount,
+                                      scaleIngredient
+                                    )}
+                                  </Box>
+                                  <RenderComponent
+                                    if={!!step.timer}
+                                    then={
+                                      <Chip
+                                        icon={<TimerIcon />}
+                                        label={`${step.timer} min`}
+                                        size="small"
+                                        variant="outlined"
+                                        sx={{ flexShrink: 0 }}
+                                      />
+                                    }
+                                  />
+                                </Stack>
+                              }
+                              isActive={activeStep === currentGlobalIndex}
+                              onClick={() =>
+                                setActiveStep(
+                                  activeStep === currentGlobalIndex
+                                    ? null
+                                    : currentGlobalIndex
+                                )
+                              }
+                            />
+                          </Box>
+                        );
+                      })}
+                    </Stack>
+                  </Box>
                 ))}
               </Stack>
             </Paper>
@@ -392,34 +480,76 @@ export default function RecipeDetail() {
                       />
                     </Box>
 
-                    <Stack spacing={1}>
-                      {recipe.ingredients.map((ingredient) => {
-                        const scaled = scaleIngredient(ingredient);
-                        const converted = convertAmount(
-                          scaled.amount,
-                          scaled.unit,
-                        );
-                        return (
-                          <Box
-                            key={ingredient.id}
-                            sx={{
-                              display: "flex",
-                              alignItems: "center",
-                              gap: 2,
-                              p: 1.5,
-                              borderRadius: 2,
-                              bgcolor: "rgba(0, 0, 0, 0.02)",
-                              "&:hover": { bgcolor: "rgba(0, 0, 0, 0.04)" },
-                            }}
-                          >
-                            <Checkbox size="small" />
-                            <Typography>
-                              {converted.amount} {converted.unit}{" "}
-                              {ingredient.name}
-                            </Typography>
-                          </Box>
-                        );
-                      })}
+                    <Stack spacing={3}>
+                      {ingredientGroups.map((group, groupIndex) => (
+                        <Box key={groupIndex}>
+                          <RenderComponent
+                            if={!!group.heading}
+                            then={
+                              <Typography
+                                variant="subtitle2"
+                                fontWeight={600}
+                                sx={{ mb: 1.5, color: "text.secondary" }}
+                              >
+                                {group.heading}
+                              </Typography>
+                            }
+                          />
+                          <Stack spacing={1}>
+                            {group.items.map((ingredient) => {
+                              const scaled = scaleIngredient(ingredient);
+                              const converted = convertAmount(
+                                scaled.amount,
+                                scaled.unit
+                              );
+                              return (
+                                <Box
+                                  key={ingredient.id}
+                                  sx={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: 2,
+                                    p: 1.5,
+                                    borderRadius: 2,
+                                    bgcolor: "rgba(0, 0, 0, 0.02)",
+                                    "&:hover": { bgcolor: "rgba(0, 0, 0, 0.04)" },
+                                  }}
+                                >
+                                  <Checkbox size="small" />
+                                  <Box sx={{ flex: 1 }}>
+                                    <Typography>
+                                      {converted.amount} {converted.unit}{" "}
+                                      {ingredient.name}
+                                      <RenderComponent
+                                        if={!!ingredient.preparation}
+                                        then={
+                                          <Typography
+                                            component="span"
+                                            color="text.secondary"
+                                          >
+                                            , {ingredient.preparation}
+                                          </Typography>
+                                        }
+                                      />
+                                    </Typography>
+                                    <RenderComponent
+                                      if={!!ingredient.note}
+                                      then={
+                                        <Typography
+                                          variant="caption"
+                                          color="text.secondary"
+                                        >
+                                          {ingredient.note}
+                                        </Typography>
+                                      }
+                                    />
+                                  </Box>
+                                </Box>
+                              );
+                            })}
+                          </Stack>
+                        </Box>
+                      ))}
                     </Stack>
 
                     <Button

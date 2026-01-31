@@ -12,25 +12,55 @@ import {
   InputLabel,
   Select,
   MenuItem,
-  Chip,
   Stack,
   Alert,
-  IconButton,
 } from "@mui/material";
-import {
-  Create as CreateIcon,
-  Delete as DeleteIcon,
-  ArrowBack as BackIcon,
-} from "@mui/icons-material";
+import { ArrowBack as BackIcon } from "@mui/icons-material";
 import { useAuth } from "@/context/AuthContext";
 import { useNotification } from "@/context/NotificationContext";
-import { dietaryOptions, difficultyOptions, Ingredient } from "@/data/recipes";
+import { dietaryOptions, difficultyOptions } from "@/data/recipes";
 import { useAddRecipe } from "@/hooks/useAddRecipe";
+import { IngredientGroupForm } from "@/components/custom/IngredientGroupForm";
+import { IngredientGroupFormItem } from "@/components/custom/IngredientGroupForm/interfaces";
+import { InstructionGroupForm } from "@/components/custom/InstructionGroupForm";
+import { InstructionGroupFormItem } from "@/components/custom/InstructionGroupForm/interfaces";
+import { CategoryChipsSelect } from "@/components/custom/CategoryChipsSelect";
+
+const categoryOptions = [
+  "Dinner",
+  "Breakfast",
+  "Lunch",
+  "Dessert",
+  "Snack",
+  "Packed lunches",
+  "Make-ahead breakfasts",
+];
+
+const createEmptyIngredientGroup = (): IngredientGroupFormItem => ({
+  tempId: crypto.randomUUID(),
+  heading: "",
+  items: [
+    {
+      tempId: crypto.randomUUID(),
+      name: "",
+      amount: "",
+      unit: "",
+      preparation: "",
+      note: "",
+    },
+  ],
+});
+
+const createEmptyInstructionGroup = (): InstructionGroupFormItem => ({
+  tempId: crypto.randomUUID(),
+  heading: "",
+  steps: [{ tempId: crypto.randomUUID(), text: "", timer: undefined }],
+});
 
 export default function AddRecipe() {
   const { user } = useAuth();
   const { showNotification } = useNotification();
-  
+
   const addRecipe = useAddRecipe();
   const navigate = useNavigate();
 
@@ -44,7 +74,7 @@ export default function AddRecipe() {
   const [cookTime, setCookTime] = useState("");
   const [servings, setServings] = useState(4);
   const [difficulty, setDifficulty] = useState<"easy" | "medium" | "hard">(
-    "easy",
+    "easy"
   );
   const [categories, setCategories] = useState<string[]>([]);
   const [dietaryTags, setDietaryTags] = useState<string[]>([]);
@@ -56,57 +86,18 @@ export default function AddRecipe() {
   const [carbs, setCarbs] = useState<number | "">("");
   const [fat, setFat] = useState<number | "">("");
 
-  // Ingredients
-  const [ingredients, setIngredients] = useState<Omit<Ingredient, "id">[]>([
-    { name: "", amount: "", unit: "", category: "" },
-  ]);
-
-  // Instructions
-  const [instructions, setInstructions] = useState<string[]>([""]);
+  // Grouped ingredients and instructions
+  const [ingredientGroups, setIngredientGroups] = useState<
+    IngredientGroupFormItem[]
+  >([createEmptyIngredientGroup()]);
+  const [instructionGroups, setInstructionGroups] = useState<
+    InstructionGroupFormItem[]
+  >([createEmptyInstructionGroup()]);
 
   // Only chefs can create recipes
   if (!user || user.role !== "chef") {
     return <Navigate to="/" replace />;
   }
-
-  const createIngredient = () => {
-    setIngredients([
-      ...ingredients,
-      { name: "", amount: "", unit: "", category: "" },
-    ]);
-  };
-
-  const updateIngredient = (
-    index: number,
-    field: keyof Omit<Ingredient, "id">,
-    value: string,
-  ) => {
-    const updated = [...ingredients];
-    updated[index] = { ...updated[index], [field]: value };
-    setIngredients(updated);
-  };
-
-  const removeIngredient = (index: number) => {
-    if (ingredients.length > 1) {
-      setIngredients(ingredients.filter((_, i) => i !== index));
-    }
-  };
-
-  const createInstruction = () => {
-    setInstructions([...instructions, ""]);
-  };
-
-  const updateInstruction = (index: number, value: string) => {
-    const updated = [...instructions];
-    updated[index] = value;
-    setInstructions(updated);
-  };
-
-  const removeInstruction = (index: number) => {
-    if (instructions.length > 1) {
-      setInstructions(instructions.filter((_, i) => i !== index));
-    }
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -120,24 +111,57 @@ export default function AddRecipe() {
       return;
     }
 
-    const validIngredients = ingredients.filter(
-      (i) => i.name.trim() && i.amount.trim(),
+    // Validate ingredients
+    const hasValidIngredient = ingredientGroups.some((group) =>
+      group.items.some((item) => item.name.trim() && item.amount.trim())
     );
-    if (validIngredients.length === 0) {
-      setError("Please create at least one ingredient");
+    if (!hasValidIngredient) {
+      setError("Please add at least one ingredient");
       setLoading(false);
       return;
     }
 
-    const validInstructions = instructions.filter((i) => i.trim());
-    if (validInstructions.length === 0) {
-      setError("Please create at least one instruction");
+    // Validate instructions
+    const hasValidInstruction = instructionGroups.some((group) =>
+      group.steps.some((step) => step.text.trim())
+    );
+    if (!hasValidInstruction) {
+      setError("Please add at least one instruction");
       setLoading(false);
       return;
     }
 
     try {
-      addRecipe({
+      // Transform form data to recipe format
+      const formattedIngredientGroups = ingredientGroups
+        .map((group) => ({
+          heading: group.heading || undefined,
+          items: group.items
+            .filter((item) => item.name.trim())
+            .map((item, idx) => ({
+              id: crypto.randomUUID(),
+              name: item.name,
+              amount: item.amount,
+              unit: item.unit,
+              preparation: item.preparation || undefined,
+              note: item.note || undefined,
+            })),
+        }))
+        .filter((group) => group.items.length > 0);
+
+      const formattedInstructionGroups = instructionGroups
+        .map((group) => ({
+          heading: group.heading || undefined,
+          steps: group.steps
+            .filter((step) => step.text.trim())
+            .map((step) => ({
+              text: step.text,
+              timer: step.timer || undefined,
+            })),
+        }))
+        .filter((group) => group.steps.length > 0);
+
+      await addRecipe({
         title,
         description,
         image:
@@ -149,18 +173,14 @@ export default function AddRecipe() {
         category: categories.length > 0 ? categories : ["Dinner"],
         dietaryTags,
         videoUrl: videoUrl || undefined,
-
         chef: {
           name: user.name,
           avatar:
             user.avatar ||
             "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&q=80",
         },
-        ingredients: validIngredients.map((ing, idx) => ({
-          ...ing,
-          id: String(idx + 1),
-        })),
-        instructions: validInstructions,
+        ingredientGroups: formattedIngredientGroups,
+        instructionGroups: formattedInstructionGroups,
         nutrition:
           calories || protein || carbs || fat
             ? {
@@ -181,17 +201,6 @@ export default function AddRecipe() {
 
     setLoading(false);
   };
-
-  const categoryOptions = [
-    "Dinner",
-    "Breakfast",
-    "Lunch",
-    "Dessert",
-    "Snack",
-    "Packed lunches",
-    "Make-ahead breakfasts",
-    "New recipes",
-  ];
 
   return (
     <Box sx={{ minHeight: "100vh", py: 4, bgcolor: "background.default" }}>
@@ -303,68 +312,20 @@ export default function AddRecipe() {
               <Typography variant="h6" sx={{ mb: 3 }}>
                 Categories & Tags
               </Typography>
-              <Grid container spacing={3}>
-                <Grid size={{ xs: 12 }}>
-                  <FormControl fullWidth>
-                    <InputLabel>Categories</InputLabel>
-                    <Select
-                      multiple
-                      value={categories}
-                      label="Categories"
-                      onChange={(e) =>
-                        setCategories(e.target.value as string[])
-                      }
-                      renderValue={(selected) => (
-                        <Box
-                          sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}
-                        >
-                          {selected.map((value) => (
-                            <Chip key={value} label={value} size="small" />
-                          ))}
-                        </Box>
-                      )}
-                    >
-                      {categoryOptions.map((cat) => (
-                        <MenuItem key={cat} value={cat}>
-                          {cat}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                </Grid>
-                <Grid size={{ xs: 12 }}>
-                  <FormControl fullWidth>
-                    <InputLabel>Dietary Tags</InputLabel>
-                    <Select
-                      multiple
-                      value={dietaryTags}
-                      label="Dietary Tags"
-                      onChange={(e) =>
-                        setDietaryTags(e.target.value as string[])
-                      }
-                      renderValue={(selected) => (
-                        <Box
-                          sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}
-                        >
-                          {selected.map((value) => (
-                            <Chip key={value} label={value} size="small" />
-                          ))}
-                        </Box>
-                      )}
-                    >
-                      {dietaryOptions.map((tag) => (
-                        <MenuItem
-                          key={tag}
-                          value={tag}
-                          sx={{ textTransform: "capitalize" }}
-                        >
-                          {tag}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                </Grid>
-              </Grid>
+              <Stack spacing={3}>
+                <CategoryChipsSelect
+                  options={categoryOptions}
+                  selected={categories}
+                  onChange={setCategories}
+                  label="Categories"
+                />
+                <CategoryChipsSelect
+                  options={dietaryOptions}
+                  selected={dietaryTags}
+                  onChange={setDietaryTags}
+                  label="Dietary Tags"
+                />
+              </Stack>
             </Paper>
 
             {/* Ingredients */}
@@ -372,74 +333,10 @@ export default function AddRecipe() {
               <Typography variant="h6" sx={{ mb: 3 }}>
                 Ingredients
               </Typography>
-              <Stack spacing={2}>
-                {ingredients.map((ing, index) => (
-                  <Grid container spacing={2} key={index} alignItems="center">
-                    <Grid size={{ xs: 2 }}>
-                      <TextField
-                        label="Amount"
-                        value={ing.amount}
-                        onChange={(e) =>
-                          updateIngredient(index, "amount", e.target.value)
-                        }
-                        fullWidth
-                        size="small"
-                      />
-                    </Grid>
-                    <Grid size={{ xs: 2 }}>
-                      <TextField
-                        label="Unit"
-                        value={ing.unit}
-                        onChange={(e) =>
-                          updateIngredient(index, "unit", e.target.value)
-                        }
-                        fullWidth
-                        size="small"
-                        placeholder="g, ml, tbsp"
-                      />
-                    </Grid>
-                    <Grid size={{ xs: 5 }}>
-                      <TextField
-                        label="Ingredient"
-                        value={ing.name}
-                        onChange={(e) =>
-                          updateIngredient(index, "name", e.target.value)
-                        }
-                        fullWidth
-                        size="small"
-                      />
-                    </Grid>
-                    <Grid size={{ xs: 2 }}>
-                      <TextField
-                        label="Category"
-                        value={ing.category}
-                        onChange={(e) =>
-                          updateIngredient(index, "category", e.target.value)
-                        }
-                        fullWidth
-                        size="small"
-                        placeholder="Pantry, Dairy"
-                      />
-                    </Grid>
-                    <Grid size={{ xs: 1 }}>
-                      <IconButton
-                        onClick={() => removeIngredient(index)}
-                        size="small"
-                      >
-                        <DeleteIcon />
-                      </IconButton>
-                    </Grid>
-                  </Grid>
-                ))}
-                <Button
-                  startIcon={<CreateIcon />}
-                  onClick={createIngredient}
-                  variant="outlined"
-                  sx={{ alignSelf: "flex-start" }}
-                >
-                  Create Ingredient
-                </Button>
-              </Stack>
+              <IngredientGroupForm
+                groups={ingredientGroups}
+                onChange={setIngredientGroups}
+              />
             </Paper>
 
             {/* Instructions */}
@@ -447,61 +344,16 @@ export default function AddRecipe() {
               <Typography variant="h6" sx={{ mb: 3 }}>
                 Instructions
               </Typography>
-              <Stack spacing={2}>
-                {instructions.map((inst, index) => (
-                  <Stack
-                    key={index}
-                    direction="row"
-                    spacing={2}
-                    alignItems="flex-start"
-                  >
-                    <Box
-                      sx={{
-                        width: 32,
-                        height: 32,
-                        borderRadius: "50%",
-                        bgcolor: "primary.main",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        fontWeight: 600,
-                        flexShrink: 0,
-                        mt: 1,
-                      }}
-                    >
-                      {index + 1}
-                    </Box>
-                    <TextField
-                      value={inst}
-                      onChange={(e) => updateInstruction(index, e.target.value)}
-                      fullWidth
-                      multiline
-                      rows={2}
-                      placeholder={`Step ${index + 1}`}
-                    />
-                    <IconButton
-                      onClick={() => removeInstruction(index)}
-                      size="small"
-                    >
-                      <DeleteIcon />
-                    </IconButton>
-                  </Stack>
-                ))}
-                <Button
-                  startIcon={<CreateIcon />}
-                  onClick={createInstruction}
-                  variant="outlined"
-                  sx={{ alignSelf: "flex-start" }}
-                >
-                  Create Step
-                </Button>
-              </Stack>
+              <InstructionGroupForm
+                groups={instructionGroups}
+                onChange={setInstructionGroups}
+              />
             </Paper>
 
             {/* Extra Info */}
             <Paper elevation={0} sx={{ p: 3, borderRadius: 3 }}>
               <Typography variant="h6" sx={{ mb: 3 }}>
-                Createitional Information
+                Additional Information
               </Typography>
               <Grid container spacing={3}>
                 <Grid size={{ xs: 12 }}>

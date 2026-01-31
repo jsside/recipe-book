@@ -13,6 +13,9 @@ export function isNewRecipe(recipe: Recipe): boolean {
   return createdDate >= thirtyDaysAgo;
 }
 
+// Alias for isNewRecipe
+export const isNew = isNewRecipe;
+
 /**
  * Get all categories for a recipe, including auto-generated "New recipes" category
  */

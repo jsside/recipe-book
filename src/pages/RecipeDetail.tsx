@@ -13,7 +13,8 @@ import {
   IconButton,
   Tooltip,
   Chip,
-  Divider,
+  Tab,
+  Tabs,
 } from "@mui/material";
 import {
   ChevronLeft as BackIcon,
@@ -29,6 +30,7 @@ import { useShoppingList } from "@/context/ShoppingListContext";
 import { useWakeLock } from "@/hooks/useWakeLock";
 import { useUnitConversion } from "@/hooks/useUnitConversion";
 import { useServingsAdjuster } from "@/hooks/useServingsAdjuster";
+import { useShare } from "@/hooks/useShare";
 import { parseInstructionWithIngredients } from "@/utils/ingredientParser";
 import { getRecipeCategories } from "@/utils/recipeHelpers";
 import RenderComponent from "@/components/helpers/renderComponent";
@@ -53,21 +55,14 @@ export default function RecipeDetail() {
     [recipes],
   );
 
-  const getRecipesByChef = useCallback(
-    (chefName: string) => {
-      return recipes.filter(
-        (recipe) => recipe.chef?.name?.toLowerCase() === chefName.toLowerCase(),
-      );
-    },
-    [recipes],
-  );
-
   const { addIngredients } = useShoppingList();
   const { isActive, toggleWakeLock, isSupported } = useWakeLock();
   const { unitSystem, toggleUnitSystem, convertAmount } = useUnitConversion();
+  const { share } = useShare();
   const [activeStep, setActiveStep] = useState<number | null>(null);
+  const [activeTab, setActiveTab] = useState(0);
 
-  const recipe = getRecipeById(parseFloat(id));
+  const recipe = getRecipeById(parseFloat(id || "0"));
 
   const {
     adjustedServings,
@@ -90,7 +85,6 @@ export default function RecipeDetail() {
   }
 
   const handleAddAllToList = () => {
-    // Scale ingredients before adding
     const scaledIngredients = recipe.ingredients.map((ing) => ({
       ...ing,
       ...scaleIngredient(ing),
@@ -98,7 +92,25 @@ export default function RecipeDetail() {
     addIngredients(scaledIngredients, recipe.id, recipe.title);
   };
 
+  const handleShare = () => {
+    share({
+      title: recipe.title,
+      text: recipe.description,
+      url: window.location.href,
+    });
+  };
+
+  const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
+    setActiveTab(newValue);
+  };
+
   const categories = getRecipeCategories(recipe);
+  const hasNutrition = Boolean(
+    recipe.nutrition?.calories ||
+      recipe.nutrition?.protein ||
+      recipe.nutrition?.carbs ||
+      recipe.nutrition?.fat,
+  );
 
   return (
     <Box sx={{ minHeight: "100vh", pb: 6 }}>
@@ -223,7 +235,7 @@ export default function RecipeDetail() {
                 >
                   Add to Shopping List
                 </Button>
-                <IconButton>
+                <IconButton onClick={handleShare}>
                   <ShareIcon />
                 </IconButton>
                 <IconButton onClick={() => window.print()}>
@@ -284,24 +296,56 @@ export default function RecipeDetail() {
                 top: { lg: 100 },
               }}
             >
+              {/* Tabbed header for Ingredients/Nutrition */}
               <Stack
                 direction="row"
                 justifyContent="space-between"
                 alignItems="center"
-                sx={{ mb: 3 }}
+                sx={{ mb: 2 }}
               >
-                <Typography variant="h5" fontFamily='"Fraunces", serif'>
-                  Ingredients
-                </Typography>
+                <RenderComponent
+                  if={hasNutrition}
+                  then={
+                    <Tabs
+                      value={activeTab}
+                      onChange={handleTabChange}
+                      sx={{
+                        minHeight: 36,
+                        "& .MuiTabs-indicator": {
+                          backgroundColor: "text.primary",
+                        },
+                        "& .MuiTab-root": {
+                          minHeight: 36,
+                          textTransform: "none",
+                          fontWeight: 600,
+                          fontSize: "1.1rem",
+                          color: "text.secondary",
+                          fontFamily: '"Fraunces", serif',
+                          px: 0,
+                          mr: 3,
+                          "&.Mui-selected": {
+                            color: "text.primary",
+                          },
+                        },
+                      }}
+                    >
+                      <Tab label="Ingredients" />
+                      <Tab label="Nutrition" />
+                    </Tabs>
+                  }
+                  else={
+                    <Typography variant="h5" fontFamily='"Fraunces", serif'>
+                      Ingredients
+                    </Typography>
+                  }
+                />
                 <Stack direction="row" spacing={1} alignItems="center">
-                  {/* Unit toggle */}
                   <Chip
                     label={unitSystem}
                     size="small"
                     variant="outlined"
                     sx={{ textTransform: "capitalize" }}
                   />
-
                   <Tooltip
                     title={`Switch to ${unitSystem === "metric" ? "imperial" : "metric"}`}
                   >
@@ -309,8 +353,6 @@ export default function RecipeDetail() {
                       <ScaleIcon />
                     </IconButton>
                   </Tooltip>
-
-                  {/* Wake lock toggle */}
                   <RenderComponent
                     if={isSupported}
                     then={
@@ -336,114 +378,159 @@ export default function RecipeDetail() {
                 </Stack>
               </Stack>
 
-              {/* Servings adjuster */}
-              <Box sx={{ mb: 3 }}>
-                <ServingsAdjuster
-                  servings={adjustedServings}
-                  onIncrement={incrementServings}
-                  onDecrement={decrementServings}
-                />
-              </Box>
-
-              <Stack spacing={1}>
-                {recipe.ingredients.map((ingredient) => {
-                  const scaled = scaleIngredient(ingredient);
-                  const converted = convertAmount(scaled.amount, scaled.unit);
-                  return (
-                    <Box
-                      key={ingredient.id}
-                      sx={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 2,
-                        p: 1.5,
-                        borderRadius: 2,
-                        bgcolor: "rgba(0, 0, 0, 0.02)",
-                        "&:hover": { bgcolor: "rgba(0, 0, 0, 0.04)" },
-                      }}
-                    >
-                      <Checkbox size="small" />
-                      <Typography>
-                        {converted.amount} {converted.unit} {ingredient.name}
-                      </Typography>
-                    </Box>
-                  );
-                })}
-              </Stack>
-
-              <Button
-                fullWidth
-                variant="outlined"
-                startIcon={<AddIcon />}
-                onClick={handleAddAllToList}
-                sx={{ mt: 3 }}
-              >
-                Add all to list
-              </Button>
-
-              {/* Nutrition info */}
+              {/* Tab content */}
               <RenderComponent
-                if={!!recipe.nutrition}
+                if={activeTab === 0}
                 then={
-                  <Box sx={{ mt: 3 }}>
-                    <Divider sx={{ mb: 2 }} />
-                    <Typography variant="subtitle2" sx={{ mb: 2 }}>
-                      Nutrition per serving
+                  <>
+                    {/* Servings adjuster */}
+                    <Box sx={{ mb: 3 }}>
+                      <ServingsAdjuster
+                        servings={adjustedServings}
+                        onIncrement={incrementServings}
+                        onDecrement={decrementServings}
+                      />
+                    </Box>
+
+                    <Stack spacing={1}>
+                      {recipe.ingredients.map((ingredient) => {
+                        const scaled = scaleIngredient(ingredient);
+                        const converted = convertAmount(
+                          scaled.amount,
+                          scaled.unit,
+                        );
+                        return (
+                          <Box
+                            key={ingredient.id}
+                            sx={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 2,
+                              p: 1.5,
+                              borderRadius: 2,
+                              bgcolor: "rgba(0, 0, 0, 0.02)",
+                              "&:hover": { bgcolor: "rgba(0, 0, 0, 0.04)" },
+                            }}
+                          >
+                            <Checkbox size="small" />
+                            <Typography>
+                              {converted.amount} {converted.unit}{" "}
+                              {ingredient.name}
+                            </Typography>
+                          </Box>
+                        );
+                      })}
+                    </Stack>
+
+                    <Button
+                      fullWidth
+                      variant="outlined"
+                      startIcon={<AddIcon />}
+                      onClick={handleAddAllToList}
+                      sx={{ mt: 3 }}
+                    >
+                      Add all to list
+                    </Button>
+                  </>
+                }
+              />
+
+              {/* Nutrition tab content */}
+              <RenderComponent
+                if={activeTab === 1 && hasNutrition}
+                then={
+                  <Box sx={{ py: 2 }}>
+                    <Typography
+                      variant="subtitle2"
+                      color="text.secondary"
+                      sx={{ mb: 3 }}
+                    >
+                      Per serving
                     </Typography>
-                    <Grid container spacing={1}>
+                    <Stack spacing={2}>
                       <RenderComponent
                         if={!!recipe.nutrition?.calories}
                         then={
-                          <Grid size={{ xs: 6 }}>
-                            <Typography variant="body2" color="text.secondary">
+                          <Box
+                            sx={{
+                              display: "flex",
+                              justifyContent: "space-between",
+                              borderBottom: "1px solid",
+                              borderColor: "divider",
+                              pb: 1.5,
+                            }}
+                          >
+                            <Typography color="text.secondary">
                               Calories
                             </Typography>
                             <Typography fontWeight={500}>
-                              {recipe.nutrition?.calories}
+                              {recipe.nutrition?.calories} kcal
                             </Typography>
-                          </Grid>
+                          </Box>
                         }
                       />
                       <RenderComponent
                         if={!!recipe.nutrition?.protein}
                         then={
-                          <Grid size={{ xs: 6 }}>
-                            <Typography variant="body2" color="text.secondary">
+                          <Box
+                            sx={{
+                              display: "flex",
+                              justifyContent: "space-between",
+                              borderBottom: "1px solid",
+                              borderColor: "divider",
+                              pb: 1.5,
+                            }}
+                          >
+                            <Typography color="text.secondary">
                               Protein
                             </Typography>
                             <Typography fontWeight={500}>
                               {recipe.nutrition?.protein}g
                             </Typography>
-                          </Grid>
+                          </Box>
                         }
                       />
                       <RenderComponent
                         if={!!recipe.nutrition?.carbs}
                         then={
-                          <Grid size={{ xs: 6 }}>
-                            <Typography variant="body2" color="text.secondary">
-                              Carbs
+                          <Box
+                            sx={{
+                              display: "flex",
+                              justifyContent: "space-between",
+                              borderBottom: "1px solid",
+                              borderColor: "divider",
+                              pb: 1.5,
+                            }}
+                          >
+                            <Typography color="text.secondary">
+                              Carbohydrates
                             </Typography>
                             <Typography fontWeight={500}>
                               {recipe.nutrition?.carbs}g
                             </Typography>
-                          </Grid>
+                          </Box>
                         }
                       />
                       <RenderComponent
                         if={!!recipe.nutrition?.fat}
                         then={
-                          <Grid size={{ xs: 6 }}>
-                            <Typography variant="body2" color="text.secondary">
-                              Fat
-                            </Typography>
+                          <Box
+                            sx={{
+                              display: "flex",
+                              justifyContent: "space-between",
+                              borderBottom: "1px solid",
+                              borderColor: "divider",
+                              pb: 1.5,
+                            }}
+                          >
+                            <Typography color="text.secondary">Fat</Typography>
                             <Typography fontWeight={500}>
                               {recipe.nutrition?.fat}g
                             </Typography>
-                          </Grid>
+                          </Box>
                         }
                       />
-                    </Grid>
+                    </Stack>
                   </Box>
                 }
               />

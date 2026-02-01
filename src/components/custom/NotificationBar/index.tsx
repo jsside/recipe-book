@@ -1,6 +1,6 @@
 import { Alert, Box, Collapse, IconButton, Stack } from "@mui/material";
 import { Close as CloseIcon } from "@mui/icons-material";
-import { useNotification } from "@/context/NotificationContext";
+import { useNotification } from "@/context/NotificationContext/utils";
 
 export function NotificationBar() {
   const { notifications, hideNotification } = useNotification();

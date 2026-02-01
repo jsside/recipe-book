@@ -18,7 +18,6 @@ import {
   Print as PrintIcon,
   AccessTime as ClockIcon,
 } from "@mui/icons-material";
-import { useShoppingList } from "@/context/ShoppingListContext";
 import { useServingsAdjuster } from "@/hooks/useServingsAdjuster";
 import { useShare } from "@/hooks/useShare";
 import { getAllIngredients } from "@/utils/ingredientParser";
@@ -27,11 +26,11 @@ import RenderComponent from "@/components/helpers/renderComponent";
 import { IngredientsNutrientsPanel } from "./components/IngredientsNutrientsPanel";
 import { MethodPanel } from "./components/MethodPanel";
 import { useGetRecipe } from "@/hooks/useGetRecipe";
+import { useShoppingList } from "@/context/ShoppingListContext/utils";
 
 export default function RecipeDetail() {
   const { id } = useParams();
   const { data: recipe } = useGetRecipe(id);
-
   const { addIngredients } = useShoppingList();
   const { share } = useShare();
 

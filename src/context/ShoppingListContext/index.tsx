@@ -1,45 +1,8 @@
-import React, {
-  createContext,
-  useContext,
-  useState,
-  useCallback,
-  useEffect,
-} from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { Ingredient } from "@/data/recipes";
-import { useAuth } from "./AuthContext";
-import { SITE_NAME } from "@/app/constants";
-
-export interface ShoppingItem extends Ingredient {
-  checked: boolean;
-  recipeId: number;
-  recipeTitle: string;
-}
-
-interface ShoppingListContextType {
-  items: ShoppingItem[];
-  addIngredients: (
-    ingredients: Ingredient[],
-    recipeId: number,
-    recipeTitle: string,
-  ) => void;
-  removeItem: (itemId: string, recipeId: number) => void;
-  toggleItem: (itemId: string, recipeId: number) => void;
-  clearList: () => void;
-  clearChecked: () => void;
-  isOpen: boolean;
-  setIsOpen: (open: boolean) => void;
-  itemCount: number;
-}
-
-const ShoppingListContext = createContext<ShoppingListContextType | undefined>(
-  undefined,
-);
-
-// Get storage key based on user
-const getStorageKey = (userId: string | null) =>
-  userId
-    ? `${SITE_NAME}_shopping_list_${userId}`
-    : `${SITE_NAME}_shopping_list_guest`;
+import { ShoppingItem } from "./interfaces";
+import { useAuth } from "../AuthContext/utils";
+import { getStorageKey, ShoppingListContext } from "./utils";
 
 export function ShoppingListProvider({
   children,
@@ -135,14 +98,4 @@ export function ShoppingListProvider({
       {children}
     </ShoppingListContext.Provider>
   );
-}
-
-export function useShoppingList() {
-  const context = useContext(ShoppingListContext);
-  if (!context) {
-    throw new Error(
-      "useShoppingList must be used within a ShoppingListProvider",
-    );
-  }
-  return context;
 }

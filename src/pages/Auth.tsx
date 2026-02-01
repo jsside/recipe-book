@@ -16,8 +16,9 @@ import {
   MenuItem,
   Stack,
 } from "@mui/material";
-import { useAuth, UserRole } from "@/context/AuthContext";
+import { useAuth } from "@/context/AuthContext/utils";
 import { SITE_NAME } from "@/app/constants";
+import { UserRole } from "@/context/AuthContext/interfaces";
 
 interface TabPanelProps {
   children?: React.ReactNode;

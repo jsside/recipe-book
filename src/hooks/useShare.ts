@@ -1,5 +1,5 @@
+import { useNotification } from "@/context/NotificationContext/utils";
 import { useCallback } from "react";
-import { useNotification } from "@/context/NotificationContext";
 
 interface ShareData {
   title: string;

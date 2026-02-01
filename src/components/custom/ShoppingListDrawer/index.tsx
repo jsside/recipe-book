@@ -13,13 +13,13 @@ import {
   Tab,
   Tooltip,
 } from "@mui/material";
-import { Close as CloseIcon, Delete as DeleteIcon } from "@mui/icons-material";
-import { ShoppingItem, useShoppingList } from "@/context/ShoppingListContext";
+import { Close as CloseIcon } from "@mui/icons-material";
 import { useState } from "react";
 import RenderComponent from "@/components/helpers/renderComponent";
 import { useUnitConversion } from "@/hooks/useUnitConversion";
 import { ScaleIcon } from "lucide-react";
-import { useServingsAdjuster } from "@/hooks/useServingsAdjuster";
+import { ShoppingItem } from "@/context/ShoppingListContext/interfaces";
+import { useShoppingList } from "@/context/ShoppingListContext/utils";
 
 export function ShoppingListDrawer() {
   const { items, isOpen, setIsOpen, clearList, clearChecked } =

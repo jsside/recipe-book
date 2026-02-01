@@ -26,8 +26,8 @@ import { useUnitConversion } from "@/hooks/useUnitConversion";
 import { useWakeLock } from "@/hooks/useWakeLock";
 import { useServingsAdjuster } from "@/hooks/useServingsAdjuster";
 import { getAllIngredients } from "@/utils/ingredientParser";
-import { useShoppingList } from "@/context/ShoppingListContext";
 import ServingsAdjuster from "@/components/custom/ServingsAdjuster";
+import { useShoppingList } from "@/context/ShoppingListContext/utils";
 
 export const IngredientsNutrientsPanel = ({ recipe }: { recipe: Recipe }) => {
   const [activeTab, setActiveTab] = useState(0);

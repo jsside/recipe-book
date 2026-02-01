@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   AppBar,
@@ -25,15 +25,14 @@ import {
   ShoppingCart as CartIcon,
   Menu as MenuIcon,
   Close as CloseIcon,
-  Person as PersonIcon,
   Add as AddIcon,
 } from "@mui/icons-material";
-import { useShoppingList } from "@/context/ShoppingListContext";
-import { useAuth } from "@/context/AuthContext";
 import { insertIf } from "@/features/isFeatureEnabled";
 import { Features } from "@/features";
 import { SITE_NAME } from "@/app/constants";
 import RenderComponent from "@/components/helpers/renderComponent";
+import { useShoppingList } from "@/context/ShoppingListContext/utils";
+import { useAuth } from "@/context/AuthContext/utils";
 
 const navLinks = [
   { label: "All recipes", href: "/recipes" },

@@ -10,10 +10,10 @@ import {
   Stack,
 } from "@mui/material";
 import { Add as AddIcon } from "@mui/icons-material";
-import { useShoppingList } from "@/context/ShoppingListContext";
 import { RecipeCardProps } from "./interfaces";
 import { getRecipeCategories } from "@/utils/recipeHelpers";
 import RenderComponent from "@/components/helpers/renderComponent";
+import { useShoppingList } from "@/context/ShoppingListContext/utils";
 
 export function RecipeCard({ recipe }: RecipeCardProps) {
   const { addIngredients } = useShoppingList();

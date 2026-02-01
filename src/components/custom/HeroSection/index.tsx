@@ -1,8 +1,8 @@
 import RenderComponent from "@/components/helpers/renderComponent";
-import { useAuth } from "@/context/AuthContext";
 import { Box, Container, Typography, Button, Stack } from "@mui/material";
 import { Link } from "react-router-dom";
 import { ArrowForward as ArrowIcon } from "@mui/icons-material";
+import { useAuth } from "@/context/AuthContext/utils";
 
 export function HeroSection() {
   const { isAuthenticated } = useAuth();

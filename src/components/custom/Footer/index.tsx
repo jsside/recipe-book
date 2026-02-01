@@ -15,15 +15,13 @@ export function Footer() {
   const footerLinks = {
     Recipes: [
       { label: "All recipes", href: "/recipes" },
-      { label: "Dinner", href: "/recipes?category=Dinner" },
       { label: "Breakfast", href: "/recipes?category=Make-ahead breakfasts" },
       { label: "Lunch", href: "/recipes?category=Easy lunches" },
+      { label: "Dinner", href: "/recipes?category=Dinner" },
     ],
     Company: [
       { label: "About Us", href: "/about" },
       { label: "Contact", href: "/contact" },
-      { label: "Careers", href: "/careers" },
-      { label: "Press", href: "/press" },
     ],
     Support: [
       { label: "Help Center", href: "/help" },
@@ -56,19 +54,8 @@ export function Footer() {
               {SITE_NAME}
             </Typography>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-              Share and discover delicious recipes.
+              Share and discover your friends' favorite recipes.
             </Typography>
-            <Stack direction="row" spacing={0.5}>
-              <IconButton size="small" sx={{ color: "text.secondary" }}>
-                <Instagram fontSize="small" />
-              </IconButton>
-              <IconButton size="small" sx={{ color: "text.secondary" }}>
-                <Twitter fontSize="small" />
-              </IconButton>
-              <IconButton size="small" sx={{ color: "text.secondary" }}>
-                <YouTube fontSize="small" />
-              </IconButton>
-            </Stack>
           </Grid>
 
           {/* Links */}

@@ -117,7 +117,10 @@ export default function Auth() {
           </Typography>
         </Box>
 
-        <Paper elevation={0} sx={{ p: 4, borderRadius: 2, border: 1, borderColor: "divider" }}>
+        <Paper
+          elevation={0}
+          sx={{ p: 4, borderRadius: 2, border: 1, borderColor: "divider" }}
+        >
           <Tabs
             value={tabValue}
             onChange={(_, newValue) => {

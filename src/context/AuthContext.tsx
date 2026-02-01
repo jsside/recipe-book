@@ -72,7 +72,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (foundUser) {
         const { password: _, ...userWithoutPassword } = foundUser;
         setUser(userWithoutPassword);
-        localStorage.setItem(`${SITE_NAME}_user`, JSON.stringify(userWithoutPassword));
+        localStorage.setItem(
+          `${SITE_NAME}_user`,
+          JSON.stringify(userWithoutPassword),
+        );
         return { success: true };
       }
 

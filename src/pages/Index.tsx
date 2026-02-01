@@ -80,12 +80,12 @@ const Index = () => {
     <Box sx={{ minHeight: "100vh" }}>
       <HeroSection />
 
-      {/* Latest Recipes Section - Horizontal Scroll */}
+      {/* 1. Latest Recipes Section - Horizontal Scroll */}
       <RenderComponent
         if={latestRecipes.length > 0}
         then={
           <HorizontalScroll
-            title="Latest Recipes"
+            title="Latest recipes"
             subtitle="Fresh from our kitchen"
           >
             {latestRecipes.map((recipe) => (
@@ -104,14 +104,14 @@ const Index = () => {
         }
       />
 
-      {/* Recipe Section */}
+      {/* 2. Recipe Section */}
       <Box component="section" sx={{ py: { xs: 4, md: 6 } }}>
         <Container maxWidth="lg">
           <Typography
             variant="h2"
             sx={{ fontSize: { xs: "1.5rem", md: "2rem" }, mb: 3 }}
           >
-            Browse Recipes
+            Browse recipes
           </Typography>
 
           <CategoryChips
@@ -145,28 +145,30 @@ const Index = () => {
         </Container>
       </Box>
 
-      {/* Meet the Chefs Section - Horizontal Scroll */}
+      {/* 3. Meet the Chefs Section - Horizontal Scroll */}
       <RenderComponent
         if={chefs.length > 0}
         then={
-          <Box
-            component="section"
-            sx={{ py: { xs: 4, md: 6 }, bgcolor: "background.paper" }}
-          >
-            <HorizontalScroll title="Meet the Chefs" subtitle="Our recipe creators">
-              {chefs.map((chef) => (
-                <Box
-                  key={chef.name}
-                  sx={{
-                    flexShrink: 0,
-                    width: 140,
-                    scrollSnapAlign: "start",
-                  }}
-                >
-                  <ChefCard chef={chef} />
-                </Box>
-              ))}
-            </HorizontalScroll>
+          <Box component="section" sx={{ py: { xs: 4, md: 6 } }}>
+            <Container maxWidth="lg">
+              <HorizontalScroll
+                title="Meet the chefs"
+                subtitle="Our recipe creators"
+              >
+                {chefs.map((chef) => (
+                  <Box
+                    key={chef.name}
+                    sx={{
+                      flexShrink: 0,
+                      width: 140,
+                      scrollSnapAlign: "start",
+                    }}
+                  >
+                    <ChefCard chef={chef} />
+                  </Box>
+                ))}
+              </HorizontalScroll>
+            </Container>
           </Box>
         }
       />
@@ -196,7 +198,7 @@ const Index = () => {
                     variant="h2"
                     sx={{ fontSize: { xs: "1.75rem", md: "2.25rem" }, mb: 1 }}
                   >
-                    Browse by Ingredient
+                    Browse by ingredient
                   </Typography>
                   <Typography color="text.secondary">
                     Find recipes based on what you have in your kitchen

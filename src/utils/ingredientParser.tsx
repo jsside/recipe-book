@@ -7,12 +7,11 @@ import { Ingredient, IngredientGroup } from "@/data/recipes";
  */
 export function getAllIngredients(
   ingredientGroups?: IngredientGroup[],
-  ingredients?: Ingredient[]
 ): Ingredient[] {
   if (ingredientGroups && ingredientGroups.length > 0) {
     return ingredientGroups.flatMap((group) => group.items);
   }
-  return ingredients || [];
+  return [];
 }
 
 /**
@@ -24,13 +23,13 @@ export function parseInstructionWithIngredients(
   ingredients: Ingredient[],
   convertAmount?: (
     amount: string,
-    unit: string
+    unit: string,
   ) => { amount: string; unit: string },
   scaleIngredient?: (ingredient: Ingredient) => {
     amount: string;
     unit: string;
     name: string;
-  }
+  },
 ): React.ReactNode {
   if (!ingredients.length) {
     return instruction;
@@ -38,12 +37,12 @@ export function parseInstructionWithIngredients(
 
   // Sort ingredients by name length (longest first) to avoid partial matches
   const sortedIngredients = [...ingredients].sort(
-    (a, b) => b.name.length - a.name.length
+    (a, b) => b.name.length - a.name.length,
   );
 
   // Create a regex pattern for all ingredient names (case-insensitive)
   const ingredientNames = sortedIngredients.map((ing) =>
-    ing.name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+    ing.name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"),
   );
   const pattern = new RegExp(`\\b(${ingredientNames.join("|")})\\b`, "gi");
 
@@ -64,7 +63,7 @@ export function parseInstructionWithIngredients(
 
     const matchedName = match[0];
     const ingredient = sortedIngredients.find(
-      (ing) => ing.name.toLowerCase() === matchedName.toLowerCase()
+      (ing) => ing.name.toLowerCase() === matchedName.toLowerCase(),
     );
 
     if (
@@ -112,7 +111,7 @@ export function parseInstructionWithIngredients(
             ({measurement}
             {prepText})
           </Typography>
-        </React.Fragment>
+        </React.Fragment>,
       );
     } else {
       // Already mentioned or not found, just bold the name
@@ -123,13 +122,12 @@ export function parseInstructionWithIngredients(
           key={`bold-${match.index}`}
         >
           {matchedName}
-        </Typography>
+        </Typography>,
       );
     }
 
     lastIndex = regex.lastIndex;
   }
-
   // Add remaining text
   if (lastIndex < instruction.length) {
     parts.push(instruction.slice(lastIndex));

@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useState, useCallback, useEffect } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useCallback,
+  useEffect,
+} from "react";
 import { Ingredient } from "@/data/recipes";
 import { useAuth } from "./AuthContext";
 import { SITE_NAME } from "@/app/constants";
@@ -31,7 +37,9 @@ const ShoppingListContext = createContext<ShoppingListContextType | undefined>(
 
 // Get storage key based on user
 const getStorageKey = (userId: string | null) =>
-  userId ? `${SITE_NAME}_shopping_list_${userId}` : `${SITE_NAME}_shopping_list_guest`;
+  userId
+    ? `${SITE_NAME}_shopping_list_${userId}`
+    : `${SITE_NAME}_shopping_list_guest`;
 
 export function ShoppingListProvider({
   children,

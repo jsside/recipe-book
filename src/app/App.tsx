@@ -9,7 +9,6 @@ import { Footer } from "@/components/custom/Footer";
 import { ShoppingListDrawer } from "@/components/custom/ShoppingListDrawer";
 import { NotificationBar } from "@/components/custom/NotificationBar";
 import Index from "../pages/Index";
-import RecipeDetail from "../pages/RecipeDetail";
 import Recipes from "../pages/Recipes";
 import Ingredients from "../pages/Ingredients";
 import MealPlans from "../pages/MealPlans";
@@ -20,6 +19,7 @@ import NotFound from "../pages/NotFound";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { singletonQueryClient } from "./App.queries";
 import { Navbar } from "@/components/custom/Navbar";
+import RecipeDetail from "@/pages/RecipeDetail";
 
 const App = () => (
   <ThemeProvider theme={theme}>

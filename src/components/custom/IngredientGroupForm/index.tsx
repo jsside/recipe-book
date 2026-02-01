@@ -68,7 +68,9 @@ export function IngredientGroupForm({
     if (updated[groupIndex].items.length > 1) {
       updated[groupIndex] = {
         ...updated[groupIndex],
-        items: updated[groupIndex].items.filter((_, i) => i !== ingredientIndex),
+        items: updated[groupIndex].items.filter(
+          (_, i) => i !== ingredientIndex,
+        ),
       };
       onChange(updated);
     }
@@ -78,13 +80,13 @@ export function IngredientGroupForm({
     groupIndex: number,
     ingredientIndex: number,
     field: keyof IngredientFormItem,
-    value: string
+    value: string,
   ) => {
     const updated = [...groups];
     updated[groupIndex] = {
       ...updated[groupIndex],
       items: updated[groupIndex].items.map((item, i) =>
-        i === ingredientIndex ? { ...item, [field]: value } : item
+        i === ingredientIndex ? { ...item, [field]: value } : item,
       ),
     };
     onChange(updated);
@@ -149,7 +151,7 @@ export function IngredientGroupForm({
                         groupIndex,
                         ingredientIndex,
                         "amount",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                     placeholder="Qty"
@@ -163,7 +165,7 @@ export function IngredientGroupForm({
                         groupIndex,
                         ingredientIndex,
                         "unit",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                     placeholder="Unit"
@@ -177,7 +179,7 @@ export function IngredientGroupForm({
                         groupIndex,
                         ingredientIndex,
                         "name",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                     placeholder="Ingredient"
@@ -191,7 +193,7 @@ export function IngredientGroupForm({
                         groupIndex,
                         ingredientIndex,
                         "preparation",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                     placeholder="Prep (e.g., diced)"
@@ -205,7 +207,7 @@ export function IngredientGroupForm({
                         groupIndex,
                         ingredientIndex,
                         "note",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                     placeholder="Note"
@@ -213,7 +215,9 @@ export function IngredientGroupForm({
                     sx={{ width: 100 }}
                   />
                   <IconButton
-                    onClick={() => removeIngredient(groupIndex, ingredientIndex)}
+                    onClick={() =>
+                      removeIngredient(groupIndex, ingredientIndex)
+                    }
                     size="small"
                     disabled={group.items.length === 1}
                   >

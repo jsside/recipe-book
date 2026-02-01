@@ -61,7 +61,7 @@ export function HeroSection() {
               },
             }}
           >
-            See All Recipes
+            See all recipes
           </Button>
           <RenderComponent
             if={!isAuthenticated}

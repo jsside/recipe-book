@@ -17,8 +17,7 @@ import RenderComponent from "@/components/helpers/renderComponent";
 
 export function RecipeCard({ recipe }: RecipeCardProps) {
   const { addIngredients } = useShoppingList();
-    const categories = getRecipeCategories(recipe);
-  
+  const categories = getRecipeCategories(recipe);
 
   const handleAddToList = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -44,6 +43,7 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
         "&:hover .recipe-image": {
           transform: "scale(1.02)",
         },
+        background: "transparent",
       }}
     >
       <Box sx={{ position: "relative", overflow: "hidden" }}>
@@ -66,11 +66,10 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
           spacing={1}
           sx={{ position: "absolute", top: 12, left: 12 }}
         >
-          
-           <RenderComponent
-                            if={categories.includes("New")}
-                            then={<Chip label="New" color="success" size="small" />}
-                          />
+          <RenderComponent
+            if={categories.includes("New")}
+            then={<Chip label="New" color="success" size="small" />}
+          />
         </Stack>
 
         {/* Add to list button */}
@@ -115,18 +114,14 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
 
         <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
           {recipe.category.slice(0, 2).map((cat) => (
-            <Typography
+            <Chip
               key={cat}
-              variant="caption"
-              sx={{
-                color: "text.secondary",
-                "&:not(:last-child)::after": {
-                  content: '","',
-                },
-              }}
-            >
-              {cat}
-            </Typography>
+              size="small"
+              label={cat}
+              variant={"outlined"}
+              // onClick={() => onCategoryChange(category)}
+              color={"default"}
+            />
           ))}
         </Stack>
       </CardContent>

@@ -77,20 +77,23 @@ export function InstructionGroupForm({
     groupIndex: number,
     stepIndex: number,
     field: keyof InstructionFormStep,
-    value: string | number | undefined
+    value: string | number | undefined,
   ) => {
     const updated = [...groups];
     updated[groupIndex] = {
       ...updated[groupIndex],
       steps: updated[groupIndex].steps.map((step, i) =>
-        i === stepIndex ? { ...step, [field]: value } : step
+        i === stepIndex ? { ...step, [field]: value } : step,
       ),
     };
     onChange(updated);
   };
 
   // Get global step number
-  const getGlobalStepNumber = (groupIndex: number, stepIndex: number): number => {
+  const getGlobalStepNumber = (
+    groupIndex: number,
+    stepIndex: number,
+  ): number => {
     let count = 0;
     for (let g = 0; g < groupIndex; g++) {
       count += groups[g].steps.length;
@@ -171,7 +174,12 @@ export function InstructionGroupForm({
                     <TextField
                       value={step.text}
                       onChange={(e) =>
-                        updateStep(groupIndex, stepIndex, "text", e.target.value)
+                        updateStep(
+                          groupIndex,
+                          stepIndex,
+                          "text",
+                          e.target.value,
+                        )
                       }
                       placeholder={`Step ${getGlobalStepNumber(groupIndex, stepIndex)}`}
                       fullWidth
@@ -186,7 +194,7 @@ export function InstructionGroupForm({
                           groupIndex,
                           stepIndex,
                           "timer",
-                          e.target.value ? Number(e.target.value) : undefined
+                          e.target.value ? Number(e.target.value) : undefined,
                         )
                       }
                       placeholder="Timer"

@@ -74,7 +74,7 @@ export default function AddRecipe() {
   const [cookTime, setCookTime] = useState("");
   const [servings, setServings] = useState(4);
   const [difficulty, setDifficulty] = useState<"easy" | "medium" | "hard">(
-    "easy"
+    "easy",
   );
   const [categories, setCategories] = useState<string[]>([]);
   const [dietaryTags, setDietaryTags] = useState<string[]>([]);
@@ -113,7 +113,7 @@ export default function AddRecipe() {
 
     // Validate ingredients
     const hasValidIngredient = ingredientGroups.some((group) =>
-      group.items.some((item) => item.name.trim() && item.amount.trim())
+      group.items.some((item) => item.name.trim() && item.amount.trim()),
     );
     if (!hasValidIngredient) {
       setError("Please add at least one ingredient");
@@ -123,7 +123,7 @@ export default function AddRecipe() {
 
     // Validate instructions
     const hasValidInstruction = instructionGroups.some((group) =>
-      group.steps.some((step) => step.text.trim())
+      group.steps.some((step) => step.text.trim()),
     );
     if (!hasValidInstruction) {
       setError("Please add at least one instruction");

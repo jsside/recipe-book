@@ -107,7 +107,9 @@ export default function NutritionTabs({ nutrition }: NutritionTabsProps) {
                       pb: 1,
                     }}
                   >
-                    <Typography color="text.secondary">Carbohydrates</Typography>
+                    <Typography color="text.secondary">
+                      Carbohydrates
+                    </Typography>
                     <Typography fontWeight={500}>
                       {nutrition?.carbs}g
                     </Typography>

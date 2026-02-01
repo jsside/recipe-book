@@ -9,8 +9,8 @@ export interface Recipe {
   };
   category: string[];
   ingredientGroups: IngredientGroup[];
-  servings: number;
   instructionGroups: InstructionGroup[];
+  servings: number;
   description: string;
   createdAt?: string;
   // Extended fields
@@ -23,9 +23,6 @@ export interface Recipe {
     carbs?: number;
     fat?: number;
   };
-  // Legacy support
-  ingredients?: Ingredient[];
-  instructions?: string[];
 }
 
 export interface IngredientGroup {

@@ -20,14 +20,19 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
   const categories = getRecipeCategories(recipe);
 
   // Get all ingredients from ingredient groups
-  const allIngredients = recipe.ingredientGroups?.flatMap(
-    (group) => group.items
-  ) || [];
+  const allIngredients =
+    recipe.ingredientGroups?.flatMap((group) => group.items) || [];
 
   const handleAddToList = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    addIngredients(allIngredients, recipe.id, recipe.title, recipe.image, recipe.servings);
+    addIngredients(
+      allIngredients,
+      recipe.id,
+      recipe.title,
+      recipe.images?.at(0),
+      recipe.servings,
+    );
   };
 
   return (
@@ -54,7 +59,7 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
       <Box sx={{ position: "relative", overflow: "hidden" }}>
         <CardMedia
           component="img"
-          image={recipe.image}
+          image={recipe.images?.at(0)}
           alt={recipe.title}
           className="recipe-image"
           sx={{
@@ -73,7 +78,7 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
         >
           <RenderComponent
             if={categories.includes("New")}
-            then={<Chip label="New" color="success" size="small" />}
+            then={<Chip label="New" color="primary" size="small" />}
           />
         </Stack>
 

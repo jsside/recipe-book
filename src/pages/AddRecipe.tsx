@@ -22,7 +22,11 @@ import {
   Delete as DeleteIcon,
 } from "@mui/icons-material";
 
-import { dietaryOptions, difficultyOptions, RecipeReference } from "@/data/recipes";
+import {
+  dietaryOptions,
+  difficultyOptions,
+  RecipeReference,
+} from "@/data/recipes";
 import { useAddRecipe } from "@/hooks/useAddRecipe";
 import { IngredientGroupForm } from "@/components/custom/IngredientGroupForm";
 import { IngredientGroupFormItem } from "@/components/custom/IngredientGroupForm/interfaces";
@@ -223,9 +227,6 @@ export default function AddRecipe() {
 
       // Filter valid images
       const validImages = images.filter((img) => img.trim());
-      const primaryImage =
-        validImages[0] ||
-        "https://images.unsplash.com/photo-1495521821757-a1efb6729352?w=800&q=80";
 
       // Format references
       const formattedReferences: RecipeReference[] = references
@@ -239,7 +240,6 @@ export default function AddRecipe() {
       await addRecipe({
         title,
         description,
-        image: primaryImage,
         images: validImages.length > 1 ? validImages : undefined,
         cookTime,
         servings,
@@ -345,7 +345,11 @@ export default function AddRecipe() {
                         alignItems="center"
                       >
                         <TextField
-                          label={index === 0 ? "Primary Image URL" : `Image ${index + 1} URL`}
+                          label={
+                            index === 0
+                              ? "Primary Image URL"
+                              : `Image ${index + 1} URL`
+                          }
                           value={image}
                           onChange={(e) =>
                             handleImageChange(index, e.target.value)

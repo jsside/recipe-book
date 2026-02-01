@@ -27,7 +27,10 @@ import { IngredientsNutrientsPanel } from "./components/IngredientsNutrientsPane
 import { MethodPanel } from "./components/MethodPanel";
 import { useGetRecipe } from "@/hooks/useGetRecipe";
 import { useShoppingList } from "@/context/ShoppingListContext/utils";
-import { ImageGallery, ReferencesSection } from "@/components/custom/RecipeGallery";
+import {
+  ImageGallery,
+  ReferencesSection,
+} from "@/components/custom/RecipeGallery";
 
 export default function RecipeDetail() {
   const { id } = useParams();
@@ -83,7 +86,7 @@ export default function RecipeDetail() {
       scaledIngredients,
       recipe.id,
       recipe.title,
-      recipe.image,
+      recipe.images?.at(0),
       recipe.servings,
     );
   };
@@ -122,7 +125,7 @@ export default function RecipeDetail() {
               <Grid size={{ xs: 12, lg: 6 }}>
                 <Box
                   component="img"
-                  src={recipe.image}
+                  src={recipe.images?.at(0)}
                   alt={recipe.title}
                   sx={{
                     width: "100%",
@@ -182,10 +185,10 @@ export default function RecipeDetail() {
               </Typography>
 
               {/* Multiple Images Gallery - below title/description */}
-              <RenderComponent
+              {/* <RenderComponent
                 if={hasMultipleImages}
                 then={<ImageGallery images={recipe.images || []} />}
-              />
+              /> */}
 
               {/* Cook time */}
               <Stack direction="row" alignItems="center" spacing={1}>

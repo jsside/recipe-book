@@ -17,7 +17,7 @@ export function ImageGallery({ images }: ImageGalleryProps) {
         "&::-webkit-scrollbar": { display: "none" },
       }}
     >
-      {images.map((image, index) => (
+      {images?.map((image, index) => (
         <Box
           key={index}
           component="img"

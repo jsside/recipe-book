@@ -183,7 +183,13 @@ const IngredientsTabContent = ({ recipe }: { recipe: Recipe }) => {
       ...ing,
       ...scaleIngredient(ing),
     }));
-    addIngredients(scaledIngredients, recipe.id, recipe.title, recipe.image, recipe.servings);
+    addIngredients(
+      scaledIngredients,
+      recipe.id,
+      recipe.title,
+      recipe.image,
+      recipe.servings,
+    );
   };
 
   return (

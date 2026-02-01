@@ -18,7 +18,10 @@ import { Close as CloseIcon } from "@mui/icons-material";
 import { ScaleIcon } from "lucide-react";
 import RenderComponent from "@/components/helpers/renderComponent";
 import { useUnitConversion } from "@/hooks/useUnitConversion";
-import { ShoppingItem, ShoppingRecipe } from "@/context/ShoppingListContext/interfaces";
+import {
+  ShoppingItem,
+  ShoppingRecipe,
+} from "@/context/ShoppingListContext/interfaces";
 import { useShoppingList } from "@/context/ShoppingListContext/utils";
 import { RecipeListItem } from "./RecipeListItem";
 import { AdjustServingsModal } from "./AdjustServingsModal";

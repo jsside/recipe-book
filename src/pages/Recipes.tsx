@@ -54,7 +54,10 @@ export default function Recipes() {
           group.items.some(
             (ing) =>
               ing.name.toLowerCase().includes(ingredientParam.toLowerCase()) ||
-              (ing.category && ing.category.toLowerCase().includes(ingredientParam.toLowerCase())),
+              (ing.category &&
+                ing.category
+                  .toLowerCase()
+                  .includes(ingredientParam.toLowerCase())),
           ),
         ),
       );

@@ -7,7 +7,6 @@ export interface RecipeReference {
 export interface Recipe {
   id: number;
   title: string;
-  image: string;
   images?: string[]; // Multiple images support
   cookTime: string;
   chef: {

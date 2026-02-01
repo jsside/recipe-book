@@ -37,9 +37,7 @@ export function ReferencesSection({ links, images }: ReferencesSectionProps) {
               }}
             >
               <LinkIcon fontSize="small" />
-              <Typography variant="body2">
-                {link.title || link.url}
-              </Typography>
+              <Typography variant="body2">{link.title || link.url}</Typography>
             </Link>
           ))}
         </Stack>

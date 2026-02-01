@@ -31,6 +31,7 @@ import {
   ImageGallery,
   ReferencesSection,
 } from "@/components/custom/RecipeGallery";
+import DisplayImage from "@/db/DisplayImageWidget";
 
 export default function RecipeDetail() {
   const { id } = useParams();

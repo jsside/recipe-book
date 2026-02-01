@@ -35,12 +35,7 @@ export function IngredientCard({ ingredient }: IngredientCardProps) {
       </Box>
 
       <CardContent sx={{ textAlign: "center" }}>
-        <Typography
-          variant="h6"
-          fontFamily='"Fraunces", serif'
-          fontWeight={600}
-          sx={{ mb: 0.5 }}
-        >
+        <Typography variant="h6" fontWeight={600} sx={{ mb: 0.5 }}>
           {ingredient.name}
         </Typography>
         <Typography variant="body2" color="text.secondary">

@@ -32,7 +32,6 @@ export default function ChefCard({ chef }: ChefCardProps) {
       />
       <Typography
         variant="subtitle1"
-        fontFamily='"Fraunces", serif'
         fontWeight={500}
         sx={{ textAlign: "center" }}
       >

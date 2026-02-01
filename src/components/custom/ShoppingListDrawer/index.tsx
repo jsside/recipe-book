@@ -70,9 +70,7 @@ export function ShoppingListDrawer() {
             borderColor: "divider",
           }}
         >
-          <Typography variant="h6" fontFamily='"Fraunces", serif'>
-            Shopping list
-          </Typography>
+          <Typography variant="h6">Shopping list</Typography>
           <IconButton onClick={() => setIsOpen(false)}>
             <CloseIcon />
           </IconButton>
@@ -99,7 +97,6 @@ export function ShoppingListDrawer() {
                       fontWeight: 600,
                       fontSize: "1.1rem",
                       color: "text.secondary",
-                      fontFamily: '"Fraunces", serif',
                       px: 0,
                       mr: 3,
                       "&.Mui-selected": {

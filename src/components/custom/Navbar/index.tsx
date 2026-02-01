@@ -83,7 +83,6 @@ export function Navbar() {
             component={Link}
             to="/"
             sx={{
-              fontFamily: '"Fraunces", serif',
               fontSize: "1.25rem",
               fontWeight: 500,
               color: "text.primary",

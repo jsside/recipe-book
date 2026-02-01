@@ -40,7 +40,7 @@ export const MethodPanel = ({ recipe }: { recipe: Recipe }) => {
         elevation={0}
         sx={{ p: 3, bgcolor: "background.paper", borderRadius: 3 }}
       >
-        <Typography variant="h5" fontFamily='"Fraunces", serif' sx={{ mb: 3 }}>
+        <Typography variant="h5" sx={{ mb: 3 }}>
           Method
         </Typography>
         <Stack spacing={3}>

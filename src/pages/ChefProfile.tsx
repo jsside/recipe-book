@@ -38,7 +38,7 @@ export default function ChefProfile() {
   if (!chefInfo && recipes.length > 0) {
     return (
       <Container sx={{ py: 10, textAlign: "center" }}>
-        <Typography variant="h4" fontFamily='"Fraunces", serif' sx={{ mb: 2 }}>
+        <Typography variant="h4" sx={{ mb: 2 }}>
           Chef not found
         </Typography>
         <Button component={RouterLink} to="/" variant="contained">
@@ -84,11 +84,7 @@ export default function ChefProfile() {
                 sx={{ width: 120, height: 120 }}
               />
               <Box textAlign={{ xs: "center", sm: "left" }}>
-                <Typography
-                  variant="h3"
-                  fontFamily='"Fraunces", serif'
-                  sx={{ mb: 1 }}
-                >
+                <Typography variant="h3" sx={{ mb: 1 }}>
                   {chefInfo.name}
                 </Typography>
                 <Typography variant="body1" color="text.secondary">
@@ -114,7 +110,7 @@ export default function ChefProfile() {
 
       {/* Recipes Grid */}
       <Container>
-        <Typography variant="h5" fontFamily='"Fraunces", serif' sx={{ mb: 3 }}>
+        <Typography variant="h5" sx={{ mb: 3 }}>
           Recipes by {chefInfo?.name || decodedName}
         </Typography>
 

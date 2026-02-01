@@ -214,7 +214,7 @@ export default function AddRecipe() {
           Back
         </Button>
 
-        <Typography variant="h4" fontFamily='"Fraunces", serif' sx={{ mb: 4 }}>
+        <Typography variant="h4" sx={{ mb: 4 }}>
           Add New Recipe
         </Typography>
 

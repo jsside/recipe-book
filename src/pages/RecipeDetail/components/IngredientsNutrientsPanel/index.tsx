@@ -79,7 +79,6 @@ export const IngredientsNutrientsPanel = ({ recipe }: { recipe: Recipe }) => {
                     fontWeight: 600,
                     fontSize: "1.1rem",
                     color: "text.secondary",
-                    fontFamily: '"Fraunces", serif',
                     px: 0,
                     mr: 3,
                     "&.Mui-selected": {
@@ -92,11 +91,7 @@ export const IngredientsNutrientsPanel = ({ recipe }: { recipe: Recipe }) => {
                 <Tab label="Nutrition" />
               </Tabs>
             }
-            else={
-              <Typography variant="h5" fontFamily='"Fraunces", serif'>
-                Ingredients
-              </Typography>
-            }
+            else={<Typography variant="h5">Ingredients</Typography>}
           />
           {/* Units */}
           <UnitsControl />

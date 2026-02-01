@@ -98,7 +98,6 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
           variant="h6"
           component="h3"
           sx={{
-            fontFamily: '"Fraunces", serif',
             fontWeight: 500,
             fontSize: "1rem",
             lineHeight: 1.4,

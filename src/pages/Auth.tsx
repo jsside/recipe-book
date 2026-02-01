@@ -105,12 +105,7 @@ export default function Auth() {
     <Box sx={{ minHeight: "100vh", py: 8 }}>
       <Container maxWidth="sm">
         <Box sx={{ textAlign: "center", mb: 5 }}>
-          <Typography
-            variant="h3"
-            fontFamily='"Fraunces", serif'
-            fontWeight={500}
-            sx={{ mb: 1 }}
-          >
+          <Typography variant="h3" fontWeight={500} sx={{ mb: 1 }}>
             {SITE_NAME}
           </Typography>
           <Typography color="text.secondary">

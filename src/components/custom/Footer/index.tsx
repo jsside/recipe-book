@@ -45,12 +45,7 @@ export function Footer() {
         <Grid container spacing={4}>
           {/* Logo and social */}
           <Grid size={{ xs: 12, md: 4 }}>
-            <Typography
-              variant="h5"
-              fontFamily='"Fraunces", serif'
-              fontWeight={500}
-              sx={{ mb: 2 }}
-            >
+            <Typography variant="h5" fontWeight={500} sx={{ mb: 2 }}>
               {SITE_NAME}
             </Typography>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>

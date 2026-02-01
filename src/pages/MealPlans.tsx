@@ -87,11 +87,7 @@ export default function MealPlans() {
           }}
         >
           <Box sx={{ maxWidth: 500 }}>
-            <Typography
-              variant="h4"
-              fontFamily='"Fraunces", serif'
-              sx={{ mb: 2 }}
-            >
+            <Typography variant="h4" sx={{ mb: 2 }}>
               Create Your Own Meal Plan
             </Typography>
             <Typography color="text.secondary" sx={{ mb: 3 }}>
@@ -109,7 +105,7 @@ export default function MealPlans() {
         </Card>
 
         {/* Meal Plans Grid */}
-        <Typography variant="h5" fontFamily='"Fraunces", serif' sx={{ mb: 3 }}>
+        <Typography variant="h5" sx={{ mb: 3 }}>
           Pre-made Meal Plans
         </Typography>
         <Grid container spacing={3} sx={{ mb: 6 }}>
@@ -144,11 +140,7 @@ export default function MealPlans() {
                   />
                 </Box>
                 <CardContent>
-                  <Typography
-                    variant="h6"
-                    fontFamily='"Fraunces", serif'
-                    sx={{ mb: 1 }}
-                  >
+                  <Typography variant="h6" sx={{ mb: 1 }}>
                     {plan.title}
                   </Typography>
                   <Typography
@@ -191,7 +183,7 @@ export default function MealPlans() {
         </Grid>
 
         {/* Batch Cooking Tips */}
-        <Typography variant="h5" fontFamily='"Fraunces", serif' sx={{ mb: 3 }}>
+        <Typography variant="h5" sx={{ mb: 3 }}>
           Batch Cooking Tips
         </Typography>
         <Grid container spacing={3}>
@@ -215,11 +207,7 @@ export default function MealPlans() {
             <Grid size={{ xs: 12, md: 4 }} key={tip.title}>
               <Card sx={{ height: "100%" }}>
                 <CardContent>
-                  <Typography
-                    variant="h6"
-                    fontFamily='"Fraunces", serif'
-                    sx={{ mb: 1 }}
-                  >
+                  <Typography variant="h6" sx={{ mb: 1 }}>
                     {tip.title}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">

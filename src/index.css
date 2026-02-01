@@ -4,7 +4,7 @@
 
 @layer base {
   :root {
-    /* Clean off-white background like cabagges.world */
+    /* Clean off-white background */
     --background: 60 20% 97%;
     --foreground: 0 0% 10%;
 
@@ -15,7 +15,7 @@
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 10%;
 
-    /* Primary - Clean forest green like cabagges.world */
+    /* Primary - Clean forest green */
     --primary: 145 63% 32%;
     --primary-foreground: 0 0% 100%;
 

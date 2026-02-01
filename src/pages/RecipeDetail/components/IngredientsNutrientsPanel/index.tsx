@@ -44,70 +44,68 @@ export const IngredientsNutrientsPanel = ({ recipe }: { recipe: Recipe }) => {
   };
 
   return (
-    <Grid size={{ xs: 12, lg: 5 }}>
-      <Paper
-        elevation={0}
-        sx={{
-          p: 3,
-          bgcolor: "background.paper",
-          borderRadius: 3,
-          position: { lg: "sticky" },
-          top: { lg: 100 },
-        }}
+    <Paper
+      elevation={0}
+      sx={{
+        p: 3,
+        bgcolor: "background.paper",
+        borderRadius: 3,
+        position: { lg: "sticky" },
+        top: { lg: 100 },
+      }}
+    >
+      {/* Tabs header */}
+      <Stack
+        direction="row"
+        justifyContent="space-between"
+        alignItems="center"
+        sx={{ mb: 2 }}
       >
-        {/* Tabs header */}
-        <Stack
-          direction="row"
-          justifyContent="space-between"
-          alignItems="center"
-          sx={{ mb: 2 }}
-        >
-          <RenderComponent
-            if={hasNutrition}
-            then={
-              <Tabs
-                value={activeTab}
-                onChange={handleTabChange}
-                sx={{
+        <RenderComponent
+          if={hasNutrition}
+          then={
+            <Tabs
+              value={activeTab}
+              onChange={handleTabChange}
+              sx={{
+                minHeight: 36,
+                "& .MuiTabs-indicator": {
+                  backgroundColor: "text.primary",
+                },
+                "& .MuiTab-root": {
                   minHeight: 36,
-                  "& .MuiTabs-indicator": {
-                    backgroundColor: "text.primary",
+                  textTransform: "none",
+                  fontWeight: 600,
+                  fontSize: "1.1rem",
+                  color: "text.secondary",
+                  px: 0,
+                  mr: 3,
+                  "&.Mui-selected": {
+                    color: "text.primary",
                   },
-                  "& .MuiTab-root": {
-                    minHeight: 36,
-                    textTransform: "none",
-                    fontWeight: 600,
-                    fontSize: "1.1rem",
-                    color: "text.secondary",
-                    px: 0,
-                    mr: 3,
-                    "&.Mui-selected": {
-                      color: "text.primary",
-                    },
-                  },
-                }}
-              >
-                <Tab label="Ingredients" />
-                <Tab label="Nutrition" />
-              </Tabs>
-            }
-            else={<Typography variant="h5">Ingredients</Typography>}
-          />
-          {/* Units */}
-          <UnitsControl />
-        </Stack>
+                },
+              }}
+            >
+              <Tab label="Ingredients" />
+              <Tab label="Nutrition" />
+            </Tabs>
+          }
+          else={<Typography variant="h5">Ingredients</Typography>}
+        />
+        {/* Units */}
+        <UnitsControl />
+      </Stack>
 
-        {/* Tab content */}
-        <RenderComponent
-          if={activeTab === 0}
-          then={<IngredientsTabContent recipe={recipe} />}
-        />
-        <RenderComponent
-          if={activeTab === 1 && hasNutrition}
-          then={<NutritionTabContent recipe={recipe} />}
-        />
-      </Paper>
-    </Grid>
+      {/* Tab content */}
+      <RenderComponent
+        if={activeTab === 0}
+        then={<IngredientsTabContent recipe={recipe} />}
+      />
+      <RenderComponent
+        if={activeTab === 1 && hasNutrition}
+        then={<NutritionTabContent recipe={recipe} />}
+      />
+    </Paper>
   );
 };
 
@@ -185,7 +183,7 @@ const IngredientsTabContent = ({ recipe }: { recipe: Recipe }) => {
       ...ing,
       ...scaleIngredient(ing),
     }));
-    addIngredients(scaledIngredients, recipe.id, recipe.title);
+    addIngredients(scaledIngredients, recipe.id, recipe.title, recipe.image, recipe.servings);
   };
 
   return (

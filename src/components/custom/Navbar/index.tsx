@@ -34,15 +34,20 @@ import RenderComponent from "@/components/helpers/renderComponent";
 import { useShoppingList } from "@/context/ShoppingListContext/utils";
 import { useAuth } from "@/context/AuthContext/utils";
 
-const navLinks = [
+interface NavLink {
+  label: string;
+  href: string;
+}
+
+const navLinks: NavLink[] = [
   { label: "All recipes", href: "/recipes" },
-  insertIf(Features["feature-recipe-by-ingredient"], [
+  ...(insertIf(Features["feature-recipe-by-ingredient"], [
     { label: "Ingredients", href: "/ingredients" },
-  ]),
-  insertIf(Features["feature-plan-batch"], [
+  ]) as NavLink[]),
+  ...(insertIf(Features["feature-plan-batch"], [
     { label: "Plan & Batch", href: "/meal-plans" },
-  ]),
-];
+  ]) as NavLink[]),
+].flat();
 
 export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);

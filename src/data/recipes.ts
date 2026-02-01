@@ -1,7 +1,14 @@
+export interface RecipeReference {
+  type: "link" | "image";
+  url: string;
+  title?: string;
+}
+
 export interface Recipe {
   id: number;
   title: string;
   image: string;
+  images?: string[]; // Multiple images support
   cookTime: string;
   chef: {
     name: string;
@@ -23,6 +30,7 @@ export interface Recipe {
     carbs?: number;
     fat?: number;
   };
+  references?: RecipeReference[];
 }
 
 export interface IngredientGroup {

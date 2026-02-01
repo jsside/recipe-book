@@ -14,10 +14,15 @@ import {
   MenuItem,
   Stack,
   Alert,
+  IconButton,
 } from "@mui/material";
-import { ArrowBack as BackIcon } from "@mui/icons-material";
+import {
+  ArrowBack as BackIcon,
+  Add as AddIcon,
+  Delete as DeleteIcon,
+} from "@mui/icons-material";
 
-import { dietaryOptions, difficultyOptions } from "@/data/recipes";
+import { dietaryOptions, difficultyOptions, RecipeReference } from "@/data/recipes";
 import { useAddRecipe } from "@/hooks/useAddRecipe";
 import { IngredientGroupForm } from "@/components/custom/IngredientGroupForm";
 import { IngredientGroupFormItem } from "@/components/custom/IngredientGroupForm/interfaces";
@@ -26,6 +31,7 @@ import { InstructionGroupFormItem } from "@/components/custom/InstructionGroupFo
 import { CategoryChipsSelect } from "@/components/custom/CategoryChipsSelect";
 import { useNotification } from "@/context/NotificationContext/utils";
 import { useAuth } from "@/context/AuthContext/utils";
+import RenderComponent from "@/components/helpers/renderComponent";
 
 const categoryOptions = [
   "Dinner",
@@ -58,6 +64,20 @@ const createEmptyInstructionGroup = (): InstructionGroupFormItem => ({
   steps: [{ tempId: crypto.randomUUID(), text: "", timer: undefined }],
 });
 
+interface ReferenceFormItem {
+  tempId: string;
+  type: "link" | "image";
+  url: string;
+  title: string;
+}
+
+const createEmptyReference = (type: "link" | "image"): ReferenceFormItem => ({
+  tempId: crypto.randomUUID(),
+  type,
+  url: "",
+  title: "",
+});
+
 export default function AddRecipe() {
   const { user } = useAuth();
   const { showNotification } = useNotification();
@@ -71,7 +91,7 @@ export default function AddRecipe() {
   // Form state
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [image, setImage] = useState("");
+  const [images, setImages] = useState<string[]>([""]);
   const [cookTime, setCookTime] = useState("");
   const [servings, setServings] = useState(4);
   const [difficulty, setDifficulty] = useState<"easy" | "medium" | "hard">(
@@ -95,10 +115,49 @@ export default function AddRecipe() {
     InstructionGroupFormItem[]
   >([createEmptyInstructionGroup()]);
 
+  // References
+  const [references, setReferences] = useState<ReferenceFormItem[]>([]);
+
   // Only chefs can create recipes
   if (!user || user.role !== "chef") {
     return <Navigate to="/" replace />;
   }
+
+  // Image handlers
+  const handleAddImage = () => {
+    setImages([...images, ""]);
+  };
+
+  const handleRemoveImage = (index: number) => {
+    setImages(images.filter((_, i) => i !== index));
+  };
+
+  const handleImageChange = (index: number, value: string) => {
+    const newImages = [...images];
+    newImages[index] = value;
+    setImages(newImages);
+  };
+
+  // Reference handlers
+  const handleAddReference = (type: "link" | "image") => {
+    setReferences([...references, createEmptyReference(type)]);
+  };
+
+  const handleRemoveReference = (tempId: string) => {
+    setReferences(references.filter((ref) => ref.tempId !== tempId));
+  };
+
+  const handleReferenceChange = (
+    tempId: string,
+    field: "url" | "title",
+    value: string,
+  ) => {
+    setReferences(
+      references.map((ref) =>
+        ref.tempId === tempId ? { ...ref, [field]: value } : ref,
+      ),
+    );
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -139,7 +198,7 @@ export default function AddRecipe() {
           heading: group.heading || undefined,
           items: group.items
             .filter((item) => item.name.trim())
-            .map((item, idx) => ({
+            .map((item) => ({
               id: crypto.randomUUID(),
               name: item.name,
               amount: item.amount,
@@ -162,12 +221,26 @@ export default function AddRecipe() {
         }))
         .filter((group) => group.steps.length > 0);
 
+      // Filter valid images
+      const validImages = images.filter((img) => img.trim());
+      const primaryImage =
+        validImages[0] ||
+        "https://images.unsplash.com/photo-1495521821757-a1efb6729352?w=800&q=80";
+
+      // Format references
+      const formattedReferences: RecipeReference[] = references
+        .filter((ref) => ref.url.trim())
+        .map((ref) => ({
+          type: ref.type,
+          url: ref.url,
+          title: ref.title || undefined,
+        }));
+
       await addRecipe({
         title,
         description,
-        image:
-          image ||
-          "https://images.unsplash.com/photo-1495521821757-a1efb6729352?w=800&q=80",
+        image: primaryImage,
+        images: validImages.length > 1 ? validImages : undefined,
         cookTime,
         servings,
         difficulty,
@@ -191,6 +264,8 @@ export default function AddRecipe() {
                 fat: fat || undefined,
               }
             : undefined,
+        references:
+          formattedReferences.length > 0 ? formattedReferences : undefined,
       });
 
       showNotification("Recipe created successfully!", "success");
@@ -218,11 +293,14 @@ export default function AddRecipe() {
           Add New Recipe
         </Typography>
 
-        {error && (
-          <Alert severity="error" sx={{ mb: 3 }}>
-            {error}
-          </Alert>
-        )}
+        <RenderComponent
+          if={!!error}
+          then={
+            <Alert severity="error" sx={{ mb: 3 }}>
+              {error}
+            </Alert>
+          }
+        />
 
         <form onSubmit={handleSubmit}>
           <Stack spacing={4}>
@@ -252,16 +330,59 @@ export default function AddRecipe() {
                     rows={3}
                   />
                 </Grid>
+
+                {/* Multiple Images */}
                 <Grid size={{ xs: 12 }}>
-                  <TextField
-                    label="Image URL"
-                    value={image}
-                    onChange={(e) => setImage(e.target.value)}
-                    fullWidth
-                    placeholder="https://example.com/image.jpg"
-                    helperText="Leave empty for a default image"
-                  />
+                  <Typography variant="subtitle2" sx={{ mb: 1.5 }}>
+                    Images
+                  </Typography>
+                  <Stack spacing={2}>
+                    {images.map((image, index) => (
+                      <Stack
+                        key={index}
+                        direction="row"
+                        spacing={1}
+                        alignItems="center"
+                      >
+                        <TextField
+                          label={index === 0 ? "Primary Image URL" : `Image ${index + 1} URL`}
+                          value={image}
+                          onChange={(e) =>
+                            handleImageChange(index, e.target.value)
+                          }
+                          fullWidth
+                          placeholder="https://example.com/image.jpg"
+                          size="small"
+                        />
+                        <RenderComponent
+                          if={images.length > 1}
+                          then={
+                            <IconButton
+                              onClick={() => handleRemoveImage(index)}
+                              size="small"
+                              color="error"
+                            >
+                              <DeleteIcon fontSize="small" />
+                            </IconButton>
+                          }
+                        />
+                      </Stack>
+                    ))}
+                    <Button
+                      startIcon={<AddIcon />}
+                      onClick={handleAddImage}
+                      size="small"
+                      sx={{ alignSelf: "flex-start" }}
+                    >
+                      Add another image
+                    </Button>
+                  </Stack>
+                  <Typography variant="caption" color="text.secondary">
+                    Add multiple images for a gallery view. First image is the
+                    primary.
+                  </Typography>
                 </Grid>
+
                 <Grid size={{ xs: 12, sm: 4 }}>
                   <TextField
                     label="Cook Time"
@@ -349,6 +470,81 @@ export default function AddRecipe() {
                 groups={instructionGroups}
                 onChange={setInstructionGroups}
               />
+            </Paper>
+
+            {/* References */}
+            <Paper elevation={0} sx={{ p: 3, borderRadius: 3 }}>
+              <Typography variant="h6" sx={{ mb: 1 }}>
+                References
+              </Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+                Add links or images as references for this recipe.
+              </Typography>
+
+              <Stack spacing={2}>
+                {references.map((ref) => (
+                  <Stack
+                    key={ref.tempId}
+                    direction="row"
+                    spacing={1}
+                    alignItems="center"
+                  >
+                    <TextField
+                      label={ref.type === "link" ? "Link URL" : "Image URL"}
+                      value={ref.url}
+                      onChange={(e) =>
+                        handleReferenceChange(ref.tempId, "url", e.target.value)
+                      }
+                      fullWidth
+                      size="small"
+                      placeholder={
+                        ref.type === "link"
+                          ? "https://example.com"
+                          : "https://example.com/image.jpg"
+                      }
+                    />
+                    <TextField
+                      label="Title (optional)"
+                      value={ref.title}
+                      onChange={(e) =>
+                        handleReferenceChange(
+                          ref.tempId,
+                          "title",
+                          e.target.value,
+                        )
+                      }
+                      size="small"
+                      sx={{ minWidth: 150 }}
+                    />
+                    <IconButton
+                      onClick={() => handleRemoveReference(ref.tempId)}
+                      size="small"
+                      color="error"
+                    >
+                      <DeleteIcon fontSize="small" />
+                    </IconButton>
+                  </Stack>
+                ))}
+
+                <Stack direction="row" spacing={1}>
+                  <Button
+                    startIcon={<AddIcon />}
+                    onClick={() => handleAddReference("link")}
+                    size="small"
+                    variant="outlined"
+                  >
+                    Add link reference
+                  </Button>
+                  <Button
+                    startIcon={<AddIcon />}
+                    onClick={() => handleAddReference("image")}
+                    size="small"
+                    variant="outlined"
+                  >
+                    Add image reference
+                  </Button>
+                </Stack>
+              </Stack>
             </Paper>
 
             {/* Extra Info */}

@@ -160,7 +160,6 @@ const UnitsControl = () => {
 
 const IngredientsTabContent = ({ recipe }: { recipe: Recipe }) => {
   const { addIngredients } = useShoppingList();
-
   const { convertAmount } = useUnitConversion();
 
   const {

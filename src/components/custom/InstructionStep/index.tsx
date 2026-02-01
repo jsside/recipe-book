@@ -17,9 +17,9 @@ export default function InstructionStep({
         borderRadius: 2,
         cursor: "pointer",
         transition: "all 0.2s ease",
-        bgcolor: isActive ? "primary.main" : "transparent",
+        bgcolor: isActive ? "action.hover" : "transparent",
         "&:hover": {
-          bgcolor: isActive ? "primary.main" : "rgba(0, 0, 0, 0.04)",
+          bgcolor: "action.hover",
         },
       }}
     >
@@ -28,13 +28,12 @@ export default function InstructionStep({
           width: 32,
           height: 32,
           borderRadius: "50%",
-          bgcolor: isActive ? "background.paper" : "primary.main",
-          color: isActive ? "primary.main" : "text.primary",
+          bgcolor: isActive ? "secondary.main" : "background.paper",
+          color: isActive ? "background.paper" : "text.primary",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
           fontWeight: 600,
-          flexShrink: 0,
           transition: "all 0.2s ease",
         }}
       >
@@ -44,7 +43,6 @@ export default function InstructionStep({
         sx={{
           pt: 0.5,
           fontSize: "1.1rem",
-          color: isActive ? "background.paper" : "text.primary",
           transition: "color 0.2s ease",
         }}
       >

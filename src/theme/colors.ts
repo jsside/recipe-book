@@ -1,10 +1,11 @@
 export const THEME_COLORS = {
+  // https://www.pinterest.com/pin/351912466735300/
   primary: {
-    main: "#228B22", // Forest green like cabagges.world
+    main: "#80aa00", // Chartreuse
     contrastText: "#ffffff",
   },
   secondary: {
-    main: "#1a1a1a", // Near black
+    main: "#341F1B", // Brown
     contrastText: "#f8f8f8",
   },
   background: {
@@ -12,7 +13,7 @@ export const THEME_COLORS = {
     paper: "#ffffff",
   },
   text: {
-    primary: "#1a1a1a",
+    primary: "#341F1B",
     secondary: "#737373",
   },
   error: {
@@ -24,4 +25,22 @@ export const THEME_COLORS = {
   success: {
     main: "#228B22", // Match primary
   },
+  action: {
+    hover: "rgba(0, 0, 0, 0.04)", // low opacity gray
+  },
 };
+
+// // 1a1a1a near blAck
+// // 580200 burgundy
+
+// // 334EAC royal
+// // F7F2EB MOON
+// // 7096DA CHINA
+// // F2F0DE ASIAN PEAR
+// // 081F5C MIDNIGHT
+// // D0E3FF DAWN
+// // FFF9F0 JICAMA
+// // EDF1FC PORCELAIN
+// // BAD6EB SKY
+
+// // 6c6648 moss

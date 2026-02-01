@@ -9,7 +9,7 @@ import { Ingredient } from "@/data/recipes";
 import { useAuth } from "./AuthContext";
 import { SITE_NAME } from "@/app/constants";
 
-interface ShoppingItem extends Ingredient {
+export interface ShoppingItem extends Ingredient {
   checked: boolean;
   recipeId: number;
   recipeTitle: string;

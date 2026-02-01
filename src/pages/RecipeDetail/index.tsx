@@ -27,6 +27,7 @@ import { IngredientsNutrientsPanel } from "./components/IngredientsNutrientsPane
 import { MethodPanel } from "./components/MethodPanel";
 import { useGetRecipe } from "@/hooks/useGetRecipe";
 import { useShoppingList } from "@/context/ShoppingListContext/utils";
+import { ImageGallery, ReferencesSection } from "@/components/custom/RecipeGallery";
 
 export default function RecipeDetail() {
   const { id } = useParams();
@@ -41,6 +42,24 @@ export default function RecipeDetail() {
     if (!recipe) return [];
     return getAllIngredients(recipe.ingredientGroups);
   }, [recipe]);
+
+  // Get reference links and images
+  const referenceLinks = useMemo(() => {
+    if (!recipe?.references) return [];
+    return recipe.references
+      .filter((ref) => ref.type === "link")
+      .map((ref) => ({ url: ref.url, title: ref.title }));
+  }, [recipe]);
+
+  const referenceImages = useMemo(() => {
+    if (!recipe?.references) return [];
+    return recipe.references
+      .filter((ref) => ref.type === "image")
+      .map((ref) => ({ url: ref.url, title: ref.title }));
+  }, [recipe]);
+
+  // Check if recipe has multiple images
+  const hasMultipleImages = (recipe?.images?.length || 0) > 1;
 
   if (!recipe) {
     return (
@@ -60,7 +79,13 @@ export default function RecipeDetail() {
       ...ing,
       ...scaleIngredient(ing),
     }));
-    addIngredients(scaledIngredients, recipe.id, recipe.title);
+    addIngredients(
+      scaledIngredients,
+      recipe.id,
+      recipe.title,
+      recipe.image,
+      recipe.servings,
+    );
   };
 
   const handleShare = () => {
@@ -90,23 +115,28 @@ export default function RecipeDetail() {
       {/* Hero section */}
       <Container>
         <Grid container spacing={4}>
-          {/* Image */}
-          <Grid size={{ xs: 12, lg: 6 }}>
-            <Box
-              component="img"
-              src={recipe.image}
-              alt={recipe.title}
-              sx={{
-                width: "100%",
-                aspectRatio: "4/3",
-                objectFit: "cover",
-                borderRadius: 4,
-              }}
-            />
-          </Grid>
+          {/* Single Image - only show if NOT multiple images */}
+          <RenderComponent
+            if={!hasMultipleImages}
+            then={
+              <Grid size={{ xs: 12, lg: 6 }}>
+                <Box
+                  component="img"
+                  src={recipe.image}
+                  alt={recipe.title}
+                  sx={{
+                    width: "100%",
+                    aspectRatio: "4/3",
+                    objectFit: "cover",
+                    borderRadius: 4,
+                  }}
+                />
+              </Grid>
+            }
+          />
 
           {/* Content */}
-          <Grid size={{ xs: 12, lg: 6 }}>
+          <Grid size={{ xs: 12, lg: hasMultipleImages ? 12 : 6 }}>
             <Stack spacing={3}>
               {/* Badges */}
               <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
@@ -150,6 +180,12 @@ export default function RecipeDetail() {
               >
                 {recipe.description}
               </Typography>
+
+              {/* Multiple Images Gallery - below title/description */}
+              <RenderComponent
+                if={hasMultipleImages}
+                then={<ImageGallery images={recipe.images || []} />}
+              />
 
               {/* Cook time */}
               <Stack direction="row" alignItems="center" spacing={1}>
@@ -214,8 +250,23 @@ export default function RecipeDetail() {
           {/* Method (Left) */}
           <MethodPanel recipe={recipe} />
 
-          {/* Ingredients (Right) */}
-          <IngredientsNutrientsPanel recipe={recipe} />
+          {/* Ingredients and References (Right) */}
+          <Grid size={{ xs: 12, lg: 5 }}>
+            <Stack spacing={4}>
+              <IngredientsNutrientsPanel recipe={recipe} />
+
+              {/* References Section */}
+              <RenderComponent
+                if={referenceLinks.length > 0 || referenceImages.length > 0}
+                then={
+                  <ReferencesSection
+                    links={referenceLinks}
+                    images={referenceImages}
+                  />
+                }
+              />
+            </Stack>
+          </Grid>
         </Grid>
       </Container>
     </Box>

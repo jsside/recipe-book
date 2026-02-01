@@ -19,10 +19,15 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
   const { addIngredients } = useShoppingList();
   const categories = getRecipeCategories(recipe);
 
+  // Get all ingredients from ingredient groups
+  const allIngredients = recipe.ingredientGroups?.flatMap(
+    (group) => group.items
+  ) || [];
+
   const handleAddToList = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    addIngredients(recipe.ingredients, recipe.id, recipe.title);
+    addIngredients(allIngredients, recipe.id, recipe.title, recipe.image, recipe.servings);
   };
 
   return (

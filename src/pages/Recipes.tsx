@@ -50,10 +50,12 @@ export default function Recipes() {
     // Filter by ingredient
     if (ingredientParam) {
       filtered = filtered.filter((r) =>
-        r.ingredients.some(
-          (ing) =>
-            ing.name.toLowerCase().includes(ingredientParam.toLowerCase()) ||
-            ing.category.toLowerCase().includes(ingredientParam.toLowerCase()),
+        r.ingredientGroups?.some((group) =>
+          group.items.some(
+            (ing) =>
+              ing.name.toLowerCase().includes(ingredientParam.toLowerCase()) ||
+              (ing.category && ing.category.toLowerCase().includes(ingredientParam.toLowerCase())),
+          ),
         ),
       );
     }
@@ -65,7 +67,9 @@ export default function Recipes() {
         (r) =>
           r.title.toLowerCase().includes(query) ||
           r.description.toLowerCase().includes(query) ||
-          r.ingredients.some((ing) => ing.name.toLowerCase().includes(query)),
+          r.ingredientGroups?.some((group) =>
+            group.items.some((ing) => ing.name.toLowerCase().includes(query)),
+          ),
       );
     }
 

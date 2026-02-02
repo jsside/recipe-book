@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import {
   Container,
   Box,
@@ -17,6 +17,7 @@ import {
   Share as ShareIcon,
   Print as PrintIcon,
   AccessTime as ClockIcon,
+  Edit as EditIcon,
 } from "@mui/icons-material";
 import { useServingsAdjuster } from "@/hooks/useServingsAdjuster";
 import { useShare } from "@/hooks/useShare";
@@ -27,19 +28,24 @@ import { IngredientsNutrientsPanel } from "./components/IngredientsNutrientsPane
 import { MethodPanel } from "./components/MethodPanel";
 import { useGetRecipe } from "@/hooks/useGetRecipe";
 import { useShoppingList } from "@/context/ShoppingListContext/utils";
+import { useAuth } from "@/context/AuthContext/utils";
 import {
   ImageGallery,
   ReferencesSection,
 } from "@/components/custom/RecipeGallery";
-import DisplayImage from "@/db/DisplayImageWidget";
 
 export default function RecipeDetail() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const { data: recipe } = useGetRecipe(id);
   const { addIngredients } = useShoppingList();
   const { share } = useShare();
+  const { user } = useAuth();
 
   const { scaleIngredient } = useServingsAdjuster(recipe?.servings || 4);
+
+  // Check if current user can edit this recipe
+  const canEdit = user && recipe && user.name === recipe.chef?.name;
 
   // Get all ingredients
   const allIngredients = useMemo(() => {
@@ -236,6 +242,14 @@ export default function RecipeDetail() {
                 >
                   Add to shopping list
                 </Button>
+                <RenderComponent
+                  if={canEdit}
+                  then={
+                    <IconButton onClick={() => navigate(`/edit-recipe/${id}`)}>
+                      <EditIcon />
+                    </IconButton>
+                  }
+                />
                 <IconButton onClick={handleShare}>
                   <ShareIcon />
                 </IconButton>

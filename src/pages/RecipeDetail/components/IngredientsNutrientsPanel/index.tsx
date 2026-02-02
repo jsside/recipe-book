@@ -187,7 +187,7 @@ const IngredientsTabContent = ({ recipe }: { recipe: Recipe }) => {
       scaledIngredients,
       recipe.id,
       recipe.title,
-      recipe.image,
+      recipe.images?.at(0),
       recipe.servings,
     );
   };

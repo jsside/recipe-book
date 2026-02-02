@@ -1,6 +1,17 @@
 import React from "react";
 import { CLOUD_NAME } from "./cloudinaryInstance.js";
 
+declare global {
+  interface Window {
+    cloudinary: {
+      openUploadWidget: (
+        options: { cloudName: string; uploadPreset: string },
+        callback: (error: unknown, result: { event: string; info: unknown }) => void
+      ) => void;
+    };
+  }
+}
+
 const UploadWidget = () => {
   const openWidget = () => {
     window.cloudinary.openUploadWidget(
@@ -11,7 +22,6 @@ const UploadWidget = () => {
       (error, result) => {
         if (!error && result && result.event === "success") {
           console.log("Done! Here is the image info: ", result.info);
-          // Handle the result (e.g., save the URL to your app's state or backend)
         }
       },
     );

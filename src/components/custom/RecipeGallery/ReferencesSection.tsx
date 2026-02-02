@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Box, Typography, Link, Stack } from "@mui/material";
+import { Box, Typography, Link, Stack, Paper } from "@mui/material";
 import { Link as LinkIcon } from "@mui/icons-material";
 import { ReferencesSectionProps } from "./interfaces";
 import { Lightbox } from "./Lightbox";
@@ -13,7 +13,7 @@ export function ReferencesSection({ links, images }: ReferencesSectionProps) {
   if (links.length === 0 && images.length === 0) return null;
 
   return (
-    <Box>
+    <Paper elevation={0} sx={{ p: 3, borderRadius: 3, bgcolor: "background.paper" }}>
       <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
         References
       </Typography>
@@ -74,6 +74,6 @@ export function ReferencesSection({ links, images }: ReferencesSectionProps) {
         imageSrc={lightboxImage?.url || ""}
         title={lightboxImage?.title}
       />
-    </Box>
+    </Paper>
   );
 }

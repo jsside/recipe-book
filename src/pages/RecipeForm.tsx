@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate, Navigate } from "react-router-dom";
+import { useState, useEffect, useCallback, useRef } from "react";
+import { useNavigate, Navigate, useParams } from "react-router-dom";
 import {
   Container,
   Box,
@@ -26,8 +26,11 @@ import {
   dietaryOptions,
   difficultyOptions,
   RecipeReference,
+  Recipe,
 } from "@/data/recipes";
 import { useAddRecipe } from "@/hooks/useAddRecipe";
+import { useUpdateRecipe } from "@/hooks/useUpdateRecipe";
+import { useGetRecipe } from "@/hooks/useGetRecipe";
 import { IngredientGroupForm } from "@/components/custom/IngredientGroupForm";
 import { IngredientGroupFormItem } from "@/components/custom/IngredientGroupForm/interfaces";
 import { InstructionGroupForm } from "@/components/custom/InstructionGroupForm";
@@ -82,73 +85,235 @@ const createEmptyReference = (type: "link" | "image"): ReferenceFormItem => ({
   title: "",
 });
 
-export default function AddRecipe() {
+// Form state interface for undo/redo
+interface FormState {
+  title: string;
+  description: string;
+  images: string[];
+  cookTime: string;
+  servings: number;
+  difficulty: "easy" | "medium" | "hard";
+  categories: string[];
+  dietaryTags: string[];
+  videoUrl: string;
+  calories: number | "";
+  protein: number | "";
+  carbs: number | "";
+  fat: number | "";
+  ingredientGroups: IngredientGroupFormItem[];
+  instructionGroups: InstructionGroupFormItem[];
+  references: ReferenceFormItem[];
+}
+
+const getInitialState = (): FormState => ({
+  title: "",
+  description: "",
+  images: [""],
+  cookTime: "",
+  servings: 4,
+  difficulty: "easy",
+  categories: [],
+  dietaryTags: [],
+  videoUrl: "",
+  calories: "",
+  protein: "",
+  carbs: "",
+  fat: "",
+  ingredientGroups: [createEmptyIngredientGroup()],
+  instructionGroups: [createEmptyInstructionGroup()],
+  references: [],
+});
+
+export default function RecipeForm() {
+  const { id } = useParams<{ id?: string }>();
+  const isEditMode = Boolean(id);
+  
   const { user } = useAuth();
   const { showNotification } = useNotification();
-
   const addRecipe = useAddRecipe();
+  const updateRecipe = useUpdateRecipe();
   const navigate = useNavigate();
+  
+  // Fetch existing recipe for edit mode
+  const { data: existingRecipe, isLoading: isLoadingRecipe } = useGetRecipe(id || "");
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [formState, setFormState] = useState<FormState>(getInitialState());
+  
+  // Undo/Redo history
+  const historyRef = useRef<FormState[]>([getInitialState()]);
+  const historyIndexRef = useRef(0);
+  const isUndoRedoRef = useRef(false);
 
-  // Form state
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [images, setImages] = useState<string[]>([""]);
-  const [cookTime, setCookTime] = useState("");
-  const [servings, setServings] = useState(4);
-  const [difficulty, setDifficulty] = useState<"easy" | "medium" | "hard">(
-    "easy",
-  );
-  const [categories, setCategories] = useState<string[]>([]);
-  const [dietaryTags, setDietaryTags] = useState<string[]>([]);
-  const [videoUrl, setVideoUrl] = useState("");
+  // Populate form when editing
+  useEffect(() => {
+    if (isEditMode && existingRecipe) {
+      const populatedState: FormState = {
+        title: existingRecipe.title || "",
+        description: existingRecipe.description || "",
+        images: existingRecipe.images?.length ? existingRecipe.images : [""],
+        cookTime: existingRecipe.cookTime || "",
+        servings: existingRecipe.servings || 4,
+        difficulty: existingRecipe.difficulty || "easy",
+        categories: existingRecipe.category || [],
+        dietaryTags: existingRecipe.dietaryTags || [],
+        videoUrl: existingRecipe.videoUrl || "",
+        calories: existingRecipe.nutrition?.calories || "",
+        protein: existingRecipe.nutrition?.protein || "",
+        carbs: existingRecipe.nutrition?.carbs || "",
+        fat: existingRecipe.nutrition?.fat || "",
+        ingredientGroups: existingRecipe.ingredientGroups?.map((g) => ({
+          tempId: crypto.randomUUID(),
+          heading: g.heading || "",
+          items: g.items.map((item) => ({
+            tempId: crypto.randomUUID(),
+            name: item.name,
+            amount: item.amount,
+            unit: item.unit,
+            preparation: item.preparation || "",
+            note: item.note || "",
+          })),
+        })) || [createEmptyIngredientGroup()],
+        instructionGroups: existingRecipe.instructionGroups?.map((g) => ({
+          tempId: crypto.randomUUID(),
+          heading: g.heading || "",
+          steps: g.steps.map((step) => ({
+            tempId: crypto.randomUUID(),
+            text: step.text,
+            timer: step.timer,
+          })),
+        })) || [createEmptyInstructionGroup()],
+        references: existingRecipe.references?.map((ref) => ({
+          tempId: crypto.randomUUID(),
+          type: ref.type,
+          url: ref.url,
+          title: ref.title || "",
+        })) || [],
+      };
+      setFormState(populatedState);
+      historyRef.current = [populatedState];
+      historyIndexRef.current = 0;
+    }
+  }, [isEditMode, existingRecipe]);
 
-  // Nutrition
-  const [calories, setCalories] = useState<number | "">("");
-  const [protein, setProtein] = useState<number | "">("");
-  const [carbs, setCarbs] = useState<number | "">("");
-  const [fat, setFat] = useState<number | "">("");
+  // Update form state with history tracking
+  const updateFormState = useCallback((updates: Partial<FormState>) => {
+    setFormState((prev) => {
+      const newState = { ...prev, ...updates };
+      
+      // Don't track undo/redo operations
+      if (!isUndoRedoRef.current) {
+        // Remove any redo history
+        historyRef.current = historyRef.current.slice(0, historyIndexRef.current + 1);
+        historyRef.current.push(newState);
+        historyIndexRef.current = historyRef.current.length - 1;
+        
+        // Limit history size
+        if (historyRef.current.length > 50) {
+          historyRef.current.shift();
+          historyIndexRef.current--;
+        }
+      }
+      
+      return newState;
+    });
+  }, []);
 
-  // Grouped ingredients and instructions
-  const [ingredientGroups, setIngredientGroups] = useState<
-    IngredientGroupFormItem[]
-  >([createEmptyIngredientGroup()]);
-  const [instructionGroups, setInstructionGroups] = useState<
-    InstructionGroupFormItem[]
-  >([createEmptyInstructionGroup()]);
+  // Undo handler
+  const handleUndo = useCallback(() => {
+    if (historyIndexRef.current > 0) {
+      isUndoRedoRef.current = true;
+      historyIndexRef.current--;
+      setFormState(historyRef.current[historyIndexRef.current]);
+      setTimeout(() => { isUndoRedoRef.current = false; }, 0);
+    }
+  }, []);
 
-  // References
-  const [references, setReferences] = useState<ReferenceFormItem[]>([]);
+  // Redo handler
+  const handleRedo = useCallback(() => {
+    if (historyIndexRef.current < historyRef.current.length - 1) {
+      isUndoRedoRef.current = true;
+      historyIndexRef.current++;
+      setFormState(historyRef.current[historyIndexRef.current]);
+      setTimeout(() => { isUndoRedoRef.current = false; }, 0);
+    }
+  }, []);
 
-  // Only chefs can create recipes
+  // Keyboard shortcuts for undo/redo
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "z") {
+        e.preventDefault();
+        if (e.shiftKey) {
+          handleRedo();
+        } else {
+          handleUndo();
+        }
+      }
+      if ((e.metaKey || e.ctrlKey) && e.key === "y") {
+        e.preventDefault();
+        handleRedo();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [handleUndo, handleRedo]);
+
+  // Check authorization for edit mode
+  const canEdit = !isEditMode || (existingRecipe && user && existingRecipe.chef?.name === user.name);
+
+  // Only chefs can create/edit recipes
   if (!user || user.role !== "chef") {
     return <Navigate to="/" replace />;
   }
 
+  // Show loading for edit mode
+  if (isEditMode && isLoadingRecipe) {
+    return (
+      <Container sx={{ py: 10, textAlign: "center" }}>
+        <Typography>Loading recipe...</Typography>
+      </Container>
+    );
+  }
+
+  // Check if user can edit this recipe
+  if (isEditMode && existingRecipe && !canEdit) {
+    return (
+      <Container sx={{ py: 10, textAlign: "center" }}>
+        <Typography variant="h5" sx={{ mb: 2 }}>
+          You can only edit your own recipes
+        </Typography>
+        <Button onClick={() => navigate(-1)} variant="contained">
+          Go Back
+        </Button>
+      </Container>
+    );
+  }
+
   // Image handlers
   const handleAddImage = () => {
-    setImages([...images, ""]);
+    updateFormState({ images: [...formState.images, ""] });
   };
 
   const handleRemoveImage = (index: number) => {
-    setImages(images.filter((_, i) => i !== index));
+    updateFormState({ images: formState.images.filter((_, i) => i !== index) });
   };
 
   const handleImageChange = (index: number, value: string) => {
-    const newImages = [...images];
+    const newImages = [...formState.images];
     newImages[index] = value;
-    setImages(newImages);
+    updateFormState({ images: newImages });
   };
 
   // Reference handlers
   const handleAddReference = (type: "link" | "image") => {
-    setReferences([...references, createEmptyReference(type)]);
+    updateFormState({ references: [...formState.references, createEmptyReference(type)] });
   };
 
   const handleRemoveReference = (tempId: string) => {
-    setReferences(references.filter((ref) => ref.tempId !== tempId));
+    updateFormState({ references: formState.references.filter((ref) => ref.tempId !== tempId) });
   };
 
   const handleReferenceChange = (
@@ -156,11 +321,11 @@ export default function AddRecipe() {
     field: "url" | "title",
     value: string,
   ) => {
-    setReferences(
-      references.map((ref) =>
+    updateFormState({
+      references: formState.references.map((ref) =>
         ref.tempId === tempId ? { ...ref, [field]: value } : ref,
       ),
-    );
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -169,14 +334,14 @@ export default function AddRecipe() {
     setLoading(true);
 
     // Validation
-    if (!title.trim() || !description.trim() || !cookTime.trim()) {
+    if (!formState.title.trim() || !formState.description.trim() || !formState.cookTime.trim()) {
       setError("Please fill in all required fields");
       setLoading(false);
       return;
     }
 
     // Validate ingredients
-    const hasValidIngredient = ingredientGroups.some((group) =>
+    const hasValidIngredient = formState.ingredientGroups.some((group) =>
       group.items.some((item) => item.name.trim() && item.amount.trim()),
     );
     if (!hasValidIngredient) {
@@ -186,7 +351,7 @@ export default function AddRecipe() {
     }
 
     // Validate instructions
-    const hasValidInstruction = instructionGroups.some((group) =>
+    const hasValidInstruction = formState.instructionGroups.some((group) =>
       group.steps.some((step) => step.text.trim()),
     );
     if (!hasValidInstruction) {
@@ -197,7 +362,7 @@ export default function AddRecipe() {
 
     try {
       // Transform form data to recipe format
-      const formattedIngredientGroups = ingredientGroups
+      const formattedIngredientGroups = formState.ingredientGroups
         .map((group) => ({
           heading: group.heading || undefined,
           items: group.items
@@ -213,7 +378,7 @@ export default function AddRecipe() {
         }))
         .filter((group) => group.items.length > 0);
 
-      const formattedInstructionGroups = instructionGroups
+      const formattedInstructionGroups = formState.instructionGroups
         .map((group) => ({
           heading: group.heading || undefined,
           steps: group.steps
@@ -226,10 +391,10 @@ export default function AddRecipe() {
         .filter((group) => group.steps.length > 0);
 
       // Filter valid images
-      const validImages = images.filter((img) => img.trim());
+      const validImages = formState.images.filter((img) => img.trim());
 
       // Format references
-      const formattedReferences: RecipeReference[] = references
+      const formattedReferences: RecipeReference[] = formState.references
         .filter((ref) => ref.url.trim())
         .map((ref) => ({
           type: ref.type,
@@ -237,16 +402,16 @@ export default function AddRecipe() {
           title: ref.title || undefined,
         }));
 
-      await addRecipe({
-        title,
-        description,
-        images: validImages.length > 1 ? validImages : undefined,
-        cookTime,
-        servings,
-        difficulty,
-        category: categories.length > 0 ? categories : ["Dinner"],
-        dietaryTags,
-        videoUrl: videoUrl || undefined,
+      const recipeData: Omit<Recipe, "id"> = {
+        title: formState.title,
+        description: formState.description,
+        images: validImages.length > 0 ? validImages : undefined,
+        cookTime: formState.cookTime,
+        servings: formState.servings,
+        difficulty: formState.difficulty,
+        category: formState.categories.length > 0 ? formState.categories : ["Dinner"],
+        dietaryTags: formState.dietaryTags,
+        videoUrl: formState.videoUrl || undefined,
         chef: {
           name: user.name,
           avatar:
@@ -256,23 +421,29 @@ export default function AddRecipe() {
         ingredientGroups: formattedIngredientGroups,
         instructionGroups: formattedInstructionGroups,
         nutrition:
-          calories || protein || carbs || fat
+          formState.calories || formState.protein || formState.carbs || formState.fat
             ? {
-                calories: calories || undefined,
-                protein: protein || undefined,
-                carbs: carbs || undefined,
-                fat: fat || undefined,
+                calories: formState.calories || undefined,
+                protein: formState.protein || undefined,
+                carbs: formState.carbs || undefined,
+                fat: formState.fat || undefined,
               }
             : undefined,
-        references:
-          formattedReferences.length > 0 ? formattedReferences : undefined,
-      });
+        references: formattedReferences.length > 0 ? formattedReferences : undefined,
+      };
 
-      showNotification("Recipe created successfully!", "success");
-      setTimeout(() => navigate("/recipes"), 1000);
+      if (isEditMode && id) {
+        await updateRecipe({ id, updates: recipeData });
+        showNotification("Recipe updated successfully!", "success");
+        setTimeout(() => navigate(`/recipe/${id}`), 1000);
+      } else {
+        await addRecipe(recipeData);
+        showNotification("Recipe created successfully!", "success");
+        setTimeout(() => navigate("/recipes"), 1000);
+      }
     } catch (err) {
-      setError("Failed to create recipe");
-      showNotification("Failed to create recipe", "error");
+      setError(isEditMode ? "Failed to update recipe" : "Failed to create recipe");
+      showNotification(isEditMode ? "Failed to update recipe" : "Failed to create recipe", "error");
     }
 
     setLoading(false);
@@ -289,9 +460,14 @@ export default function AddRecipe() {
           Back
         </Button>
 
-        <Typography variant="h4" sx={{ mb: 4 }}>
-          Add New Recipe
-        </Typography>
+        <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 4 }}>
+          <Typography variant="h4">
+            {isEditMode ? "Edit Recipe" : "Add New Recipe"}
+          </Typography>
+          <Typography variant="caption" color="text.secondary">
+            Tip: Use Ctrl+Z / Cmd+Z to undo
+          </Typography>
+        </Stack>
 
         <RenderComponent
           if={!!error}
@@ -313,8 +489,8 @@ export default function AddRecipe() {
                 <Grid size={{ xs: 12 }}>
                   <TextField
                     label="Recipe Title"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
+                    value={formState.title}
+                    onChange={(e) => updateFormState({ title: e.target.value })}
                     required
                     fullWidth
                   />
@@ -322,8 +498,8 @@ export default function AddRecipe() {
                 <Grid size={{ xs: 12 }}>
                   <TextField
                     label="Description"
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
+                    value={formState.description}
+                    onChange={(e) => updateFormState({ description: e.target.value })}
                     required
                     fullWidth
                     multiline
@@ -337,7 +513,7 @@ export default function AddRecipe() {
                     Images
                   </Typography>
                   <Stack spacing={2}>
-                    {images.map((image, index) => (
+                    {formState.images.map((image, index) => (
                       <Stack
                         key={index}
                         direction="row"
@@ -359,7 +535,7 @@ export default function AddRecipe() {
                           size="small"
                         />
                         <RenderComponent
-                          if={images.length > 1}
+                          if={formState.images.length > 1}
                           then={
                             <IconButton
                               onClick={() => handleRemoveImage(index)}
@@ -390,8 +566,8 @@ export default function AddRecipe() {
                 <Grid size={{ xs: 12, sm: 4 }}>
                   <TextField
                     label="Cook Time"
-                    value={cookTime}
-                    onChange={(e) => setCookTime(e.target.value)}
+                    value={formState.cookTime}
+                    onChange={(e) => updateFormState({ cookTime: e.target.value })}
                     required
                     fullWidth
                     placeholder="e.g., 30 mins"
@@ -401,8 +577,8 @@ export default function AddRecipe() {
                   <TextField
                     label="Servings"
                     type="number"
-                    value={servings}
-                    onChange={(e) => setServings(Number(e.target.value))}
+                    value={formState.servings}
+                    onChange={(e) => updateFormState({ servings: Number(e.target.value) })}
                     required
                     fullWidth
                     inputProps={{ min: 1 }}
@@ -412,10 +588,10 @@ export default function AddRecipe() {
                   <FormControl fullWidth>
                     <InputLabel>Difficulty</InputLabel>
                     <Select
-                      value={difficulty}
+                      value={formState.difficulty}
                       label="Difficulty"
                       onChange={(e) =>
-                        setDifficulty(e.target.value as typeof difficulty)
+                        updateFormState({ difficulty: e.target.value as typeof formState.difficulty })
                       }
                     >
                       {difficultyOptions.map((opt) => (
@@ -441,14 +617,14 @@ export default function AddRecipe() {
               <Stack spacing={3}>
                 <CategoryChipsSelect
                   options={categoryOptions}
-                  selected={categories}
-                  onChange={setCategories}
+                  selected={formState.categories}
+                  onChange={(categories) => updateFormState({ categories })}
                   label="Categories"
                 />
                 <CategoryChipsSelect
                   options={dietaryOptions}
-                  selected={dietaryTags}
-                  onChange={setDietaryTags}
+                  selected={formState.dietaryTags}
+                  onChange={(dietaryTags) => updateFormState({ dietaryTags })}
                   label="Dietary Tags"
                 />
               </Stack>
@@ -460,8 +636,8 @@ export default function AddRecipe() {
                 Ingredients
               </Typography>
               <IngredientGroupForm
-                groups={ingredientGroups}
-                onChange={setIngredientGroups}
+                groups={formState.ingredientGroups}
+                onChange={(ingredientGroups) => updateFormState({ ingredientGroups })}
               />
             </Paper>
 
@@ -471,8 +647,8 @@ export default function AddRecipe() {
                 Instructions
               </Typography>
               <InstructionGroupForm
-                groups={instructionGroups}
-                onChange={setInstructionGroups}
+                groups={formState.instructionGroups}
+                onChange={(instructionGroups) => updateFormState({ instructionGroups })}
               />
             </Paper>
 
@@ -486,7 +662,7 @@ export default function AddRecipe() {
               </Typography>
 
               <Stack spacing={2}>
-                {references.map((ref) => (
+                {formState.references.map((ref) => (
                   <Stack
                     key={ref.tempId}
                     direction="row"
@@ -560,8 +736,8 @@ export default function AddRecipe() {
                 <Grid size={{ xs: 12 }}>
                   <TextField
                     label="Video URL (optional)"
-                    value={videoUrl}
-                    onChange={(e) => setVideoUrl(e.target.value)}
+                    value={formState.videoUrl}
+                    onChange={(e) => updateFormState({ videoUrl: e.target.value })}
                     fullWidth
                     placeholder="https://youtube.com/..."
                   />
@@ -579,9 +755,9 @@ export default function AddRecipe() {
                   <TextField
                     label="Calories"
                     type="number"
-                    value={calories}
+                    value={formState.calories}
                     onChange={(e) =>
-                      setCalories(e.target.value ? Number(e.target.value) : "")
+                      updateFormState({ calories: e.target.value ? Number(e.target.value) : "" })
                     }
                     fullWidth
                     inputProps={{ min: 0 }}
@@ -591,9 +767,9 @@ export default function AddRecipe() {
                   <TextField
                     label="Protein (g)"
                     type="number"
-                    value={protein}
+                    value={formState.protein}
                     onChange={(e) =>
-                      setProtein(e.target.value ? Number(e.target.value) : "")
+                      updateFormState({ protein: e.target.value ? Number(e.target.value) : "" })
                     }
                     fullWidth
                     inputProps={{ min: 0 }}
@@ -603,9 +779,9 @@ export default function AddRecipe() {
                   <TextField
                     label="Carbs (g)"
                     type="number"
-                    value={carbs}
+                    value={formState.carbs}
                     onChange={(e) =>
-                      setCarbs(e.target.value ? Number(e.target.value) : "")
+                      updateFormState({ carbs: e.target.value ? Number(e.target.value) : "" })
                     }
                     fullWidth
                     inputProps={{ min: 0 }}
@@ -615,9 +791,9 @@ export default function AddRecipe() {
                   <TextField
                     label="Fat (g)"
                     type="number"
-                    value={fat}
+                    value={formState.fat}
                     onChange={(e) =>
-                      setFat(e.target.value ? Number(e.target.value) : "")
+                      updateFormState({ fat: e.target.value ? Number(e.target.value) : "" })
                     }
                     fullWidth
                     inputProps={{ min: 0 }}
@@ -635,7 +811,13 @@ export default function AddRecipe() {
               disabled={loading}
               sx={{ py: 1.5 }}
             >
-              {loading ? "Creating Recipe..." : "Create Recipe"}
+              {loading
+                ? isEditMode
+                  ? "Updating Recipe..."
+                  : "Creating Recipe..."
+                : isEditMode
+                  ? "Update Recipe"
+                  : "Create Recipe"}
             </Button>
           </Stack>
         </form>

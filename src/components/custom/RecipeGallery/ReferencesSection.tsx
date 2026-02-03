@@ -3,6 +3,8 @@ import { Box, Typography, Link, Stack, Paper } from "@mui/material";
 import { Link as LinkIcon } from "@mui/icons-material";
 import { ReferencesSectionProps } from "./interfaces";
 import { Lightbox } from "./Lightbox";
+import { CloudinaryImage } from "@/components/custom/CloudinaryImage";
+import { getImageUrl } from "@/utils/cloudinaryHelpers";
 
 export function ReferencesSection({ links, images }: ReferencesSectionProps) {
   const [lightboxImage, setLightboxImage] = useState<{
@@ -47,11 +49,12 @@ export function ReferencesSection({ links, images }: ReferencesSectionProps) {
       {images.length > 0 && (
         <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
           {images.map((image, index) => (
-            <Box
+            <CloudinaryImage
               key={index}
-              component="img"
               src={image.url}
               alt={image.title || `Reference ${index + 1}`}
+              width={64}
+              height={64}
               onClick={() => setLightboxImage(image)}
               sx={{
                 width: 64,
@@ -71,7 +74,7 @@ export function ReferencesSection({ links, images }: ReferencesSectionProps) {
       <Lightbox
         open={!!lightboxImage}
         onClose={() => setLightboxImage(null)}
-        imageSrc={lightboxImage?.url || ""}
+        imageSrc={lightboxImage ? getImageUrl(lightboxImage.url) : ""}
         title={lightboxImage?.title}
       />
     </Paper>

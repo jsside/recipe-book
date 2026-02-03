@@ -2,7 +2,6 @@ import { Link } from "react-router-dom";
 import {
   Card,
   CardContent,
-  CardMedia,
   Typography,
   IconButton,
   Box,
@@ -14,6 +13,7 @@ import { RecipeCardProps } from "./interfaces";
 import { getRecipeCategories } from "@/utils/recipeHelpers";
 import RenderComponent from "@/components/helpers/renderComponent";
 import { useShoppingList } from "@/context/ShoppingListContext/utils";
+import { CloudinaryImage } from "@/components/custom/CloudinaryImage";
 
 export function RecipeCard({ recipe }: RecipeCardProps) {
   const { addIngredients } = useShoppingList();
@@ -57,12 +57,14 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
       }}
     >
       <Box sx={{ position: "relative", overflow: "hidden" }}>
-        <CardMedia
-          component="img"
-          image={recipe.images?.at(0)}
+        <CloudinaryImage
+          src={recipe.images?.at(0) || ""}
           alt={recipe.title}
+          width={400}
+          height={500}
           className="recipe-image"
           sx={{
+            width: "100%",
             aspectRatio: "4/5",
             objectFit: "cover",
             transition: "transform 0.4s ease",

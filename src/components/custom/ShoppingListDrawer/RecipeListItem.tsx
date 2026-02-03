@@ -14,6 +14,7 @@ import {
 } from "@mui/icons-material";
 import { useState } from "react";
 import { RecipeListItemProps } from "./interfaces";
+import { CloudinaryImage } from "@/components/custom/CloudinaryImage";
 
 export function RecipeListItem({
   recipe,
@@ -52,10 +53,11 @@ export function RecipeListItem({
         "&:last-child": { borderBottom: 0 },
       }}
     >
-      <Box
-        component="img"
-        src={recipe.recipeImage}
+      <CloudinaryImage
+        src={recipe.recipeImage || ""}
         alt={recipe.recipeTitle}
+        width={56}
+        height={56}
         sx={{
           width: 56,
           height: 56,

@@ -1,6 +1,6 @@
 import { Box } from "@mui/material";
-import HorizontalScroll from "@/components/custom/HorizontalScroll";
 import { ImageGalleryProps } from "./interfaces";
+import { CloudinaryImage } from "@/components/custom/CloudinaryImage";
 
 export function ImageGallery({ images }: ImageGalleryProps) {
   if (images.length === 0) return null;
@@ -18,11 +18,12 @@ export function ImageGallery({ images }: ImageGalleryProps) {
       }}
     >
       {images?.map((image, index) => (
-        <Box
+        <CloudinaryImage
           key={index}
-          component="img"
           src={image}
           alt={`Recipe image ${index + 1}`}
+          width={400}
+          height={300}
           sx={{
             width: { xs: 280, sm: 320, md: 400 },
             height: { xs: 200, sm: 240, md: 300 },

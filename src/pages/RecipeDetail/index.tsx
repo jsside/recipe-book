@@ -33,6 +33,7 @@ import {
   ImageGallery,
   ReferencesSection,
 } from "@/components/custom/RecipeGallery";
+import { CloudinaryImage } from "@/components/custom/CloudinaryImage";
 
 export default function RecipeDetail() {
   const { id } = useParams();
@@ -130,10 +131,11 @@ export default function RecipeDetail() {
             if={!hasMultipleImages}
             then={
               <Grid size={{ xs: 12, lg: 6 }}>
-                <Box
-                  component="img"
-                  src={recipe.images?.at(0)}
+                <CloudinaryImage
+                  src={recipe.images?.at(0) || ""}
                   alt={recipe.title}
+                  width={800}
+                  height={600}
                   sx={{
                     width: "100%",
                     aspectRatio: "4/3",

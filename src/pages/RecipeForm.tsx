@@ -21,6 +21,7 @@ import {
   Add as AddIcon,
   Delete as DeleteIcon,
 } from "@mui/icons-material";
+import { ImageUploadField } from "@/components/custom/ImageUploadField";
 
 import {
   dietaryOptions,
@@ -518,22 +519,16 @@ export default function RecipeForm() {
                         key={index}
                         direction="row"
                         spacing={1}
-                        alignItems="center"
+                        alignItems="flex-start"
                       >
-                        <TextField
-                          label={
-                            index === 0
-                              ? "Primary Image URL"
-                              : `Image ${index + 1} URL`
-                          }
-                          value={image}
-                          onChange={(e) =>
-                            handleImageChange(index, e.target.value)
-                          }
-                          fullWidth
-                          placeholder="https://example.com/image.jpg"
-                          size="small"
-                        />
+                        <Box sx={{ flex: 1 }}>
+                          <ImageUploadField
+                            value={image}
+                            onChange={(value) => handleImageChange(index, value)}
+                            label={index === 0 ? "Primary Image" : `Image ${index + 1}`}
+                            placeholder="Enter image URL or upload"
+                          />
+                        </Box>
                         <RenderComponent
                           if={formState.images.length > 1}
                           then={
@@ -541,6 +536,7 @@ export default function RecipeForm() {
                               onClick={() => handleRemoveImage(index)}
                               size="small"
                               color="error"
+                              sx={{ mt: 3.5 }}
                             >
                               <DeleteIcon fontSize="small" />
                             </IconButton>
@@ -557,9 +553,9 @@ export default function RecipeForm() {
                       Add another image
                     </Button>
                   </Stack>
-                  <Typography variant="caption" color="text.secondary">
+                  <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: "block" }}>
                     Add multiple images for a gallery view. First image is the
-                    primary.
+                    primary. You can either paste a URL or upload directly.
                   </Typography>
                 </Grid>
 

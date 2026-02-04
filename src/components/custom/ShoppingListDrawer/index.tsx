@@ -38,7 +38,7 @@ export function ShoppingListDrawer() {
     updateRecipeServings,
     toggleItem,
   } = useShoppingList();
-  const { unitSystem, toggleUnitSystem } = useUnitConversion();
+  const { unitSystem, toggleUnitSystem, convertAmount } = useUnitConversion();
 
   const [activeTab, setActiveTab] = useState(0);
   const [adjustModalRecipe, setAdjustModalRecipe] =
@@ -199,17 +199,21 @@ export function ShoppingListDrawer() {
                                 {recipeTitle}
                               </Typography>
                               <List dense disablePadding>
-                                {recipeItems.map((item) => (
-                                  <ShoppingListItem
-                                    key={`${item.recipeId}-${item.id}`}
-                                    item={item}
-                                    scaledAmount={getScaledAmount(item)}
-                                    unitSystem={unitSystem}
-                                    onToggle={() =>
-                                      toggleItem(item.id, item.recipeId)
-                                    }
-                                  />
-                                ))}
+                                {recipeItems.map((item) => {
+                                  const scaledAmount = getScaledAmount(item);
+                                  const converted = convertAmount(scaledAmount, item.unit);
+                                  return (
+                                    <ShoppingListItem
+                                      key={`${item.recipeId}-${item.id}`}
+                                      item={item}
+                                      scaledAmount={converted.amount}
+                                      convertedUnit={converted.unit}
+                                      onToggle={() =>
+                                        toggleItem(item.id, item.recipeId)
+                                      }
+                                    />
+                                  );
+                                })}
                               </List>
                             </Box>
                           ),
@@ -300,13 +304,14 @@ const EmptyListContent = () => {
 interface ShoppingListItemProps {
   item: ShoppingItem;
   scaledAmount: string;
-  unitSystem: "metric" | "imperial";
+  convertedUnit: string;
   onToggle: () => void;
 }
 
 const ShoppingListItem = ({
   item,
   scaledAmount,
+  convertedUnit,
   onToggle,
 }: ShoppingListItemProps) => {
   return (
@@ -328,8 +333,7 @@ const ShoppingListItem = ({
               textDecoration: item.checked ? "line-through" : "none",
             }}
           >
-            {scaledAmount}
-            {item.unit} {item.name}
+            {scaledAmount} {convertedUnit} {item.name}
           </Typography>
         }
       />

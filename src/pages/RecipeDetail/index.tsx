@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import {
   Container,
@@ -10,6 +10,11 @@ import {
   Stack,
   IconButton,
   Chip,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
 } from "@mui/material";
 import {
   ChevronLeft as BackIcon,
@@ -18,9 +23,11 @@ import {
   Print as PrintIcon,
   AccessTime as ClockIcon,
   Edit as EditIcon,
+  Delete as DeleteIcon,
 } from "@mui/icons-material";
 import { useServingsAdjuster } from "@/hooks/useServingsAdjuster";
 import { useShare } from "@/hooks/useShare";
+import { useDeleteRecipe } from "@/hooks/useDeleteRecipe";
 import { getAllIngredients } from "@/utils/ingredientParser";
 import { getRecipeCategories } from "@/utils/recipeHelpers";
 import RenderComponent from "@/components/helpers/renderComponent";
@@ -42,6 +49,10 @@ export default function RecipeDetail() {
   const { addIngredients } = useShoppingList();
   const { share } = useShare();
   const { user } = useAuth();
+  const deleteRecipe = useDeleteRecipe();
+  
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const { scaleIngredient } = useServingsAdjuster(recipe?.servings || 4);
 
@@ -105,6 +116,20 @@ export default function RecipeDetail() {
       text: recipe.description,
       url: window.location.href,
     });
+  };
+
+  const handleDelete = async () => {
+    if (!recipe) return;
+    setIsDeleting(true);
+    try {
+      await deleteRecipe(recipe.id);
+      navigate("/");
+    } catch (error) {
+      console.error("Failed to delete recipe:", error);
+    } finally {
+      setIsDeleting(false);
+      setDeleteDialogOpen(false);
+    }
   };
 
   const categories = getRecipeCategories(recipe);
@@ -247,9 +272,17 @@ export default function RecipeDetail() {
                 <RenderComponent
                   if={canEdit}
                   then={
-                    <IconButton onClick={() => navigate(`/edit-recipe/${id}`)}>
-                      <EditIcon />
-                    </IconButton>
+                    <>
+                      <IconButton onClick={() => navigate(`/edit-recipe/${id}`)}>
+                        <EditIcon />
+                      </IconButton>
+                      <IconButton 
+                        onClick={() => setDeleteDialogOpen(true)}
+                        color="error"
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    </>
                   }
                 />
                 <IconButton onClick={handleShare}>
@@ -289,6 +322,32 @@ export default function RecipeDetail() {
           </Grid>
         </Grid>
       </Container>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog
+        open={deleteDialogOpen}
+        onClose={() => setDeleteDialogOpen(false)}
+      >
+        <DialogTitle>Delete Recipe</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you want to delete "{recipe.title}"? This action cannot be undone.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDeleteDialogOpen(false)} disabled={isDeleting}>
+            Cancel
+          </Button>
+          <Button 
+            onClick={handleDelete} 
+            color="error" 
+            variant="contained"
+            disabled={isDeleting}
+          >
+            {isDeleting ? "Deleting..." : "Delete"}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 }

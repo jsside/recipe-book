@@ -1,12 +1,16 @@
 import React from "react";
 import { CLOUD_NAME } from "./cloudinaryInstance.js";
+import { UPLOAD_PRESET } from "@/components/custom/ImageUploadField/index.js";
 
 declare global {
   interface Window {
     cloudinary: {
       openUploadWidget: (
         options: { cloudName: string; uploadPreset: string },
-        callback: (error: unknown, result: { event: string; info: unknown }) => void
+        callback: (
+          error: unknown,
+          result: { event: string; info: unknown },
+        ) => void,
       ) => void;
     };
   }
@@ -17,7 +21,7 @@ const UploadWidget = () => {
     window.cloudinary.openUploadWidget(
       {
         cloudName: CLOUD_NAME,
-        uploadPreset: "YOUR_UNSIGNED_UPLOAD_PRESET",
+        uploadPreset: UPLOAD_PRESET,
       },
       (error, result) => {
         if (!error && result && result.event === "success") {

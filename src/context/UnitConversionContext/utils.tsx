@@ -1,5 +1,9 @@
-import { useContext } from "react";
-import { UnitConversionContext } from "./index";
+import { createContext, useContext } from "react";
+import { UnitConversionContextType } from "./interfaces";
+
+export const UnitConversionContext = createContext<
+  UnitConversionContextType | undefined
+>(undefined);
 
 export function useUnitConversion() {
   const context = useContext(UnitConversionContext);

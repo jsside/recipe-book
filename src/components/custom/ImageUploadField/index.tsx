@@ -11,7 +11,7 @@ import { CloudUpload as UploadIcon } from "@mui/icons-material";
 import { ImageUploadFieldProps } from "./interfaces";
 import { CLOUD_NAME } from "@/db/cloudinaryInstance";
 
-const UPLOAD_PRESET = "shared_plates_unsigned";
+export const UPLOAD_PRESET = "shared_plates_unsigned";
 
 export function ImageUploadField({
   value,
@@ -83,11 +83,7 @@ export function ImageUploadField({
         <Button
           variant="outlined"
           startIcon={
-            isUploading ? (
-              <CircularProgress size={16} />
-            ) : (
-              <UploadIcon />
-            )
+            isUploading ? <CircularProgress size={16} /> : <UploadIcon />
           }
           onClick={() => fileInputRef.current?.click()}
           disabled={isUploading}

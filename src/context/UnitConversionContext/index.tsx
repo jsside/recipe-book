@@ -1,6 +1,12 @@
-import React, { createContext, useState, useCallback, useMemo, ReactNode } from "react";
-
-export type UnitSystem = "metric" | "imperial";
+import {
+  createContext,
+  useState,
+  useCallback,
+  useMemo,
+  ReactNode,
+} from "react";
+import { UnitSystem } from "./interfaces";
+import { UnitConversionContext } from "./utils";
 
 interface ConversionRule {
   from: string;
@@ -23,16 +29,6 @@ const imperialToMetric: ConversionRule[] = [
   { from: "cup", to: "ml", factor: 236.588 },
   { from: "cups", to: "ml", factor: 236.588 },
 ];
-
-interface UnitConversionContextType {
-  unitSystem: UnitSystem;
-  setUnitSystem: (system: UnitSystem) => void;
-  toggleUnitSystem: () => void;
-  convertAmount: (amount: string, unit: string) => { amount: string; unit: string };
-  formatIngredient: (amount: string, unit: string, name: string) => string;
-}
-
-export const UnitConversionContext = createContext<UnitConversionContextType | undefined>(undefined);
 
 export function UnitConversionProvider({ children }: { children: ReactNode }) {
   const [unitSystem, setUnitSystem] = useState<UnitSystem>("metric");

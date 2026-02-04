@@ -15,7 +15,10 @@ export function ReferencesSection({ links, images }: ReferencesSectionProps) {
   if (links.length === 0 && images.length === 0) return null;
 
   return (
-    <Paper elevation={0} sx={{ p: 3, borderRadius: 3, bgcolor: "background.paper" }}>
+    <Paper
+      elevation={0}
+      sx={{ p: 3, borderRadius: 3, bgcolor: "background.paper" }}
+    >
       <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
         References
       </Typography>

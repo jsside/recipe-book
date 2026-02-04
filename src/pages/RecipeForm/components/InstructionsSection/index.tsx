@@ -10,7 +10,9 @@ export function InstructionsSection({ formik }: InstructionsSectionProps) {
       </Typography>
       <InstructionGroupForm
         groups={formik.values.instructionGroups}
-        onChange={(instructionGroups) => formik.setFieldValue("instructionGroups", instructionGroups)}
+        onChange={(instructionGroups) =>
+          formik.setFieldValue("instructionGroups", instructionGroups)
+        }
       />
     </Paper>
   );

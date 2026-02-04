@@ -2,10 +2,11 @@ import { Paper, Typography, Grid, TextField } from "@mui/material";
 import { NutritionSectionProps } from "./interfaces";
 
 export function NutritionSection({ formik }: NutritionSectionProps) {
-  const handleNumberChange = (field: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    formik.setFieldValue(field, value ? Number(value) : "");
-  };
+  const handleNumberChange =
+    (field: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value;
+      formik.setFieldValue(field, value ? Number(value) : "");
+    };
 
   return (
     <Paper elevation={0} sx={{ p: 3, borderRadius: 3 }}>

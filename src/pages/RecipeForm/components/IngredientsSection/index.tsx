@@ -10,7 +10,9 @@ export function IngredientsSection({ formik }: IngredientsSectionProps) {
       </Typography>
       <IngredientGroupForm
         groups={formik.values.ingredientGroups}
-        onChange={(ingredientGroups) => formik.setFieldValue("ingredientGroups", ingredientGroups)}
+        onChange={(ingredientGroups) =>
+          formik.setFieldValue("ingredientGroups", ingredientGroups)
+        }
       />
     </Paper>
   );

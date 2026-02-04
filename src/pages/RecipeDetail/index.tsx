@@ -15,6 +15,7 @@ import {
   DialogContent,
   DialogContentText,
   DialogActions,
+  Skeleton,
 } from "@mui/material";
 import {
   ChevronLeft as BackIcon,
@@ -41,16 +42,18 @@ import {
   ReferencesSection,
 } from "@/components/custom/RecipeGallery";
 import { CloudinaryImage } from "@/components/custom/CloudinaryImage";
+import { LoadingRecipeDetail } from "./components/LoadingRecipeDetail";
+import { RecipeNotFound } from "./components/RecipeNotFound";
 
 export default function RecipeDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { data: recipe } = useGetRecipe(id);
+  const { data: recipe, isLoading: isRecipeLoading } = useGetRecipe(id);
   const { addIngredients } = useShoppingList();
   const { share } = useShare();
   const { user } = useAuth();
   const deleteRecipe = useDeleteRecipe();
-  
+
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -83,17 +86,14 @@ export default function RecipeDetail() {
   // Check if recipe has multiple images
   const hasMultipleImages = (recipe?.images?.length || 0) > 1;
 
+  // Loading state
+  if (isRecipeLoading) {
+    return <LoadingRecipeDetail />;
+  }
+
+  // Recipe not found
   if (!recipe) {
-    return (
-      <Container sx={{ py: 10, textAlign: "center" }}>
-        <Typography variant="h4" sx={{ mb: 2 }}>
-          Recipe not found
-        </Typography>
-        <Button component={Link} to="/" variant="contained">
-          Back to home
-        </Button>
-      </Container>
-    );
+    return <RecipeNotFound />;
   }
 
   const handleAddAllToList = () => {
@@ -273,10 +273,12 @@ export default function RecipeDetail() {
                   if={canEdit}
                   then={
                     <>
-                      <IconButton onClick={() => navigate(`/edit-recipe/${id}`)}>
+                      <IconButton
+                        onClick={() => navigate(`/edit-recipe/${id}`)}
+                      >
                         <EditIcon />
                       </IconButton>
-                      <IconButton 
+                      <IconButton
                         onClick={() => setDeleteDialogOpen(true)}
                         color="error"
                       >
@@ -331,16 +333,20 @@ export default function RecipeDetail() {
         <DialogTitle>Delete Recipe</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Are you sure you want to delete "{recipe.title}"? This action cannot be undone.
+            Are you sure you want to delete "{recipe.title}"? This action cannot
+            be undone.
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setDeleteDialogOpen(false)} disabled={isDeleting}>
+          <Button
+            onClick={() => setDeleteDialogOpen(false)}
+            disabled={isDeleting}
+          >
             Cancel
           </Button>
-          <Button 
-            onClick={handleDelete} 
-            color="error" 
+          <Button
+            onClick={handleDelete}
+            color="error"
             variant="contained"
             disabled={isDeleting}
           >

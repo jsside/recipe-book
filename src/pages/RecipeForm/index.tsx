@@ -1,18 +1,29 @@
 import { useEffect } from "react";
 import { useNavigate, Navigate, useParams } from "react-router-dom";
 import { Formik, Form, FormikProps } from "formik";
-import { Container, Box, Typography, Button, Stack, Alert } from "@mui/material";
+import {
+  Container,
+  Box,
+  Typography,
+  Button,
+  Stack,
+  Alert,
+} from "@mui/material";
 import { ArrowBack as BackIcon } from "@mui/icons-material";
 
 import { useAddRecipe } from "@/hooks/useAddRecipe";
 import { useUpdateRecipe } from "@/hooks/useUpdateRecipe";
-import { useGetRecipe } from "@/hooks/useGetRecipe";
+import { invalidateGetRecipe, useGetRecipe } from "@/hooks/useGetRecipe";
 import { useNotification } from "@/context/NotificationContext/utils";
 import { useAuth } from "@/context/AuthContext/utils";
 import RenderComponent from "@/components/helpers/renderComponent";
 
 import { RecipeFormValues } from "./interfaces";
-import { getInitialValues, createEmptyIngredientGroup, createEmptyInstructionGroup } from "./constants";
+import {
+  getInitialValues,
+  createEmptyIngredientGroup,
+  createEmptyInstructionGroup,
+} from "./constants";
 import { recipeFormSchema } from "./validation";
 import { transformFormToRecipe, validateFormData } from "./utils";
 import { useFormHistory } from "./hooks/useFormHistory";
@@ -25,7 +36,11 @@ import { ReferencesSection } from "./components/ReferencesSection";
 import { AdditionalInfoSection } from "./components/AdditionalInfoSection";
 import { NutritionSection } from "./components/NutritionSection";
 
-function RecipeFormContent({ formik }: { formik: FormikProps<RecipeFormValues> }) {
+function RecipeFormContent({
+  formik,
+}: {
+  formik: FormikProps<RecipeFormValues>;
+}) {
   useFormHistory(formik);
 
   return (
@@ -51,7 +66,9 @@ export default function RecipeForm() {
   const updateRecipe = useUpdateRecipe();
   const navigate = useNavigate();
 
-  const { data: existingRecipe, isLoading: isLoadingRecipe } = useGetRecipe(id || "");
+  const { data: existingRecipe, isLoading: isLoadingRecipe } = useGetRecipe(
+    id || "",
+  );
 
   // Only chefs can create/edit recipes
   if (!user || user.role !== "chef") {
@@ -68,7 +85,9 @@ export default function RecipeForm() {
   }
 
   // Check if user can edit this recipe
-  const canEdit = !isEditMode || (existingRecipe && user && existingRecipe.chef?.name === user.name);
+  const canEdit =
+    !isEditMode ||
+    (existingRecipe && user && existingRecipe.chef?.name === user.name);
   if (isEditMode && existingRecipe && !canEdit) {
     return (
       <Container sx={{ py: 10, textAlign: "center" }}>
@@ -84,7 +103,7 @@ export default function RecipeForm() {
 
   const getEditModeValues = (): RecipeFormValues => {
     if (!existingRecipe) return getInitialValues();
-    
+
     return {
       title: existingRecipe.title || "",
       description: existingRecipe.description || "",
@@ -120,18 +139,25 @@ export default function RecipeForm() {
           timer: step.timer,
         })),
       })) || [createEmptyInstructionGroup()],
-      references: existingRecipe.references?.map((ref) => ({
-        tempId: crypto.randomUUID(),
-        type: ref.type,
-        url: ref.url,
-        title: ref.title || "",
-      })) || [],
+      references:
+        existingRecipe.references?.map((ref) => ({
+          tempId: crypto.randomUUID(),
+          type: ref.type,
+          url: ref.url,
+          title: ref.title || "",
+        })) || [],
     };
   };
 
   const handleSubmit = async (
     values: RecipeFormValues,
-    { setSubmitting, setStatus }: { setSubmitting: (isSubmitting: boolean) => void; setStatus: (status: string | null) => void }
+    {
+      setSubmitting,
+      setStatus,
+    }: {
+      setSubmitting: (isSubmitting: boolean) => void;
+      setStatus: (status: string | null) => void;
+    },
   ) => {
     const validationError = validateFormData(values);
     if (validationError) {
@@ -153,11 +179,15 @@ export default function RecipeForm() {
         setTimeout(() => navigate("/recipes"), 1000);
       }
     } catch (err) {
-      const errorMsg = isEditMode ? "Failed to update recipe" : "Failed to create recipe";
+      const errorMsg = isEditMode
+        ? "Failed to update recipe"
+        : "Failed to create recipe";
       setStatus(errorMsg);
       showNotification(errorMsg, "error");
     }
     setSubmitting(false);
+    // invalidate getRecipe to refetch query
+    invalidateGetRecipe();
   };
 
   const initialValues = isEditMode ? getEditModeValues() : getInitialValues();
@@ -173,7 +203,12 @@ export default function RecipeForm() {
           Back
         </Button>
 
-        <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 4 }}>
+        <Stack
+          direction="row"
+          justifyContent="space-between"
+          alignItems="center"
+          sx={{ mb: 4 }}
+        >
           <Typography variant="h4">
             {isEditMode ? "Edit Recipe" : "Add New Recipe"}
           </Typography>

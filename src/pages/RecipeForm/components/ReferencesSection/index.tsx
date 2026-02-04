@@ -1,5 +1,12 @@
 import { FieldArray } from "formik";
-import { Paper, Typography, Stack, TextField, Button, IconButton } from "@mui/material";
+import {
+  Paper,
+  Typography,
+  Stack,
+  TextField,
+  Button,
+  IconButton,
+} from "@mui/material";
 import { Add as AddIcon, Delete as DeleteIcon } from "@mui/icons-material";
 import { createEmptyReference } from "../../constants";
 import { ReferencesSectionProps } from "./interfaces";
@@ -18,7 +25,12 @@ export function ReferencesSection({ formik }: ReferencesSectionProps) {
         {({ push, remove }) => (
           <Stack spacing={2}>
             {formik.values.references.map((ref, index) => (
-              <Stack key={ref.tempId} direction="row" spacing={1} alignItems="center">
+              <Stack
+                key={ref.tempId}
+                direction="row"
+                spacing={1}
+                alignItems="center"
+              >
                 <TextField
                   name={`references.${index}.url`}
                   label={ref.type === "link" ? "Link URL" : "Image URL"}
@@ -40,7 +52,11 @@ export function ReferencesSection({ formik }: ReferencesSectionProps) {
                   size="small"
                   sx={{ minWidth: 150 }}
                 />
-                <IconButton onClick={() => remove(index)} size="small" color="error">
+                <IconButton
+                  onClick={() => remove(index)}
+                  size="small"
+                  color="error"
+                >
                   <DeleteIcon fontSize="small" />
                 </IconButton>
               </Stack>

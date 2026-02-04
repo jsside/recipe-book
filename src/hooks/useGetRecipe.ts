@@ -1,7 +1,8 @@
-import { useQuery } from "@tanstack/react-query";
+import { InvalidateQueryFilters, useQuery } from "@tanstack/react-query";
 import { Recipe } from "@/data/recipes";
 import { supabase } from "@/db/supabaseClient";
 import { singletonQueryClient } from "@/app/App.queries";
+import { getRecipeCategories } from "@/utils/recipeHelpers";
 
 export const GET_RECIPE_KEY = "get-recipe";
 
@@ -20,9 +21,11 @@ const fetchRecipeById = async (recipeId: string): Promise<Recipe> => {
   return data;
 };
 
-// export function invalidateListRecipes () {
-//     return singletonQueryClient.invalidateQueries([LIST_RECIPES_KEY]);
-// }
+export function invalidateGetRecipe() {
+  return singletonQueryClient.invalidateQueries([
+    GET_RECIPE_KEY,
+  ] as InvalidateQueryFilters<readonly unknown[]>);
+}
 
 export function useGetRecipe(recipeId: string) {
   return useQuery<Recipe, Error>({

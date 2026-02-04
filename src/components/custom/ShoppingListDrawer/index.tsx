@@ -201,7 +201,10 @@ export function ShoppingListDrawer() {
                               <List dense disablePadding>
                                 {recipeItems.map((item) => {
                                   const scaledAmount = getScaledAmount(item);
-                                  const converted = convertAmount(scaledAmount, item.unit);
+                                  const converted = convertAmount(
+                                    scaledAmount,
+                                    item.unit,
+                                  );
                                   return (
                                     <ShoppingListItem
                                       key={`${item.recipeId}-${item.id}`}

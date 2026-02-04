@@ -35,7 +35,9 @@ export const createEmptyInstructionGroup = (): InstructionGroupFormItem => ({
   steps: [{ tempId: crypto.randomUUID(), text: "", timer: undefined }],
 });
 
-export const createEmptyReference = (type: "link" | "image"): ReferenceFormItem => ({
+export const createEmptyReference = (
+  type: "link" | "image",
+): ReferenceFormItem => ({
   tempId: crypto.randomUUID(),
   type,
   url: "",

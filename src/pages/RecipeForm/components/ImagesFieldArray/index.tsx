@@ -15,11 +15,18 @@ export function ImagesFieldArray({ formik }: ImagesFieldArrayProps) {
           </Typography>
           <Stack spacing={2}>
             {formik.values.images.map((image, index) => (
-              <Stack key={index} direction="row" spacing={1} alignItems="flex-start">
+              <Stack
+                key={index}
+                direction="row"
+                spacing={1}
+                alignItems="flex-start"
+              >
                 <Box sx={{ flex: 1 }}>
                   <ImageUploadField
                     value={image}
-                    onChange={(value) => formik.setFieldValue(`images.${index}`, value)}
+                    onChange={(value) =>
+                      formik.setFieldValue(`images.${index}`, value)
+                    }
                     label={index === 0 ? "Primary Image" : `Image ${index + 1}`}
                     placeholder="Enter image URL or upload"
                   />
@@ -48,7 +55,11 @@ export function ImagesFieldArray({ formik }: ImagesFieldArrayProps) {
               Add another image
             </Button>
           </Stack>
-          <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: "block" }}>
+          <Typography
+            variant="caption"
+            color="text.secondary"
+            sx={{ mt: 1, display: "block" }}
+          >
             Add multiple images for a gallery view. First image is the primary.
           </Typography>
         </Box>

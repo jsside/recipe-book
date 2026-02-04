@@ -25,15 +25,7 @@ export function CloudinaryImage({
 }: CloudinaryImageProps) {
   // If it's a valid URL, render a regular img
   if (isValidUrl(src)) {
-    return (
-      <Box
-        component="img"
-        src={src}
-        alt={alt}
-        sx={sx}
-        {...boxProps}
-      />
-    );
+    return <Box component="img" src={src} alt={alt} sx={sx} {...boxProps} />;
   }
 
   // Otherwise, it's a Cloudinary public ID

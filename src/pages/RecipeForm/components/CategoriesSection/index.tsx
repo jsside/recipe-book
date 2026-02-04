@@ -14,13 +14,17 @@ export function CategoriesSection({ formik }: CategoriesSectionProps) {
         <CategoryChipsSelect
           options={CATEGORY_OPTIONS}
           selected={formik.values.categories}
-          onChange={(categories) => formik.setFieldValue("categories", categories)}
+          onChange={(categories) =>
+            formik.setFieldValue("categories", categories)
+          }
           label="Categories"
         />
         <CategoryChipsSelect
           options={dietaryOptions}
           selected={formik.values.dietaryTags}
-          onChange={(dietaryTags) => formik.setFieldValue("dietaryTags", dietaryTags)}
+          onChange={(dietaryTags) =>
+            formik.setFieldValue("dietaryTags", dietaryTags)
+          }
           label="Dietary Tags"
         />
       </Stack>

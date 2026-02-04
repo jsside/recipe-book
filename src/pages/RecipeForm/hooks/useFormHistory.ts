@@ -14,7 +14,10 @@ export function useFormHistory(formik: FormikProps<RecipeFormValues>) {
     const currentJson = JSON.stringify(formik.values);
     if (!isUndoRedoRef.current && currentJson !== lastValuesRef.current) {
       // Remove any redo history
-      historyRef.current = historyRef.current.slice(0, historyIndexRef.current + 1);
+      historyRef.current = historyRef.current.slice(
+        0,
+        historyIndexRef.current + 1,
+      );
       historyRef.current.push(formik.values);
       historyIndexRef.current = historyRef.current.length - 1;
 
@@ -32,7 +35,9 @@ export function useFormHistory(formik: FormikProps<RecipeFormValues>) {
       isUndoRedoRef.current = true;
       historyIndexRef.current--;
       formik.setValues(historyRef.current[historyIndexRef.current]);
-      lastValuesRef.current = JSON.stringify(historyRef.current[historyIndexRef.current]);
+      lastValuesRef.current = JSON.stringify(
+        historyRef.current[historyIndexRef.current],
+      );
       setTimeout(() => {
         isUndoRedoRef.current = false;
       }, 0);
@@ -44,7 +49,9 @@ export function useFormHistory(formik: FormikProps<RecipeFormValues>) {
       isUndoRedoRef.current = true;
       historyIndexRef.current++;
       formik.setValues(historyRef.current[historyIndexRef.current]);
-      lastValuesRef.current = JSON.stringify(historyRef.current[historyIndexRef.current]);
+      lastValuesRef.current = JSON.stringify(
+        historyRef.current[historyIndexRef.current],
+      );
       setTimeout(() => {
         isUndoRedoRef.current = false;
       }, 0);

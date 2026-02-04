@@ -39,7 +39,9 @@ export function BasicInfoSection({ formik }: BasicInfoSectionProps) {
             value={formik.values.description}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
-            error={formik.touched.description && Boolean(formik.errors.description)}
+            error={
+              formik.touched.description && Boolean(formik.errors.description)
+            }
             helperText={formik.touched.description && formik.errors.description}
             required
             fullWidth
@@ -89,7 +91,11 @@ export function BasicInfoSection({ formik }: BasicInfoSectionProps) {
               onChange={formik.handleChange}
             >
               {difficultyOptions.map((opt) => (
-                <MenuItem key={opt} value={opt} sx={{ textTransform: "capitalize" }}>
+                <MenuItem
+                  key={opt}
+                  value={opt}
+                  sx={{ textTransform: "capitalize" }}
+                >
                   {opt}
                 </MenuItem>
               ))}

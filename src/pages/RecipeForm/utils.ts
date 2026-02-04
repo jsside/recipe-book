@@ -8,7 +8,7 @@ interface User {
 
 export function transformFormToRecipe(
   values: RecipeFormValues,
-  user: User
+  user: User,
 ): Omit<Recipe, "id"> {
   const formattedIngredientGroups = values.ingredientGroups
     .map((group) => ({
@@ -60,7 +60,9 @@ export function transformFormToRecipe(
     videoUrl: values.videoUrl?.trim() || undefined,
     chef: {
       name: user.name,
-      avatar: user.avatar || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&q=80",
+      avatar:
+        user.avatar ||
+        "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&q=80",
     },
     ingredientGroups: formattedIngredientGroups,
     instructionGroups: formattedInstructionGroups,
@@ -73,24 +75,29 @@ export function transformFormToRecipe(
             fat: values.fat || undefined,
           }
         : undefined,
-    references: formattedReferences.length > 0 ? formattedReferences : undefined,
+    references:
+      formattedReferences.length > 0 ? formattedReferences : undefined,
   };
 }
 
 export function validateFormData(values: RecipeFormValues): string | null {
-  if (!values.title.trim() || !values.description.trim() || !values.cookTime.trim()) {
+  if (
+    !values.title.trim() ||
+    !values.description.trim() ||
+    !values.cookTime.trim()
+  ) {
     return "Please fill in all required fields";
   }
 
   const hasValidIngredient = values.ingredientGroups.some((group) =>
-    group.items.some((item) => item.name.trim() && item.amount.trim())
+    group.items.some((item) => item.name.trim() && item.amount.trim()),
   );
   if (!hasValidIngredient) {
     return "Please add at least one ingredient";
   }
 
   const hasValidInstruction = values.instructionGroups.some((group) =>
-    group.steps.some((step) => step.text.trim())
+    group.steps.some((step) => step.text.trim()),
   );
   if (!hasValidInstruction) {
     return "Please add at least one instruction";

@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+ import { useState } from "react";
 import { useNavigate, Navigate, useParams } from "react-router-dom";
 import { Formik, Form, FormikProps } from "formik";
 import {
@@ -27,6 +27,7 @@ import {
 import { recipeFormSchema } from "./validation";
 import { transformFormToRecipe, validateFormData } from "./utils";
 import { useFormHistory } from "./hooks/useFormHistory";
+ import { processImages } from "./utils/uploadHelpers";
 
 import { BasicInfoSection } from "./components/BasicInfoSection";
 import { CategoriesSection } from "./components/CategoriesSection";
@@ -35,30 +36,58 @@ import { InstructionsSection } from "./components/InstructionsSection";
 import { ReferencesSection } from "./components/ReferencesSection";
 import { AdditionalInfoSection } from "./components/AdditionalInfoSection";
 import { NutritionSection } from "./components/NutritionSection";
+ import { CancelConfirmDialog } from "./components/CancelConfirmDialog";
 
 function RecipeFormContent({
   formik,
+   onCancel,
 }: {
   formik: FormikProps<RecipeFormValues>;
+   onCancel: () => void;
 }) {
   useFormHistory(formik);
 
   return (
-    <Stack spacing={4}>
-      <BasicInfoSection formik={formik} />
-      <CategoriesSection formik={formik} />
-      <IngredientsSection formik={formik} />
-      <InstructionsSection formik={formik} />
-      <ReferencesSection formik={formik} />
-      <AdditionalInfoSection formik={formik} />
-      <NutritionSection formik={formik} />
-    </Stack>
+     <>
+       <Stack spacing={4}>
+         <BasicInfoSection formik={formik} />
+         <CategoriesSection formik={formik} />
+         <IngredientsSection formik={formik} />
+         <InstructionsSection formik={formik} />
+         <ReferencesSection formik={formik} />
+         <AdditionalInfoSection formik={formik} />
+         <NutritionSection formik={formik} />
+       </Stack>
+ 
+       <Stack direction="row" spacing={2} sx={{ mt: 4 }}>
+         <Button
+           variant="outlined"
+           color="inherit"
+           size="large"
+           onClick={onCancel}
+           sx={{ py: 1.5, flex: 1 }}
+         >
+           Cancel
+         </Button>
+         <Button
+           type="submit"
+           variant="contained"
+           color="secondary"
+           size="large"
+           disabled={formik.isSubmitting}
+           sx={{ py: 1.5, flex: 2 }}
+         >
+           {formik.isSubmitting ? "Saving..." : "Save Recipe"}
+         </Button>
+       </Stack>
+     </>
   );
 }
 
 export default function RecipeForm() {
   const { id } = useParams<{ id?: string }>();
   const isEditMode = Boolean(id);
+   const [showCancelDialog, setShowCancelDialog] = useState(false);
 
   const { user } = useAuth();
   const { showNotification } = useNotification();
@@ -167,7 +196,14 @@ export default function RecipeForm() {
     }
 
     try {
-      const recipeData = transformFormToRecipe(values, user);
+       // Upload any local images to Cloudinary on save
+       const uploadedImages = await processImages(values.images);
+       const valuesWithUploadedImages = {
+         ...values,
+         images: uploadedImages.length > 0 ? uploadedImages : [""],
+       };
+ 
+       const recipeData = transformFormToRecipe(valuesWithUploadedImages, user);
 
       if (isEditMode && id) {
         await updateRecipe({ id, updates: recipeData });
@@ -192,12 +228,21 @@ export default function RecipeForm() {
 
   const initialValues = isEditMode ? getEditModeValues() : getInitialValues();
 
+   const handleCancelClick = () => {
+     setShowCancelDialog(true);
+   };
+ 
+   const handleCancelConfirm = () => {
+     setShowCancelDialog(false);
+     navigate(-1);
+   };
+ 
   return (
     <Box sx={{ minHeight: "100vh", py: 4, bgcolor: "background.default" }}>
       <Container maxWidth="md">
         <Button
           startIcon={<BackIcon />}
-          onClick={() => navigate(-1)}
+           onClick={handleCancelClick}
           sx={{ mb: 3, color: "text.secondary" }}
         >
           Back
@@ -234,25 +279,14 @@ export default function RecipeForm() {
                 }
               />
 
-              <RecipeFormContent formik={formik} />
+               <RecipeFormContent formik={formik} onCancel={handleCancelClick} />
 
-              <Button
-                type="submit"
-                variant="contained"
-                color="secondary"
-                size="large"
-                disabled={formik.isSubmitting}
-                sx={{ py: 1.5, mt: 4 }}
-                fullWidth
-              >
-                {formik.isSubmitting
-                  ? isEditMode
-                    ? "Updating Recipe..."
-                    : "Creating Recipe..."
-                  : isEditMode
-                    ? "Update Recipe"
-                    : "Create Recipe"}
-              </Button>
+               <CancelConfirmDialog
+                 open={showCancelDialog}
+                 onClose={() => setShowCancelDialog(false)}
+                 onConfirm={handleCancelConfirm}
+                 formik={formik}
+               />
             </Form>
           )}
         </Formik>

@@ -1,5 +1,10 @@
 import { Recipe, RecipeReference } from "@/data/recipes";
-import { RecipeFormValues } from "./interfaces";
+import { AddEditRecipeFormFields } from "./interfaces";
+import {
+  emptyIngredientGroup,
+  emptyInstructionGroup,
+  initialValues,
+} from "./constants";
 
 interface User {
   name: string;
@@ -7,7 +12,7 @@ interface User {
 }
 
 export function transformFormToRecipe(
-  values: RecipeFormValues,
+  values: AddEditRecipeFormFields,
   user: User,
 ): Omit<Recipe, "id"> {
   const formattedIngredientGroups = values.ingredientGroups
@@ -80,7 +85,9 @@ export function transformFormToRecipe(
   };
 }
 
-export function validateFormData(values: RecipeFormValues): string | null {
+export function validateFormData(
+  values: AddEditRecipeFormFields,
+): string | null {
   if (
     !values.title.trim() ||
     !values.description.trim() ||
@@ -105,3 +112,54 @@ export function validateFormData(values: RecipeFormValues): string | null {
 
   return null;
 }
+
+export const getFormInitialValues = (
+  existingRecipe: Recipe,
+): AddEditRecipeFormFields => {
+  if (!existingRecipe) return initialValues;
+
+  return {
+    ...initialValues,
+    title: existingRecipe.title,
+    description: existingRecipe.description,
+    images: existingRecipe.images?.length ? existingRecipe.images : [""],
+    cookTime: existingRecipe.cookTime,
+    servings: existingRecipe.servings,
+    difficulty: existingRecipe.difficulty,
+    categories: existingRecipe.category,
+    dietaryTags: existingRecipe.dietaryTags,
+    videoUrl: existingRecipe.videoUrl,
+    calories: existingRecipe.nutrition?.calories,
+    protein: existingRecipe.nutrition?.protein,
+    carbs: existingRecipe.nutrition?.carbs,
+    fat: existingRecipe.nutrition?.fat,
+    ingredientGroups: existingRecipe.ingredientGroups?.map((g) => ({
+      tempId: crypto.randomUUID(),
+      heading: g.heading,
+      items: g.items.map((item) => ({
+        tempId: crypto.randomUUID(),
+        name: item.name,
+        amount: item.amount,
+        unit: item.unit,
+        preparation: item.preparation,
+        note: item.note,
+      })),
+    })),
+    instructionGroups: existingRecipe.instructionGroups?.map((g) => ({
+      tempId: crypto.randomUUID(),
+      heading: g.heading,
+      steps: g.steps.map((step) => ({
+        tempId: crypto.randomUUID(),
+        text: step.text,
+        timer: step.timer,
+      })),
+    })),
+    references:
+      existingRecipe.references?.map((ref) => ({
+        tempId: crypto.randomUUID(),
+        type: ref.type,
+        url: ref.url,
+        title: ref.title,
+      })) || [],
+  };
+};

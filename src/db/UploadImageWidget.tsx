@@ -1,6 +1,6 @@
 import React from "react";
 import { CLOUD_NAME } from "./cloudinaryInstance.js";
- import { UPLOAD_PRESET } from "@/pages/RecipeForm/utils/uploadHelpers";
+import { UPLOAD_PRESET } from "@/pages/AddEditRecipeForm/utils/uploadHelpers.js";
 
 declare global {
   interface Window {

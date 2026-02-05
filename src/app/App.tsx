@@ -14,7 +14,7 @@ import Recipes from "../pages/Recipes";
 import Ingredients from "../pages/Ingredients";
 import MealPlans from "../pages/MealPlans";
 import Auth from "../pages/Auth";
-import RecipeForm from "../pages/RecipeForm";
+import AddEditRecipeForm from "../pages/AddEditRecipeForm";
 import ChefProfile from "../pages/ChefProfile";
 import NotFound from "../pages/NotFound";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -48,8 +48,14 @@ const App = () => (
                       <Route path="/ingredients" element={<Ingredients />} />
                       <Route path="/meal-plans" element={<MealPlans />} />
                       <Route path="/auth" element={<Auth />} />
-                      <Route path="/add-recipe" element={<RecipeForm />} />
-                      <Route path="/edit-recipe/:id" element={<RecipeForm />} />
+                      <Route
+                        path="/add-recipe"
+                        element={<AddEditRecipeForm />}
+                      />
+                      <Route
+                        path="/edit-recipe/:id"
+                        element={<AddEditRecipeForm />}
+                      />
                       <Route path="/chef/:name" element={<ChefProfile />} />
                       <Route path="*" element={<NotFound />} />
                     </Routes>

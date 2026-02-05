@@ -1,7 +1,12 @@
 import { Paper, Typography, Grid, TextField } from "@mui/material";
-import { AdditionalInfoSectionProps } from "./interfaces";
+import { FormikProps } from "formik";
+import { AddEditRecipeFormFields } from "../../interfaces";
 
-export function AdditionalInfoSection({ formik }: AdditionalInfoSectionProps) {
+export function AdditionalInfoSection({
+  formik,
+}: {
+  formik: FormikProps<AddEditRecipeFormFields>;
+}) {
   return (
     <Paper elevation={0} sx={{ p: 3, borderRadius: 3 }}>
       <Typography variant="h6" sx={{ mb: 3 }}>

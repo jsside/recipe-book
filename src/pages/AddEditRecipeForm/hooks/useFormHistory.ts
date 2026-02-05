@@ -1,10 +1,10 @@
 import { useRef, useCallback, useEffect } from "react";
 import { FormikProps } from "formik";
-import { RecipeFormValues } from "../interfaces";
+import { AddEditRecipeFormFields } from "../interfaces";
 import { MAX_HISTORY_SIZE } from "../constants";
 
-export function useFormHistory(formik: FormikProps<RecipeFormValues>) {
-  const historyRef = useRef<RecipeFormValues[]>([formik.values]);
+export function useFormHistory(formik: FormikProps<AddEditRecipeFormFields>) {
+  const historyRef = useRef<AddEditRecipeFormFields[]>([formik.values]);
   const historyIndexRef = useRef(0);
   const isUndoRedoRef = useRef(false);
   const lastValuesRef = useRef<string>(JSON.stringify(formik.values));
@@ -59,7 +59,7 @@ export function useFormHistory(formik: FormikProps<RecipeFormValues>) {
   }, [formik]);
 
   // Reset history when form is reset with new values (e.g., edit mode loaded)
-  const resetHistory = useCallback((values: RecipeFormValues) => {
+  const resetHistory = useCallback((values: AddEditRecipeFormFields) => {
     historyRef.current = [values];
     historyIndexRef.current = 0;
     lastValuesRef.current = JSON.stringify(values);

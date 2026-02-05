@@ -8,7 +8,7 @@ export interface ReferenceFormItem {
   title: string;
 }
 
-export interface RecipeFormValues {
+export interface AddEditRecipeFormFields {
   title: string;
   description: string;
   images: string[];

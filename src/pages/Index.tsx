@@ -84,23 +84,27 @@ const Index = () => {
       <RenderComponent
         if={latestRecipes.length > 0}
         then={
-          <HorizontalScroll
-            title="Latest recipes"
-            subtitle="Fresh from our kitchen"
-          >
-            {latestRecipes.map((recipe) => (
-              <Box
-                key={recipe.id}
-                sx={{
-                  flexShrink: 0,
-                  width: { xs: 260, sm: 280, md: 300 },
-                  scrollSnapAlign: "start",
-                }}
-              >
-                <RecipeCard recipe={recipe} />
-              </Box>
-            ))}
-          </HorizontalScroll>
+          <Box component="section" sx={{ py: { xs: 4, md: 6 } }}>
+            {/* <Container maxWidth="lg"> */}
+            <HorizontalScroll
+              title="Latest recipes"
+              subtitle="Fresh from our kitchen"
+            >
+              {latestRecipes.map((recipe) => (
+                <Box
+                  key={recipe.id}
+                  sx={{
+                    flexShrink: 0,
+                    width: { xs: 260, sm: 280, md: 300 },
+                    scrollSnapAlign: "start",
+                  }}
+                >
+                  <RecipeCard recipe={recipe} />
+                </Box>
+              ))}
+            </HorizontalScroll>
+            {/* </Container> */}
+          </Box>
         }
       />
 

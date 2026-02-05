@@ -1,6 +1,6 @@
 import { IngredientGroupFormItem } from "@/components/custom/IngredientGroupForm/interfaces";
 import { InstructionGroupFormItem } from "@/components/custom/InstructionGroupForm/interfaces";
-import { RecipeFormValues, ReferenceFormItem } from "./interfaces";
+import { AddEditRecipeFormFields, ReferenceFormItem } from "./interfaces";
 
 export const CATEGORY_OPTIONS = [
   "Dinner",
@@ -14,7 +14,7 @@ export const CATEGORY_OPTIONS = [
 
 export const MAX_HISTORY_SIZE = 50;
 
-export const createEmptyIngredientGroup = (): IngredientGroupFormItem => ({
+export const emptyIngredientGroup: IngredientGroupFormItem = {
   tempId: crypto.randomUUID(),
   heading: "",
   items: [
@@ -27,13 +27,13 @@ export const createEmptyIngredientGroup = (): IngredientGroupFormItem => ({
       note: "",
     },
   ],
-});
+};
 
-export const createEmptyInstructionGroup = (): InstructionGroupFormItem => ({
+export const emptyInstructionGroup: InstructionGroupFormItem = {
   tempId: crypto.randomUUID(),
   heading: "",
   steps: [{ tempId: crypto.randomUUID(), text: "", timer: undefined }],
-});
+};
 
 export const createEmptyReference = (
   type: "link" | "image",
@@ -44,7 +44,7 @@ export const createEmptyReference = (
   title: "",
 });
 
-export const getInitialValues = (): RecipeFormValues => ({
+export const initialValues: AddEditRecipeFormFields = {
   title: "",
   description: "",
   images: [""],
@@ -58,7 +58,7 @@ export const getInitialValues = (): RecipeFormValues => ({
   protein: "",
   carbs: "",
   fat: "",
-  ingredientGroups: [createEmptyIngredientGroup()],
-  instructionGroups: [createEmptyInstructionGroup()],
+  ingredientGroups: [emptyIngredientGroup],
+  instructionGroups: [emptyInstructionGroup],
   references: [],
-});
+};

@@ -22,6 +22,8 @@ const Index = () => {
     isError,
     error,
   } = useListRecipes();
+
+  console.log({ recipes });
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
   // Get latest recipes (added within last 30 days, sorted by newest first)

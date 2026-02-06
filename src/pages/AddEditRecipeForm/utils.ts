@@ -1,10 +1,6 @@
 import { Recipe, RecipeReference } from "@/data/recipes";
 import { AddEditRecipeFormFields } from "./interfaces";
-import {
-  emptyIngredientGroup,
-  emptyInstructionGroup,
-  initialValues,
-} from "./constants";
+import { initialValues } from "./constants";
 
 interface User {
   name: string;
@@ -128,10 +124,10 @@ export const getFormInitialValues = (
     difficulty: existingRecipe.difficulty,
     categories: existingRecipe.category,
     dietaryTags: existingRecipe.dietaryTags,
-    videoUrl: existingRecipe.videoUrl,
-    calories: existingRecipe.nutrition?.calories,
-    protein: existingRecipe.nutrition?.protein,
-    carbs: existingRecipe.nutrition?.carbs,
+    videoUrl: existingRecipe.videoUrl ?? undefined,
+    calories: existingRecipe.nutrition?.calories ?? undefined,
+    protein: existingRecipe.nutrition?.protein ?? undefined,
+    carbs: existingRecipe.nutrition?.carbs ?? undefined,
     fat: existingRecipe.nutrition?.fat,
     ingredientGroups: existingRecipe.ingredientGroups?.map((g) => ({
       tempId: crypto.randomUUID(),

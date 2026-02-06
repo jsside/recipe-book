@@ -20,7 +20,7 @@ export interface Recipe {
   description: string;
   createdAt?: string;
   // Extended fields
-  difficulty?: "easy" | "medium" | "hard";
+  difficulty?: Difficulty;
   dietaryTags?: string[];
   videoUrl?: string;
   nutrition?: {
@@ -32,10 +32,18 @@ export interface Recipe {
   references?: RecipeReference[];
 }
 
+export interface Chef {
+  id: number;
+  name: string;
+  avatar: string;
+}
+
 export interface IngredientGroup {
   heading?: string;
   items: Ingredient[];
 }
+
+export type Difficulty = "easy" | "medium" | "hard";
 
 export interface Ingredient {
   id: string;

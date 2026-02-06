@@ -1,3 +1,4 @@
+import { Difficulty } from "@/data/recipes";
 import { IngredientGroupFormItem } from "./components/IngredientGroupForm/interfaces";
 import { InstructionGroupFormItem } from "./components/InstructionGroupForm/interfaces";
 
@@ -14,7 +15,7 @@ export interface AddEditRecipeFormFields {
   images: string[];
   cookTime: string;
   servings: number;
-  difficulty: "easy" | "medium" | "hard";
+  difficulty: Difficulty;
   categories: string[];
   dietaryTags: string[];
   videoUrl?: string;

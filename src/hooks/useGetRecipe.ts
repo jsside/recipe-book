@@ -2,23 +2,51 @@ import { InvalidateQueryFilters, useQuery } from "@tanstack/react-query";
 import { Recipe } from "@/data/recipes";
 import { supabase } from "@/db/supabaseClient";
 import { singletonQueryClient } from "@/app/App.queries";
-import { getRecipeCategories } from "@/utils/recipeHelpers";
 
 export const GET_RECIPE_KEY = "get-recipe";
 
-const fetchRecipeById = async (recipeId: string): Promise<Recipe> => {
+export const fetchRecipeById = async (
+  recipeId: string,
+): Promise<Recipe | null> => {
   const { data, error } = await supabase
     .from("recipes")
-    .select("*")
-    .eq("id", recipeId) // Matches the column 'id' with your variable
-    .single(); // Returns a single object instead of an array
+    .select(
+      `
+      *,
+      chefs (
+        name,
+        avatar
+      )
+    `,
+    )
+    .eq("id", recipeId)
+    .single();
 
-  if (error) {
-    console.error("Error fetching recipe:", error.message);
-    return null;
-  }
+  if (error) throw error;
 
-  return data;
+  if (!data) return null;
+
+  return {
+    id: data.id,
+    title: data.title,
+    images: data.images ?? [],
+    cookTime: data.cook_time,
+    servings: data.servings,
+    difficulty: data.difficulty,
+    description: data.description,
+    category: data.category ?? [],
+    dietaryTags: data.dietary_tags ?? [],
+    videoUrl: data.video_url ?? undefined,
+    nutrition: data.nutrition ?? undefined,
+    ingredientGroups: data.ingredient_groups,
+    instructionGroups: data.instruction_groups,
+    references: data.references ?? [],
+    createdAt: data.created_at,
+    chef: {
+      name: data.chefs.name,
+      avatar: data.chefs.avatar,
+    },
+  };
 };
 
 export function invalidateGetRecipe() {

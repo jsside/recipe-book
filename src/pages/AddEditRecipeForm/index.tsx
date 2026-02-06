@@ -19,11 +19,6 @@ import { useAuth } from "@/context/AuthContext/utils";
 import RenderComponent from "@/components/helpers/renderComponent";
 
 import { AddEditRecipeFormFields } from "./interfaces";
-import {
-  initialValues,
-  emptyIngredientGroup,
-  emptyInstructionGroup,
-} from "./constants";
 import { recipeFormSchema } from "./validation";
 import {
   getFormInitialValues,
@@ -54,13 +49,13 @@ function RecipeFormContent({
   return (
     <>
       <Stack spacing={4}>
-        <BasicInfoSection formik={formik} />
-        <CategoriesSection formik={formik} />
-        <IngredientsSection formik={formik} />
-        <InstructionsSection formik={formik} />
-        <ReferencesSection formik={formik} />
-        <AdditionalInfoSection formik={formik} />
-        <NutritionSection formik={formik} />
+        <BasicInfoSection />
+        <CategoriesSection />
+        <IngredientsSection />
+        <InstructionsSection />
+        <ReferencesSection />
+        <AdditionalInfoSection />
+        <NutritionSection />
       </Stack>
 
       <Stack direction="row" spacing={2} sx={{ mt: 4 }}>
@@ -239,7 +234,6 @@ export default function AddEditRecipeForm() {
                 open={showCancelDialog}
                 onClose={() => setShowCancelDialog(false)}
                 onConfirm={handleCancelConfirm}
-                formik={formik}
               />
             </Form>
           )}

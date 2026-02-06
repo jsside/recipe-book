@@ -2,9 +2,12 @@ import { Paper, Typography, Stack } from "@mui/material";
 import { dietaryOptions } from "@/data/recipes";
 import { CategoryChipsSelect } from "../CategoryChipsSelect";
 import { CATEGORY_OPTIONS } from "../../constants";
-import { CategoriesSectionProps } from "./interfaces";
+import { useFormikContext } from "formik";
+import { AddEditRecipeFormFields } from "../../interfaces";
 
-export function CategoriesSection({ formik }: CategoriesSectionProps) {
+export function CategoriesSection() {
+  const { values, setFieldValue } = useFormikContext<AddEditRecipeFormFields>();
+
   return (
     <Paper elevation={0} sx={{ p: 3, borderRadius: 3 }}>
       <Typography variant="h6" sx={{ mb: 3 }}>
@@ -13,18 +16,14 @@ export function CategoriesSection({ formik }: CategoriesSectionProps) {
       <Stack spacing={3}>
         <CategoryChipsSelect
           options={CATEGORY_OPTIONS}
-          selected={formik.values.categories}
-          onChange={(categories) =>
-            formik.setFieldValue("categories", categories)
-          }
+          selected={values.categories}
+          onChange={(categories) => setFieldValue("categories", categories)}
           label="Categories"
         />
         <CategoryChipsSelect
           options={dietaryOptions}
-          selected={formik.values.dietaryTags}
-          onChange={(dietaryTags) =>
-            formik.setFieldValue("dietaryTags", dietaryTags)
-          }
+          selected={values.dietaryTags}
+          onChange={(dietaryTags) => setFieldValue("dietaryTags", dietaryTags)}
           label="Dietary Tags"
         />
       </Stack>

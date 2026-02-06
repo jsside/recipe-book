@@ -17,11 +17,11 @@ export interface AddEditRecipeFormFields {
   difficulty: "easy" | "medium" | "hard";
   categories: string[];
   dietaryTags: string[];
-  videoUrl: string;
-  calories: number | "";
-  protein: number | "";
-  carbs: number | "";
-  fat: number | "";
+  videoUrl?: string;
+  calories?: number;
+  protein?: number;
+  carbs?: number;
+  fat?: number;
   ingredientGroups: IngredientGroupFormItem[];
   instructionGroups: InstructionGroupFormItem[];
   references: ReferenceFormItem[];

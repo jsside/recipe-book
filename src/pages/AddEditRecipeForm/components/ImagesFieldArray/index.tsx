@@ -1,11 +1,13 @@
-import { FieldArray } from "formik";
+import { FieldArray, useFormikContext } from "formik";
 import { Box, Stack, Typography, Button, IconButton } from "@mui/material";
 import { Add as AddIcon, Delete as DeleteIcon } from "@mui/icons-material";
 import { ImageUploadField } from "../ImageUploadField";
 import RenderComponent from "@/components/helpers/renderComponent";
-import { ImagesFieldArrayProps } from "./interfaces";
+import { AddEditRecipeFormFields } from "../../interfaces";
 
-export function ImagesFieldArray({ formik }: ImagesFieldArrayProps) {
+export function ImagesFieldArray() {
+  const { values, setFieldValue } = useFormikContext<AddEditRecipeFormFields>();
+
   return (
     <FieldArray name="images">
       {({ push, remove }) => (
@@ -14,7 +16,7 @@ export function ImagesFieldArray({ formik }: ImagesFieldArrayProps) {
             Images
           </Typography>
           <Stack spacing={2}>
-            {formik.values.images.map((image, index) => (
+            {values.images.map((image, index) => (
               <Stack
                 key={index}
                 direction="row"
@@ -25,14 +27,14 @@ export function ImagesFieldArray({ formik }: ImagesFieldArrayProps) {
                   <ImageUploadField
                     value={image}
                     onChange={(value) =>
-                      formik.setFieldValue(`images.${index}`, value)
+                      setFieldValue(`images.${index}`, value)
                     }
                     label={index === 0 ? "Primary Image" : `Image ${index + 1}`}
                     placeholder="Enter image URL or upload"
                   />
                 </Box>
                 <RenderComponent
-                  if={formik.values.images.length > 1}
+                  if={values.images.length > 1}
                   then={
                     <IconButton
                       onClick={() => remove(index)}

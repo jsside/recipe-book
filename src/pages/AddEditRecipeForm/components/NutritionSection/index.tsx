@@ -1,11 +1,14 @@
 import { Paper, Typography, Grid, TextField } from "@mui/material";
-import { NutritionSectionProps } from "./interfaces";
+import { useFormikContext } from "formik";
+import { AddEditRecipeFormFields } from "../../interfaces";
 
-export function NutritionSection({ formik }: NutritionSectionProps) {
+export function NutritionSection() {
+  const { values, setFieldValue } = useFormikContext<AddEditRecipeFormFields>();
+
   const handleNumberChange =
     (field: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
       const value = e.target.value;
-      formik.setFieldValue(field, value ? Number(value) : "");
+      setFieldValue(field, value ? Number(value) : "");
     };
 
   return (
@@ -19,7 +22,7 @@ export function NutritionSection({ formik }: NutritionSectionProps) {
             name="calories"
             label="Calories"
             type="number"
-            value={formik.values.calories}
+            value={values.calories}
             onChange={handleNumberChange("calories")}
             fullWidth
             inputProps={{ min: 0 }}
@@ -30,7 +33,7 @@ export function NutritionSection({ formik }: NutritionSectionProps) {
             name="protein"
             label="Protein (g)"
             type="number"
-            value={formik.values.protein}
+            value={values.protein}
             onChange={handleNumberChange("protein")}
             fullWidth
             inputProps={{ min: 0 }}
@@ -41,7 +44,7 @@ export function NutritionSection({ formik }: NutritionSectionProps) {
             name="carbs"
             label="Carbs (g)"
             type="number"
-            value={formik.values.carbs}
+            value={values.carbs}
             onChange={handleNumberChange("carbs")}
             fullWidth
             inputProps={{ min: 0 }}
@@ -52,7 +55,7 @@ export function NutritionSection({ formik }: NutritionSectionProps) {
             name="fat"
             label="Fat (g)"
             type="number"
-            value={formik.values.fat}
+            value={values.fat}
             onChange={handleNumberChange("fat")}
             fullWidth
             inputProps={{ min: 0 }}

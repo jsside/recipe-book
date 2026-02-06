@@ -7,14 +7,17 @@ import {
   Button,
 } from "@mui/material";
 import { CancelConfirmDialogProps } from "./interfaces";
+import { useFormikContext } from "formik";
+import { AddEditRecipeFormFields } from "../../interfaces";
 
 export function CancelConfirmDialog({
   open,
   onClose,
   onConfirm,
-  formik,
 }: CancelConfirmDialogProps) {
-  const hasChanges = formik.dirty;
+  const { dirty } = useFormikContext<AddEditRecipeFormFields>();
+
+  const hasChanges = dirty;
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>

@@ -10,9 +10,13 @@ import {
 } from "@mui/material";
 import { difficultyOptions } from "@/data/recipes";
 import { ImagesFieldArray } from "../ImagesFieldArray";
-import { BasicInfoSectionProps } from "./interfaces";
+import { useFormikContext } from "formik";
+import { AddEditRecipeFormFields } from "../../interfaces";
 
-export function BasicInfoSection({ formik }: BasicInfoSectionProps) {
+export function BasicInfoSection() {
+  const { values, handleChange, handleBlur, touched, errors } =
+    useFormikContext<AddEditRecipeFormFields>();
+
   return (
     <Paper elevation={0} sx={{ p: 3, borderRadius: 3 }}>
       <Typography variant="h6" sx={{ mb: 3 }}>
@@ -23,11 +27,11 @@ export function BasicInfoSection({ formik }: BasicInfoSectionProps) {
           <TextField
             name="title"
             label="Recipe Title"
-            value={formik.values.title}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            error={formik.touched.title && Boolean(formik.errors.title)}
-            helperText={formik.touched.title && formik.errors.title}
+            value={values.title}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            error={touched.title && Boolean(errors.title)}
+            helperText={touched.title && errors.title}
             required
             fullWidth
           />
@@ -36,13 +40,11 @@ export function BasicInfoSection({ formik }: BasicInfoSectionProps) {
           <TextField
             name="description"
             label="Description"
-            value={formik.values.description}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            error={
-              formik.touched.description && Boolean(formik.errors.description)
-            }
-            helperText={formik.touched.description && formik.errors.description}
+            value={values.description}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            error={touched.description && Boolean(errors.description)}
+            helperText={touched.description && errors.description}
             required
             fullWidth
             multiline
@@ -51,18 +53,18 @@ export function BasicInfoSection({ formik }: BasicInfoSectionProps) {
         </Grid>
 
         <Grid size={{ xs: 12 }}>
-          <ImagesFieldArray formik={formik} />
+          <ImagesFieldArray />
         </Grid>
 
         <Grid size={{ xs: 12, sm: 4 }}>
           <TextField
             name="cookTime"
             label="Cook Time"
-            value={formik.values.cookTime}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            error={formik.touched.cookTime && Boolean(formik.errors.cookTime)}
-            helperText={formik.touched.cookTime && formik.errors.cookTime}
+            value={values.cookTime}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            error={touched.cookTime && Boolean(errors.cookTime)}
+            helperText={touched.cookTime && errors.cookTime}
             required
             fullWidth
             placeholder="e.g., 30 mins"
@@ -73,9 +75,9 @@ export function BasicInfoSection({ formik }: BasicInfoSectionProps) {
             name="servings"
             label="Servings"
             type="number"
-            value={formik.values.servings}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
+            value={values.servings}
+            onChange={handleChange}
+            onBlur={handleBlur}
             required
             fullWidth
             inputProps={{ min: 1 }}
@@ -86,9 +88,9 @@ export function BasicInfoSection({ formik }: BasicInfoSectionProps) {
             <InputLabel>Difficulty</InputLabel>
             <Select
               name="difficulty"
-              value={formik.values.difficulty}
+              value={values.difficulty}
               label="Difficulty"
-              onChange={formik.handleChange}
+              onChange={handleChange}
             >
               {difficultyOptions.map((opt) => (
                 <MenuItem

@@ -1,12 +1,10 @@
 import { Paper, Typography, Grid, TextField } from "@mui/material";
-import { FormikProps } from "formik";
+import { useFormikContext } from "formik";
 import { AddEditRecipeFormFields } from "../../interfaces";
 
-export function AdditionalInfoSection({
-  formik,
-}: {
-  formik: FormikProps<AddEditRecipeFormFields>;
-}) {
+export function AdditionalInfoSection() {
+  const { values, handleChange } = useFormikContext<AddEditRecipeFormFields>();
+
   return (
     <Paper elevation={0} sx={{ p: 3, borderRadius: 3 }}>
       <Typography variant="h6" sx={{ mb: 3 }}>
@@ -17,8 +15,8 @@ export function AdditionalInfoSection({
           <TextField
             name="videoUrl"
             label="Video URL (optional)"
-            value={formik.values.videoUrl}
-            onChange={formik.handleChange}
+            value={values.videoUrl}
+            onChange={handleChange}
             fullWidth
             placeholder="https://youtube.com/..."
           />

@@ -1,4 +1,4 @@
-import { FieldArray } from "formik";
+import { FieldArray, useFormikContext } from "formik";
 import {
   Paper,
   Typography,
@@ -9,9 +9,11 @@ import {
 } from "@mui/material";
 import { Add as AddIcon, Delete as DeleteIcon } from "@mui/icons-material";
 import { createEmptyReference } from "../../constants";
-import { ReferencesSectionProps } from "./interfaces";
+import { AddEditRecipeFormFields } from "../../interfaces";
 
-export function ReferencesSection({ formik }: ReferencesSectionProps) {
+export function ReferencesSection() {
+  const { values, handleChange } = useFormikContext<AddEditRecipeFormFields>();
+
   return (
     <Paper elevation={0} sx={{ p: 3, borderRadius: 3 }}>
       <Typography variant="h6" sx={{ mb: 1 }}>
@@ -24,7 +26,7 @@ export function ReferencesSection({ formik }: ReferencesSectionProps) {
       <FieldArray name="references">
         {({ push, remove }) => (
           <Stack spacing={2}>
-            {formik.values.references.map((ref, index) => (
+            {values.references.map((ref, index) => (
               <Stack
                 key={ref.tempId}
                 direction="row"
@@ -35,7 +37,7 @@ export function ReferencesSection({ formik }: ReferencesSectionProps) {
                   name={`references.${index}.url`}
                   label={ref.type === "link" ? "Link URL" : "Image URL"}
                   value={ref.url}
-                  onChange={formik.handleChange}
+                  onChange={handleChange}
                   fullWidth
                   size="small"
                   placeholder={
@@ -48,7 +50,7 @@ export function ReferencesSection({ formik }: ReferencesSectionProps) {
                   name={`references.${index}.title`}
                   label="Title (optional)"
                   value={ref.title}
-                  onChange={formik.handleChange}
+                  onChange={handleChange}
                   size="small"
                   sx={{ minWidth: 150 }}
                 />

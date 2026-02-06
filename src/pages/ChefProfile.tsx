@@ -17,13 +17,7 @@ import { useListRecipes } from "@/hooks/useListRecipes";
 export default function ChefProfile() {
   const { name } = useParams<{ name: string }>();
 
-  const {
-    data: recipes = [],
-    isLoading,
-    refetch,
-    isError,
-    error,
-  } = useListRecipes();
+  const { data: recipes = [] } = useListRecipes();
 
   const decodedName = decodeURIComponent(name || "");
 

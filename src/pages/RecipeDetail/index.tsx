@@ -37,10 +37,7 @@ import { MethodPanel } from "./components/MethodPanel";
 import { useGetRecipe } from "@/hooks/useGetRecipe";
 import { useShoppingList } from "@/context/ShoppingListContext/utils";
 import { useAuth } from "@/context/AuthContext/utils";
-import {
-  ImageGallery,
-  ReferencesSection,
-} from "./components/RecipeGallery";
+import { ImageGallery, ReferencesSection } from "./components/RecipeGallery";
 import { CloudinaryImage } from "@/components/custom/CloudinaryImage";
 import { LoadingRecipeDetail } from "./components/LoadingRecipeDetail";
 import { RecipeNotFound } from "./components/RecipeNotFound";

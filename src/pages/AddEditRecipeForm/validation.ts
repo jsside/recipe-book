@@ -18,7 +18,7 @@ export const recipeFormSchema = Yup.object().shape({
     .min(1, "Servings must be at least 1")
     .max(100, "Servings must be less than 100"),
   difficulty: Yup.string().oneOf(["easy", "medium", "hard"]).required(),
-  videoUrl: Yup.string().url("Must be a valid URL").optional(),
+  videoUrl: Yup.string().nullable().url("Must be a valid URL").optional(), // TODO: where is it set to null
   calories: Yup.number().min(0).optional(),
   protein: Yup.number().min(0).optional(),
   carbs: Yup.number().min(0).optional(),

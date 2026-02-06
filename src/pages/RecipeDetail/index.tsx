@@ -40,7 +40,7 @@ import { useAuth } from "@/context/AuthContext/utils";
 import {
   ImageGallery,
   ReferencesSection,
-} from "@/components/custom/RecipeGallery";
+} from "./components/RecipeGallery";
 import { CloudinaryImage } from "@/components/custom/CloudinaryImage";
 import { LoadingRecipeDetail } from "./components/LoadingRecipeDetail";
 import { RecipeNotFound } from "./components/RecipeNotFound";

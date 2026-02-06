@@ -1,5 +1,5 @@
-import { IngredientGroupFormItem } from "@/components/custom/IngredientGroupForm/interfaces";
-import { InstructionGroupFormItem } from "@/components/custom/InstructionGroupForm/interfaces";
+import { IngredientGroupFormItem } from "./components/IngredientGroupForm/interfaces";
+import { InstructionGroupFormItem } from "./components/InstructionGroupForm/interfaces";
 import { AddEditRecipeFormFields, ReferenceFormItem } from "./interfaces";
 
 export const CATEGORY_OPTIONS = [

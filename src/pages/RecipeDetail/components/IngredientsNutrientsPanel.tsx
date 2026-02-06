@@ -26,7 +26,7 @@ import { useUnitConversion } from "@/hooks/useUnitConversion";
 import { useWakeLock } from "@/hooks/useWakeLock";
 import { useServingsAdjuster } from "@/hooks/useServingsAdjuster";
 import { getAllIngredients } from "@/utils/ingredientParser";
-import ServingsAdjuster from "@/components/custom/ServingsAdjuster";
+import ServingsAdjuster from "./ServingsAdjuster";
 import { useShoppingList } from "@/context/ShoppingListContext/utils";
 
 export const IngredientsNutrientsPanel = ({ recipe }: { recipe: Recipe }) => {

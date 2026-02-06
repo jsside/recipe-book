@@ -2,15 +2,15 @@ import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { Container, Box, Typography, Grid, Button } from "@mui/material";
 import { ArrowForward as ArrowIcon } from "@mui/icons-material";
-import { HeroSection } from "@/components/custom/HeroSection";
+import { HeroSection } from "./components/HeroSection";
 import { CategoryChips } from "@/components/custom/CategoryChips";
 import { RecipeCard } from "@/components/custom/RecipeCard";
 import { IngredientCard } from "@/components/custom/IngredientCard";
 import { ingredientCategories } from "@/data/recipes";
 import { useListRecipes } from "@/hooks/useListRecipes";
 import RenderComponent from "@/components/helpers/renderComponent";
-import HorizontalScroll from "@/components/custom/HorizontalScroll";
-import ChefCard from "@/components/custom/ChefCard";
+import HorizontalScroll from "./components/HorizontalScroll";
+import ChefCard from "./components/ChefCard";
 import { Features } from "@/features";
 import { isNew } from "@/utils/recipeHelpers";
 

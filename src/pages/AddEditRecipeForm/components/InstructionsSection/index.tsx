@@ -1,5 +1,5 @@
 import { Paper, Typography } from "@mui/material";
-import { InstructionGroupForm } from "@/components/custom/InstructionGroupForm";
+import { InstructionGroupForm } from "../InstructionGroupForm";
 import { InstructionsSectionProps } from "./interfaces";
 
 export function InstructionsSection({ formik }: InstructionsSectionProps) {

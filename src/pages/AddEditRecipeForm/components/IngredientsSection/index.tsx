@@ -1,5 +1,5 @@
 import { Paper, Typography } from "@mui/material";
-import { IngredientGroupForm } from "@/components/custom/IngredientGroupForm";
+import { IngredientGroupForm } from "../IngredientGroupForm";
 import { IngredientsSectionProps } from "./interfaces";
 
 export function IngredientsSection({ formik }: IngredientsSectionProps) {

@@ -1,6 +1,6 @@
 import { Paper, Typography, Stack } from "@mui/material";
 import { dietaryOptions } from "@/data/recipes";
-import { CategoryChipsSelect } from "@/components/custom/CategoryChipsSelect";
+import { CategoryChipsSelect } from "../CategoryChipsSelect";
 import { CATEGORY_OPTIONS } from "../../constants";
 import { CategoriesSectionProps } from "./interfaces";
 

@@ -9,7 +9,7 @@ import { UnitConversionProvider } from "@/context/UnitConversionContext";
 import { Footer } from "@/components/custom/Footer";
 import { ShoppingListDrawer } from "@/components/custom/ShoppingListDrawer";
 import { NotificationBar } from "@/components/custom/NotificationBar";
-import Index from "../pages/Index";
+import Index from "../pages/Index/index";
 import Recipes from "../pages/Recipes";
 import Ingredients from "../pages/Ingredients";
 import MealPlans from "../pages/MealPlans";

@@ -1,4 +1,4 @@
-import InstructionStep from "@/components/custom/InstructionStep";
+import InstructionStep from "./InstructionStep";
 import RenderComponent from "@/components/helpers/renderComponent";
 import { Recipe } from "@/data/recipes";
 import { useServingsAdjuster } from "@/hooks/useServingsAdjuster";

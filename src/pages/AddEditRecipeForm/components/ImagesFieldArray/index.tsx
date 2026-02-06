@@ -1,7 +1,7 @@
 import { FieldArray } from "formik";
 import { Box, Stack, Typography, Button, IconButton } from "@mui/material";
 import { Add as AddIcon, Delete as DeleteIcon } from "@mui/icons-material";
-import { ImageUploadField } from "@/components/custom/ImageUploadField";
+import { ImageUploadField } from "../ImageUploadField";
 import RenderComponent from "@/components/helpers/renderComponent";
 import { ImagesFieldArrayProps } from "./interfaces";
 

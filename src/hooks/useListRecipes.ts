@@ -125,7 +125,6 @@ export const fetchRecipesByChef = async (
 export function invalidateListRecipesByChef(chefId: number) {
   return singletonQueryClient.invalidateQueries([
     LIST_RECIPES_KEY,
-    "by-chef",
     chefId,
   ] as InvalidateQueryFilters<readonly unknown[]>);
 }
@@ -133,7 +132,7 @@ export function invalidateListRecipesByChef(chefId: number) {
 export function useListRecipesByChef(chefId: number) {
   return useQuery<ChefWithRecipes | null, Error>({
     queryFn: () => fetchRecipesByChef(chefId),
-    queryKey: [LIST_RECIPES_KEY, "by-chef", chefId],
+    queryKey: [LIST_RECIPES_KEY, chefId],
     enabled: !!chefId,
   });
 }
@@ -208,7 +207,7 @@ export const fetchRecipesByChefName = async (
 export function useListRecipesByChefName(chefName: string) {
   return useQuery<ChefRecipesResult | null, Error>({
     queryFn: () => fetchRecipesByChefName(chefName),
-    queryKey: [LIST_RECIPES_KEY, "by-chef-name", chefName],
+    queryKey: [LIST_RECIPES_KEY, chefName],
     enabled: !!chefName,
   });
 }
@@ -271,7 +270,6 @@ export const fetchRecipesByIngredient = async (
 export function invalidateListRecipesByIngredient(ingredientId: number) {
   return singletonQueryClient.invalidateQueries([
     LIST_RECIPES_KEY,
-    "by-ingredient",
     ingredientId,
   ] as InvalidateQueryFilters<readonly unknown[]>);
 }
@@ -279,7 +277,7 @@ export function invalidateListRecipesByIngredient(ingredientId: number) {
 export function useListRecipesByIngredient(ingredientId: number) {
   return useQuery<IngredientWithRecipes | null, Error>({
     queryFn: () => fetchRecipesByIngredient(ingredientId),
-    queryKey: [LIST_RECIPES_KEY, "by-ingredient", ingredientId],
+    queryKey: [LIST_RECIPES_KEY, ingredientId],
     enabled: !!ingredientId,
   });
 }
@@ -333,7 +331,7 @@ export const fetchRecipesByCategory = async (
 export function invalidateListRecipesByCategory(category: string) {
   return singletonQueryClient.invalidateQueries([
     LIST_RECIPES_KEY,
-    "by-category",
+
     category,
   ] as InvalidateQueryFilters<readonly unknown[]>);
 }
@@ -341,7 +339,7 @@ export function invalidateListRecipesByCategory(category: string) {
 export function useListRecipesByCategory(category: string) {
   return useQuery<RecipeWithChef[], Error>({
     queryFn: () => fetchRecipesByCategory(category),
-    queryKey: [LIST_RECIPES_KEY, "by-category", category],
+    queryKey: [LIST_RECIPES_KEY, category],
     enabled: !!category,
   });
 }
@@ -385,7 +383,6 @@ export const fetchRecipesByDietaryTag = async (
 export function invalidateRecipesByDietaryTag(tag: string) {
   return singletonQueryClient.invalidateQueries([
     LIST_RECIPES_KEY,
-    "by-dietary-tag",
     tag,
   ] as InvalidateQueryFilters<readonly unknown[]>);
 }
@@ -393,7 +390,7 @@ export function invalidateRecipesByDietaryTag(tag: string) {
 export function useListRecipesByDietaryTag(tag: string) {
   return useQuery<RecipeWithChef[], Error>({
     queryFn: () => fetchRecipesByDietaryTag(tag),
-    queryKey: [LIST_RECIPES_KEY, "by-dietary-tag", tag],
+    queryKey: [LIST_RECIPES_KEY, tag],
     enabled: !!tag,
   });
 }
@@ -437,7 +434,7 @@ export const fetchRecipesByDifficulty = async (
 export function invalidateRecipesByDifficulty(difficulty: Difficulty) {
   return singletonQueryClient.invalidateQueries([
     LIST_RECIPES_KEY,
-    "by-difficulty",
+
     difficulty,
   ] as InvalidateQueryFilters<readonly unknown[]>);
 }
@@ -445,7 +442,7 @@ export function invalidateRecipesByDifficulty(difficulty: Difficulty) {
 export function useListRecipesByDifficulty(difficulty: Difficulty) {
   return useQuery<RecipeWithChef[], Error>({
     queryFn: () => fetchRecipesByDifficulty(difficulty),
-    queryKey: [LIST_RECIPES_KEY, "by-difficulty", difficulty],
+    queryKey: [LIST_RECIPES_KEY, difficulty],
     enabled: !!difficulty,
   });
 }

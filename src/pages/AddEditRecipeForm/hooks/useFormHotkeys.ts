@@ -3,7 +3,10 @@ import { FormikProps } from "formik";
 import { AddEditRecipeFormFields } from "../interfaces";
 import { MAX_HISTORY_SIZE } from "../constants";
 
-export function useFormHistory(formik: FormikProps<AddEditRecipeFormFields>) {
+export function useFormHotkeys(
+  formik: FormikProps<AddEditRecipeFormFields>,
+  onSubmit: (() => Promise<void>) & (() => Promise<AddEditRecipeFormFields>),
+) {
   const historyRef = useRef<AddEditRecipeFormFields[]>([formik.values]);
   const historyIndexRef = useRef(0);
   const isUndoRedoRef = useRef(false);
@@ -68,6 +71,7 @@ export function useFormHistory(formik: FormikProps<AddEditRecipeFormFields>) {
   // Keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      // UNDO / REDO
       if ((e.metaKey || e.ctrlKey) && e.key === "z") {
         e.preventDefault();
         if (e.shiftKey) {
@@ -80,11 +84,17 @@ export function useFormHistory(formik: FormikProps<AddEditRecipeFormFields>) {
         e.preventDefault();
         handleRedo();
       }
+
+      // SAVE
+      if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
+        e.preventDefault();
+        onSubmit();
+      }
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [handleUndo, handleRedo]);
+  }, [handleUndo, handleRedo, onSubmit]);
 
   return { handleUndo, handleRedo, resetHistory };
 }

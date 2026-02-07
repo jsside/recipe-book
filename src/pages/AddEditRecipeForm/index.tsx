@@ -2,14 +2,20 @@ import { useState } from "react";
 import { useNavigate, Navigate, useParams } from "react-router-dom";
 import { Formik, Form, FormikProps } from "formik";
 import {
+  Chip,
   Container,
   Box,
   Typography,
   Button,
   Stack,
   Alert,
+  List,
+  ListItem,
+  ListItemText,
+  Tooltip,
 } from "@mui/material";
-import { ArrowBack as BackIcon } from "@mui/icons-material";
+
+import { ArrowBack as BackIcon, FlareOutlined } from "@mui/icons-material";
 
 import { useAddRecipe } from "@/hooks/useAddRecipe";
 import { useUpdateRecipe } from "@/hooks/useUpdateRecipe";
@@ -25,7 +31,7 @@ import {
   transformFormToRecipe,
   validateFormData,
 } from "./utils";
-import { useFormHistory } from "./hooks/useFormHistory";
+
 import { processImages } from "./utils/uploadHelpers";
 
 import { BasicInfoSection } from "./components/BasicInfoSection";
@@ -36,15 +42,18 @@ import { ReferencesSection } from "./components/ReferencesSection";
 import { AdditionalInfoSection } from "./components/AdditionalInfoSection";
 import { NutritionSection } from "./components/NutritionSection";
 import { CancelConfirmDialog } from "./components/CancelConfirmDialog";
+import { useFormHotkeys } from "./hooks/useFormHotkeys";
 
 function RecipeFormContent({
   formik,
   onCancel,
+  onSubmit,
 }: {
   formik: FormikProps<AddEditRecipeFormFields>;
   onCancel: () => void;
+  onSubmit: (() => Promise<void>) & (() => Promise<AddEditRecipeFormFields>);
 }) {
-  useFormHistory(formik);
+  useFormHotkeys(formik, onSubmit);
 
   return (
     <>
@@ -209,11 +218,12 @@ export default function AddEditRecipeForm() {
           sx={{ mb: 4 }}
         >
           <Typography variant="h4">
-            {isEditMode ? "Edit Recipe" : "Add New Recipe"}
+            {isEditMode ? "Edit recipe" : "Add new recipe"}
           </Typography>
-          <Typography variant="caption" color="text.secondary">
-            Tip: Use Ctrl+Z / Cmd+Z to undo
-          </Typography>
+
+          <div>
+            <TipsTooltip />
+          </div>
         </Stack>
 
         <Formik
@@ -233,7 +243,11 @@ export default function AddEditRecipeForm() {
                 }
               />
 
-              <RecipeFormContent formik={formik} onCancel={handleCancelClick} />
+              <RecipeFormContent
+                formik={formik}
+                onCancel={handleCancelClick}
+                onSubmit={formik.submitForm}
+              />
 
               <CancelConfirmDialog
                 open={showCancelDialog}
@@ -247,3 +261,42 @@ export default function AddEditRecipeForm() {
     </Box>
   );
 }
+
+const TipsTooltip = () => {
+  const HotKeysMenu = (
+    <List dense sx={{ width: "150px" }}>
+      <ListItem
+        secondaryAction={
+          <Chip
+            label={<Typography variant="caption">{"⌘+Z"}</Typography>}
+            color="info"
+            size="small"
+          />
+        }
+      >
+        <ListItemText
+          primary={<Typography variant="caption">Undo</Typography>}
+        />
+      </ListItem>
+      <ListItem
+        secondaryAction={
+          <Chip
+            label={<Typography variant="caption">{"⌘+Enter"}</Typography>}
+            color="info"
+            size="small"
+          />
+        }
+      >
+        <ListItemText
+          primary={<Typography variant="caption">Save</Typography>}
+        />
+      </ListItem>
+    </List>
+  );
+
+  return (
+    <Tooltip title={HotKeysMenu}>
+      <FlareOutlined />
+    </Tooltip>
+  );
+};

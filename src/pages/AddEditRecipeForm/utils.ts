@@ -127,7 +127,7 @@ export function validateFormData(
   }
 
   const hasValidIngredient = values.ingredientGroups.some((group) =>
-    group.items.some((item) => item.name.trim() && item.amount.trim()),
+    group.items.some((item) => item.name.trim()),
   );
   if (!hasValidIngredient) {
     return "Please add at least one ingredient";

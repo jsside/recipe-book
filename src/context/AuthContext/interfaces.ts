@@ -6,6 +6,7 @@ export interface User {
   name: string;
   role: UserRole;
   avatar?: string;
+  chefId?: number; // Links to chefs table when user is a chef
 }
 
 export interface AuthContextType {

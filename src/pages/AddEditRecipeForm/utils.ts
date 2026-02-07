@@ -5,12 +5,51 @@ import { initialValues } from "./constants";
 interface User {
   name: string;
   avatar?: string;
+  chefId?: number;
+}
+
+interface TransformedRecipeData {
+  title: string;
+  description: string;
+  cookTime: string;
+  servings: number;
+  chefId: number;
+  images?: string[];
+  category?: string[];
+  dietaryTags?: string[];
+  difficulty?: string;
+  videoUrl?: string;
+  nutrition?: {
+    calories?: number;
+    protein?: number;
+    carbs?: number;
+    fat?: number;
+  };
+  ingredientGroups: {
+    heading?: string;
+    items: {
+      id: string;
+      name: string;
+      amount: string;
+      unit: string;
+      preparation?: string;
+      note?: string;
+    }[];
+  }[];
+  instructionGroups: {
+    heading?: string;
+    steps: {
+      text: string;
+      timer?: number;
+    }[];
+  }[];
+  references?: RecipeReference[];
 }
 
 export function transformFormToRecipe(
   values: AddEditRecipeFormFields,
   user: User,
-): Omit<Recipe, "id"> {
+): TransformedRecipeData {
   const formattedIngredientGroups = values.ingredientGroups
     .map((group) => ({
       heading: group.heading || undefined,
@@ -59,12 +98,7 @@ export function transformFormToRecipe(
     category: values.categories.length > 0 ? values.categories : ["Dinner"],
     dietaryTags: values.dietaryTags,
     videoUrl: values.videoUrl?.trim() || undefined,
-    chef: {
-      name: user.name,
-      avatar:
-        user.avatar ||
-        "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&q=80",
-    },
+    chefId: user.chefId || 0,
     ingredientGroups: formattedIngredientGroups,
     instructionGroups: formattedInstructionGroups,
     nutrition:
@@ -110,7 +144,7 @@ export function validateFormData(
 }
 
 export const getFormInitialValues = (
-  existingRecipe: Recipe,
+  existingRecipe?: Recipe | null,
 ): AddEditRecipeFormFields => {
   if (!existingRecipe) return initialValues;
 
@@ -121,9 +155,9 @@ export const getFormInitialValues = (
     images: existingRecipe.images?.length ? existingRecipe.images : [""],
     cookTime: existingRecipe.cookTime,
     servings: existingRecipe.servings,
-    difficulty: existingRecipe.difficulty,
+    difficulty: existingRecipe.difficulty || "medium",
     categories: existingRecipe.category,
-    dietaryTags: existingRecipe.dietaryTags,
+    dietaryTags: existingRecipe.dietaryTags || [],
     videoUrl: existingRecipe.videoUrl ?? undefined,
     calories: existingRecipe.nutrition?.calories ?? undefined,
     protein: existingRecipe.nutrition?.protein ?? undefined,
@@ -155,7 +189,7 @@ export const getFormInitialValues = (
         tempId: crypto.randomUUID(),
         type: ref.type,
         url: ref.url,
-        title: ref.title,
+        title: ref.title || "",
       })) || [],
   };
 };

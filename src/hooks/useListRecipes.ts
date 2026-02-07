@@ -10,8 +10,15 @@ export const LIST_RECIPES_KEY = "list-recipes";
 //----------------------------------
 
 const fetchRecipes = async (): Promise<Recipe[]> => {
-  const { data, error } = await supabase.from("recipes").select("*");
-  // .order("created_at", { ascending: false });
+  const { data, error } = await supabase
+    .from("recipes")
+    .select(
+      `
+      *,
+      chefs ( id, name, avatar )
+    `,
+    )
+    .order("created_at", { ascending: false });
 
   if (error) {
     throw error;
@@ -34,12 +41,13 @@ const fetchRecipes = async (): Promise<Recipe[]> => {
       instructionGroups: r.instruction_groups,
       references: r.references ?? [],
       createdAt: r.created_at,
-      // TODO fix chef
-
-      // chef: {
-      //   name: r.chefs.name,
-      //   avatar: r.chefs.avatar,
-      // },
+      chefId: r.chef_id,
+      chef: r.chefs
+        ? {
+            name: r.chefs.name,
+            avatar: r.chefs.avatar,
+          }
+        : undefined,
     })) ?? []
   );
 };
@@ -61,7 +69,22 @@ export function useListRecipes() {
 // RECIPES BY CHEF
 //----------------------------------
 
-export const fetchRecipesByChef = async (chefId: number) => {
+interface ChefWithRecipes {
+  id: number;
+  name: string;
+  avatar?: string;
+  recipes: {
+    id: number;
+    title: string;
+    images: string[];
+    cookTime: string;
+    createdAt: string;
+  }[];
+}
+
+export const fetchRecipesByChef = async (
+  chefId: number,
+): Promise<ChefWithRecipes | null> => {
   const { data, error } = await supabase
     .from("chefs")
     .select(
@@ -82,28 +105,133 @@ export const fetchRecipesByChef = async (chefId: number) => {
     .single();
 
   if (error) throw error;
+  if (!data) return null;
 
-  return data;
+  return {
+    id: data.id,
+    name: data.name,
+    avatar: data.avatar ?? undefined,
+    recipes:
+      data.recipes?.map((r: Record<string, unknown>) => ({
+        id: r.id as number,
+        title: r.title as string,
+        images: (r.images as string[]) ?? [],
+        cookTime: r.cook_time as string,
+        createdAt: r.created_at as string,
+      })) ?? [],
+  };
 };
 
-// export function invalidateListRecipesByChef(chefId: number) {
-//   return singletonQueryClient.invalidateQueries([
-//     `${LIST_RECIPES_KEY}-by-chef-${chefId}`,
-//   ] as InvalidateQueryFilters<readonly unknown[]>);
-// }
+export function invalidateListRecipesByChef(chefId: number) {
+  return singletonQueryClient.invalidateQueries([
+    LIST_RECIPES_KEY,
+    "by-chef",
+    chefId,
+  ] as InvalidateQueryFilters<readonly unknown[]>);
+}
 
-// export function useListRecipesByChef(chefId: number) {
-//   return useQuery<Recipe[], Error>({
-//     queryFn: fetchRecipesByChef,
-//     queryKey: [`${LIST_RECIPES_KEY}-by-chef-${chefId}`],
-//   });
-// }
+export function useListRecipesByChef(chefId: number) {
+  return useQuery<ChefWithRecipes | null, Error>({
+    queryFn: () => fetchRecipesByChef(chefId),
+    queryKey: [LIST_RECIPES_KEY, "by-chef", chefId],
+    enabled: !!chefId,
+  });
+}
+
+//----------------------------------
+// RECIPES BY CHEF NAME
+//----------------------------------
+
+interface ChefRecipesResult {
+  chef: {
+    id: number;
+    name: string;
+    avatar?: string;
+  };
+  recipes: Recipe[];
+}
+
+export const fetchRecipesByChefName = async (
+  chefName: string,
+): Promise<ChefRecipesResult | null> => {
+  // First find the chef
+  const { data: chefData, error: chefError } = await supabase
+    .from("chefs")
+    .select("id, name, avatar")
+    .ilike("name", chefName)
+    .maybeSingle();
+
+  if (chefError) throw chefError;
+  if (!chefData) return null;
+
+  // Then fetch their recipes
+  const { data: recipesData, error: recipesError } = await supabase
+    .from("recipes")
+    .select("*")
+    .eq("chef_id", chefData.id)
+    .order("created_at", { ascending: false });
+
+  if (recipesError) throw recipesError;
+
+  return {
+    chef: {
+      id: chefData.id,
+      name: chefData.name,
+      avatar: chefData.avatar ?? undefined,
+    },
+    recipes:
+      recipesData?.map((r) => ({
+        id: r.id,
+        title: r.title,
+        images: r.images ?? [],
+        cookTime: r.cook_time,
+        servings: r.servings,
+        difficulty: r.difficulty,
+        description: r.description,
+        category: r.category ?? [],
+        dietaryTags: r.dietary_tags ?? [],
+        videoUrl: r.video_url ?? undefined,
+        nutrition: r.nutrition ?? undefined,
+        ingredientGroups: r.ingredient_groups,
+        instructionGroups: r.instruction_groups,
+        references: r.references ?? [],
+        createdAt: r.created_at,
+        chefId: r.chef_id,
+        chef: {
+          name: chefData.name,
+          avatar: chefData.avatar ?? undefined,
+        },
+      })) ?? [],
+  };
+};
+
+export function useListRecipesByChefName(chefName: string) {
+  return useQuery<ChefRecipesResult | null, Error>({
+    queryFn: () => fetchRecipesByChefName(chefName),
+    queryKey: [LIST_RECIPES_KEY, "by-chef-name", chefName],
+    enabled: !!chefName,
+  });
+}
 
 //----------------------------------
 // RECIPES BY INGREDIENT
 //----------------------------------
 
-export const fetchRecipesByIngredient = async (ingredientId: number) => {
+interface IngredientWithRecipes {
+  id: number;
+  name: string;
+  category?: string;
+  imageUrl?: string;
+  recipes: {
+    id: number;
+    title: string;
+    images: string[];
+  }[];
+}
+
+export const fetchRecipesByIngredient = async (
+  ingredientId: number,
+): Promise<IngredientWithRecipes | null> => {
   const { data, error } = await supabase
     .from("ingredients")
     .select(
@@ -125,34 +253,54 @@ export const fetchRecipesByIngredient = async (ingredientId: number) => {
     .single();
 
   if (error) throw error;
+  if (!data) return null;
 
   return {
     id: data.id,
     name: data.name,
-    category: data.category,
-    imageUrl: data.image_url,
-    recipes: data.recipe_ingredients?.map((ri) => ri.recipes) ?? [],
+    category: data.category ?? undefined,
+    imageUrl: data.image_url ?? undefined,
+    recipes:
+      data.recipe_ingredients?.map(
+        (ri: { recipes: { id: number; title: string; images: string[] } }) =>
+          ri.recipes,
+      ) ?? [],
   };
 };
 
-// export function invalidateListRecipesByIngredient(ingredientId: number) {
-//   return singletonQueryClient.invalidateQueries([
-//     `${LIST_RECIPES_KEY}-by-ingredient-${ingredientId}`,
-//   ] as InvalidateQueryFilters<readonly unknown[]>);
-// }
+export function invalidateListRecipesByIngredient(ingredientId: number) {
+  return singletonQueryClient.invalidateQueries([
+    LIST_RECIPES_KEY,
+    "by-ingredient",
+    ingredientId,
+  ] as InvalidateQueryFilters<readonly unknown[]>);
+}
 
-// export function useListRecipesByIngredient(ingredientId: number) {
-//   return useQuery<Recipe[], Error>({
-//     queryFn: fetchRecipesByIngredient,
-//     queryKey: [`${LIST_RECIPES_KEY}-by-ingredient-${ingredientId}`],
-//   });
-// }
+export function useListRecipesByIngredient(ingredientId: number) {
+  return useQuery<IngredientWithRecipes | null, Error>({
+    queryFn: () => fetchRecipesByIngredient(ingredientId),
+    queryKey: [LIST_RECIPES_KEY, "by-ingredient", ingredientId],
+    enabled: !!ingredientId,
+  });
+}
 
 //----------------------------------
 // RECIPES BY CATEGORY
 //----------------------------------
 
-export const fetchRecipesByCategory = async (category: string) => {
+interface RecipeWithChef {
+  id: number;
+  title: string;
+  images: string[];
+  chef?: {
+    name: string;
+    avatar?: string;
+  };
+}
+
+export const fetchRecipesByCategory = async (
+  category: string,
+): Promise<RecipeWithChef[]> => {
   const { data, error } = await supabase
     .from("recipes")
     .select(
@@ -167,27 +315,44 @@ export const fetchRecipesByCategory = async (category: string) => {
 
   if (error) throw error;
 
-  return data ?? [];
+  return (
+    data?.map((r) => ({
+      id: r.id,
+      title: r.title,
+      images: r.images ?? [],
+      chef: r.chefs
+        ? {
+            name: r.chefs.name,
+            avatar: r.chefs.avatar ?? undefined,
+          }
+        : undefined,
+    })) ?? []
+  );
 };
 
-// export function invalidateListRecipesByCategory(category: string) {
-//   return singletonQueryClient.invalidateQueries([
-//     `${LIST_RECIPES_KEY}-by-category-${category}`,
-//   ] as InvalidateQueryFilters<readonly unknown[]>);
-// }
+export function invalidateListRecipesByCategory(category: string) {
+  return singletonQueryClient.invalidateQueries([
+    LIST_RECIPES_KEY,
+    "by-category",
+    category,
+  ] as InvalidateQueryFilters<readonly unknown[]>);
+}
 
-// export function useListRecipesByCategory(category: string) {
-//   return useQuery<Recipe[], Error>({
-//     queryFn: fetchRecipesByCategory,
-//     queryKey: [`${LIST_RECIPES_KEY}-by-category-${category}`],
-//   });
-// }
+export function useListRecipesByCategory(category: string) {
+  return useQuery<RecipeWithChef[], Error>({
+    queryFn: () => fetchRecipesByCategory(category),
+    queryKey: [LIST_RECIPES_KEY, "by-category", category],
+    enabled: !!category,
+  });
+}
 
 //----------------------------------
 // RECIPES BY DIETARY TAG
 //----------------------------------
 
-export const fetchRecipesByDietaryTag = async (tag: string) => {
+export const fetchRecipesByDietaryTag = async (
+  tag: string,
+): Promise<RecipeWithChef[]> => {
   const { data, error } = await supabase
     .from("recipes")
     .select(
@@ -202,27 +367,44 @@ export const fetchRecipesByDietaryTag = async (tag: string) => {
 
   if (error) throw error;
 
-  return data ?? [];
+  return (
+    data?.map((r) => ({
+      id: r.id,
+      title: r.title,
+      images: r.images ?? [],
+      chef: r.chefs
+        ? {
+            name: r.chefs.name,
+            avatar: r.chefs.avatar ?? undefined,
+          }
+        : undefined,
+    })) ?? []
+  );
 };
 
-// export function invalidateRecipesByDietaryTag(tag: string) {
-//   return singletonQueryClient.invalidateQueries([
-//     `${LIST_RECIPES_KEY}-by-dietary-tag-${tag}`,
-//   ] as InvalidateQueryFilters<readonly unknown[]>);
-// }
+export function invalidateRecipesByDietaryTag(tag: string) {
+  return singletonQueryClient.invalidateQueries([
+    LIST_RECIPES_KEY,
+    "by-dietary-tag",
+    tag,
+  ] as InvalidateQueryFilters<readonly unknown[]>);
+}
 
-// export function useListRecipesByDietaryTag(tag: string) {
-//   return useQuery<Recipe[], Error>({
-//     queryFn: fetchRecipesByIngredient,
-//     queryKey: [`${LIST_RECIPES_KEY}-by-dietary-tag-${tag}`],
-//   });
-// }
+export function useListRecipesByDietaryTag(tag: string) {
+  return useQuery<RecipeWithChef[], Error>({
+    queryFn: () => fetchRecipesByDietaryTag(tag),
+    queryKey: [LIST_RECIPES_KEY, "by-dietary-tag", tag],
+    enabled: !!tag,
+  });
+}
 
 //----------------------------------
 // RECIPES BY DIFFICULTY
 //----------------------------------
 
-export const fetchRecipesByDifficulty = async (difficulty: Difficulty) => {
+export const fetchRecipesByDifficulty = async (
+  difficulty: Difficulty,
+): Promise<RecipeWithChef[]> => {
   const { data, error } = await supabase
     .from("recipes")
     .select(
@@ -237,18 +419,33 @@ export const fetchRecipesByDifficulty = async (difficulty: Difficulty) => {
 
   if (error) throw error;
 
-  return data ?? [];
+  return (
+    data?.map((r) => ({
+      id: r.id,
+      title: r.title,
+      images: r.images ?? [],
+      chef: r.chefs
+        ? {
+            name: r.chefs.name,
+            avatar: r.chefs.avatar ?? undefined,
+          }
+        : undefined,
+    })) ?? []
+  );
 };
 
-// export function invalidateRecipesByDifficulty(difficulty: Difficulty) {
-//   return singletonQueryClient.invalidateQueries([
-//     `${LIST_RECIPES_KEY}-by-difficulty-${difficulty}`,
-//   ] as InvalidateQueryFilters<readonly unknown[]>);
-// }
+export function invalidateRecipesByDifficulty(difficulty: Difficulty) {
+  return singletonQueryClient.invalidateQueries([
+    LIST_RECIPES_KEY,
+    "by-difficulty",
+    difficulty,
+  ] as InvalidateQueryFilters<readonly unknown[]>);
+}
 
-// export function useListRecipesByDifficulty(difficulty: Difficulty) {
-//   return useQuery<Recipe[], Error>({
-//     queryFn: fetchRecipesByIngredient,
-//     queryKey: [`${LIST_RECIPES_KEY}-by-difficulty-${difficulty}`],
-//   });
-// }
+export function useListRecipesByDifficulty(difficulty: Difficulty) {
+  return useQuery<RecipeWithChef[], Error>({
+    queryFn: () => fetchRecipesByDifficulty(difficulty),
+    queryKey: [LIST_RECIPES_KEY, "by-difficulty", difficulty],
+    enabled: !!difficulty,
+  });
+}

@@ -85,6 +85,7 @@ function RecipeFormContent({
 
 export default function AddEditRecipeForm() {
   const { id } = useParams<{ id?: string }>();
+  const recipeId = id ? parseInt(id, 10) : 0;
   const isEditMode = Boolean(id);
   const [showCancelDialog, setShowCancelDialog] = useState(false);
 
@@ -94,9 +95,8 @@ export default function AddEditRecipeForm() {
   const updateRecipe = useUpdateRecipe();
   const navigate = useNavigate();
 
-  const { data: existingRecipe, isLoading: isLoadingRecipe } = useGetRecipe(
-    id || "",
-  );
+  const { data: existingRecipe, isLoading: isLoadingRecipe } =
+    useGetRecipe(recipeId);
 
   // Only chefs can create/edit recipes
   if (!user || user.role !== "chef") {
@@ -154,12 +154,16 @@ export default function AddEditRecipeForm() {
         images: uploadedImages.length > 0 ? uploadedImages : [""],
       };
 
-      const recipeData = transformFormToRecipe(valuesWithUploadedImages, user);
+      const recipeData = transformFormToRecipe(valuesWithUploadedImages, {
+        name: user.name,
+        avatar: user.avatar,
+        chefId: user.chefId,
+      });
 
-      if (isEditMode && id) {
-        await updateRecipe({ id, updates: recipeData });
+      if (isEditMode && recipeId) {
+        await updateRecipe({ id: recipeId, updates: recipeData });
         showNotification("Recipe updated successfully!", "success");
-        setTimeout(() => navigate(`/recipe/${id}`), 1000);
+        setTimeout(() => navigate(`/recipe/${recipeId}`), 1000);
       } else {
         await addRecipe(recipeData);
         showNotification("Recipe created successfully!", "success");

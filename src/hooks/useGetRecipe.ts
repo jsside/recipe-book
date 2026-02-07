@@ -6,7 +6,7 @@ import { singletonQueryClient } from "@/app/App.queries";
 export const GET_RECIPE_KEY = "get-recipe";
 
 export const fetchRecipeById = async (
-  recipeId: string,
+  recipeId: number,
 ): Promise<Recipe | null> => {
   const { data, error } = await supabase
     .from("recipes")
@@ -14,13 +14,14 @@ export const fetchRecipeById = async (
       `
       *,
       chefs (
+        id,
         name,
         avatar
       )
     `,
     )
     .eq("id", recipeId)
-    .single();
+    .maybeSingle();
 
   if (error) throw error;
 
@@ -42,10 +43,13 @@ export const fetchRecipeById = async (
     instructionGroups: data.instruction_groups,
     references: data.references ?? [],
     createdAt: data.created_at,
-    chef: {
-      name: data.chefs.name,
-      avatar: data.chefs.avatar,
-    },
+    chefId: data.chef_id,
+    chef: data.chefs
+      ? {
+          name: data.chefs.name,
+          avatar: data.chefs.avatar,
+        }
+      : undefined,
   };
 };
 
@@ -55,8 +59,8 @@ export function invalidateGetRecipe() {
   ] as InvalidateQueryFilters<readonly unknown[]>);
 }
 
-export function useGetRecipe(recipeId: string) {
-  return useQuery<Recipe, Error>({
+export function useGetRecipe(recipeId: number) {
+  return useQuery<Recipe | null, Error>({
     queryKey: [GET_RECIPE_KEY, recipeId],
     queryFn: async () => {
       return fetchRecipeById(recipeId);

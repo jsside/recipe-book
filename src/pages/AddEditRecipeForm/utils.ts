@@ -164,10 +164,8 @@ export const getFormInitialValues = (
     carbs: existingRecipe.nutrition?.carbs ?? undefined,
     fat: existingRecipe.nutrition?.fat,
     ingredientGroups: existingRecipe.ingredientGroups?.map((g) => ({
-      tempId: crypto.randomUUID(),
       heading: g.heading,
       items: g.items.map((item) => ({
-        tempId: crypto.randomUUID(),
         name: item.name,
         amount: item.amount,
         unit: item.unit,
@@ -176,17 +174,14 @@ export const getFormInitialValues = (
       })),
     })),
     instructionGroups: existingRecipe.instructionGroups?.map((g) => ({
-      tempId: crypto.randomUUID(),
       heading: g.heading,
       steps: g.steps.map((step) => ({
-        tempId: crypto.randomUUID(),
         text: step.text,
         timer: step.timer,
       })),
     })),
     references:
       existingRecipe.references?.map((ref) => ({
-        tempId: crypto.randomUUID(),
         type: ref.type,
         url: ref.url,
         title: ref.title || "",

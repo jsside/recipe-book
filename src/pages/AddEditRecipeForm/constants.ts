@@ -15,11 +15,9 @@ export const CATEGORY_OPTIONS = [
 export const MAX_HISTORY_SIZE = 50;
 
 export const emptyIngredientGroup: IngredientGroupFormItem = {
-  tempId: crypto.randomUUID(),
   heading: "",
   items: [
     {
-      tempId: crypto.randomUUID(),
       name: "",
       amount: "",
       unit: "",
@@ -30,15 +28,18 @@ export const emptyIngredientGroup: IngredientGroupFormItem = {
 };
 
 export const emptyInstructionGroup: InstructionGroupFormItem = {
-  tempId: crypto.randomUUID(),
   heading: "",
-  steps: [{ tempId: crypto.randomUUID(), text: "", timer: undefined }],
+  steps: [
+    {
+      text: "",
+      timer: undefined,
+    },
+  ],
 };
 
 export const createEmptyReference = (
   type: "link" | "image",
 ): ReferenceFormItem => ({
-  tempId: crypto.randomUUID(),
   type,
   url: "",
   title: "",

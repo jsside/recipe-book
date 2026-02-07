@@ -1,11 +1,8 @@
 import { Ingredient } from "@/data/recipes";
 
-export interface IngredientFormItem extends Omit<Ingredient, "id"> {
-  tempId: string;
-}
+export type IngredientFormItem = Omit<Ingredient, "id">;
 
 export interface IngredientGroupFormItem {
-  tempId: string;
   heading: string;
   items: IngredientFormItem[];
 }

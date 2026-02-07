@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Recipe } from "@/data/recipes";
+import { IngredientGroup, Recipe } from "@/data/recipes";
 import { supabase } from "@/db/supabaseClient";
 import { LIST_RECIPES_KEY } from "./useListRecipes";
 
@@ -32,7 +32,9 @@ const updateRecipeFn = async ({
   id: number;
   updates: UpdateRecipeInput;
 }): Promise<Recipe> => {
-  // Transform camelCase to snake_case for DB
+  /* -----------------------------
+   * 1. Update recipe base fields
+   * ----------------------------- */
   const dbUpdates: Record<string, unknown> = {};
 
   if (updates.title !== undefined) dbUpdates.title = updates.title;
@@ -47,53 +49,90 @@ const updateRecipeFn = async ({
     dbUpdates.dietary_tags = updates.dietaryTags;
   if (updates.difficulty !== undefined)
     dbUpdates.difficulty = updates.difficulty;
-  if (updates.videoUrl !== undefined) dbUpdates.video_url = updates.videoUrl;
-  if (updates.nutrition !== undefined) dbUpdates.nutrition = updates.nutrition;
-  if (updates.ingredientGroups !== undefined)
-    dbUpdates.ingredient_groups = updates.ingredientGroups;
+  if (updates.videoUrl !== undefined)
+    dbUpdates.video_url = updates.videoUrl ?? null;
+  if (updates.nutrition !== undefined)
+    dbUpdates.nutrition = updates.nutrition ?? null;
   if (updates.instructionGroups !== undefined)
     dbUpdates.instruction_groups = updates.instructionGroups;
   if (updates.references !== undefined)
     dbUpdates.references = updates.references;
 
-  const { data, error } = await supabase
+  if (updates.ingredientGroups !== undefined)
+    dbUpdates.ingredient_groups = updates.ingredientGroups;
+
+  const { data: recipeData, error: recipeError } = await supabase
     .from("recipes")
     .update(dbUpdates)
     .eq("id", id)
     .select(
       `
-      *,
-      chefs ( id, name, avatar )
-    `,
+        *,
+        chefs ( id, name, avatar )
+      `,
     )
     .single();
 
-  if (error) throw error;
+  if (recipeError) throw recipeError;
 
-  return {
-    id: data.id,
-    title: data.title,
-    images: data.images ?? [],
-    cookTime: data.cook_time,
-    servings: data.servings,
-    difficulty: data.difficulty,
-    description: data.description,
-    category: data.category ?? [],
-    dietaryTags: data.dietary_tags ?? [],
-    videoUrl: data.video_url ?? undefined,
-    nutrition: data.nutrition ?? undefined,
-    ingredientGroups: data.ingredient_groups,
-    instructionGroups: data.instruction_groups,
-    references: data.references ?? [],
-    createdAt: data.created_at,
-    chefId: data.chef_id,
-    chef: data.chefs
-      ? {
-          name: data.chefs.name,
-          avatar: data.chefs.avatar,
-        }
-      : undefined,
-  };
+  /* ---------------------------------------
+   * 2. Ingredient dictionary + linking
+   * --------------------------------------- */
+  if (updates.ingredientGroups) {
+    const ingredientNames = (updates.ingredientGroups as IngredientGroup[])
+      .flatMap((g) => g.items)
+      .map((i) => i.name.trim().toLowerCase())
+      .filter(Boolean);
+
+    const ingredientsSet = Array.from(new Set(ingredientNames));
+
+    if (ingredientsSet.length > 0) {
+      // 2a. Ensure all ingredients exist in the 'ingredients' table
+      // We don't rely on the return value of upsert here because of the 'ignore' behavior
+      await supabase.from("ingredients").upsert(
+        ingredientsSet.map((name) => ({ name })),
+        { onConflict: "name", ignoreDuplicates: true },
+      );
+
+      // 2b. FETCH the IDs for ALL ingredients in our set (new and old)
+      const { data: allIngredientRows, error: fetchError } = await supabase
+        .from("ingredients")
+        .select("id")
+        .in("name", ingredientsSet);
+
+      if (fetchError) throw fetchError;
+
+      const targetIngredientIds = allIngredientRows.map((row) => row.id);
+
+      /* ---------------------------------------
+       * 3. Sync the Linking Table
+       * --------------------------------------- */
+
+      // Delete links that are NOT in our target list
+      const { error: deleteError } = await supabase
+        .from("recipe_ingredients")
+        .delete()
+        .eq("recipe_id", id)
+        .not("ingredient_id", "in", `(${targetIngredientIds.join(",")})`);
+
+      if (deleteError) throw deleteError;
+
+      // Insert only the links that don't exist yet
+      const { error: linkError } = await supabase
+        .from("recipe_ingredients")
+        .upsert(
+          targetIngredientIds.map((ingId) => ({
+            recipe_id: id,
+            ingredient_id: ingId,
+          })),
+          { onConflict: "recipe_id,ingredient_id", ignoreDuplicates: true },
+        );
+
+      if (linkError) throw linkError;
+    }
+  }
+
+  return recipeData as Recipe;
 };
 
 /**

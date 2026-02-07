@@ -22,13 +22,11 @@ import {
 } from "./interfaces";
 
 const createEmptyStep = (): InstructionFormStep => ({
-  tempId: crypto.randomUUID(),
   text: "",
   timer: undefined,
 });
 
 const createEmptyGroup = (): InstructionGroupFormItem => ({
-  tempId: crypto.randomUUID(),
   heading: "",
   steps: [createEmptyStep()],
 });
@@ -105,7 +103,7 @@ export function InstructionGroupForm({
     <Stack spacing={3}>
       {groups.map((group, groupIndex) => (
         <Paper
-          key={group.tempId}
+          key={groupIndex}
           elevation={0}
           sx={{
             p: 2,
@@ -147,7 +145,7 @@ export function InstructionGroupForm({
             <Stack spacing={2}>
               {group.steps.map((step, stepIndex) => (
                 <Stack
-                  key={step.tempId}
+                  key={stepIndex}
                   direction="row"
                   spacing={2}
                   alignItems="flex-start"

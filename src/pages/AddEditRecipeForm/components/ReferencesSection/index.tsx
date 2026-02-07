@@ -28,7 +28,7 @@ export function ReferencesSection() {
           <Stack spacing={2}>
             {values.references.map((ref, index) => (
               <Stack
-                key={ref.tempId}
+                key={index}
                 direction="row"
                 spacing={1}
                 alignItems="center"

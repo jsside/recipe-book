@@ -3,7 +3,6 @@ import { IngredientGroupFormItem } from "./components/IngredientGroupForm/interf
 import { InstructionGroupFormItem } from "./components/InstructionGroupForm/interfaces";
 
 export interface ReferenceFormItem {
-  tempId: string;
   type: "link" | "image";
   url: string;
   title: string;

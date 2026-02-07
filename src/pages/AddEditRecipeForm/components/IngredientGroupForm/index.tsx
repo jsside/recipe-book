@@ -18,7 +18,6 @@ import {
 } from "./interfaces";
 
 const createEmptyIngredient = (): IngredientFormItem => ({
-  tempId: crypto.randomUUID(),
   name: "",
   amount: "",
   unit: "",
@@ -27,7 +26,6 @@ const createEmptyIngredient = (): IngredientFormItem => ({
 });
 
 const createEmptyGroup = (): IngredientGroupFormItem => ({
-  tempId: crypto.randomUUID(),
   heading: "",
   items: [createEmptyIngredient()],
 });
@@ -94,7 +92,7 @@ export function IngredientGroupForm({
     <Stack spacing={3}>
       {groups.map((group, groupIndex) => (
         <Paper
-          key={group.tempId}
+          key={groupIndex}
           elevation={0}
           sx={{
             p: 2,
@@ -136,7 +134,7 @@ export function IngredientGroupForm({
             <Stack spacing={1.5}>
               {group.items.map((ingredient, ingredientIndex) => (
                 <Stack
-                  key={ingredient.tempId}
+                  key={ingredientIndex}
                   direction="row"
                   spacing={1}
                   alignItems="flex-start"

@@ -44,8 +44,9 @@ import { RecipeNotFound } from "./components/RecipeNotFound";
 
 export default function RecipeDetail() {
   const { id } = useParams();
+  const recipeId = id ? parseInt(id, 10) : 0;
   const navigate = useNavigate();
-  const { data: recipe, isLoading: isRecipeLoading } = useGetRecipe(id);
+  const { data: recipe, isLoading: isRecipeLoading } = useGetRecipe(recipeId);
   const { addIngredients } = useShoppingList();
   const { share } = useShare();
   const { user } = useAuth();
@@ -230,32 +231,34 @@ export default function RecipeDetail() {
               </Stack>
 
               {/* Chef info - clickable */}
-              <Stack
-                component={Link}
-                to={`/chef/${encodeURIComponent(recipe.chef.name)}`}
-                direction="row"
-                alignItems="center"
-                spacing={2}
-                sx={{
-                  textDecoration: "none",
-                  color: "inherit",
-                  p: 1.5,
-                  mx: -1.5,
-                  borderRadius: 2,
-                  transition: "background-color 0.2s ease",
-                  "&:hover": {
-                    bgcolor: "rgba(0, 0, 0, 0.04)",
-                  },
-                }}
-              >
-                <Avatar src={recipe.chef.avatar} alt={recipe.chef.name} />
-                <Box>
-                  <Typography fontWeight={500}>{recipe.chef.name}</Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Recipe creator
-                  </Typography>
-                </Box>
-              </Stack>
+              {recipe.chef && (
+                <Stack
+                  component={Link}
+                  to={`/chef/${encodeURIComponent(recipe.chef.name)}`}
+                  direction="row"
+                  alignItems="center"
+                  spacing={2}
+                  sx={{
+                    textDecoration: "none",
+                    color: "inherit",
+                    p: 1.5,
+                    mx: -1.5,
+                    borderRadius: 2,
+                    transition: "background-color 0.2s ease",
+                    "&:hover": {
+                      bgcolor: "rgba(0, 0, 0, 0.04)",
+                    },
+                  }}
+                >
+                  <Avatar src={recipe.chef.avatar} alt={recipe.chef.name} />
+                  <Box>
+                    <Typography fontWeight={500}>{recipe.chef.name}</Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Recipe creator
+                    </Typography>
+                  </Box>
+                </Stack>
+              )}
 
               <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
                 <Button

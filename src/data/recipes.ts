@@ -9,9 +9,10 @@ export interface Recipe {
   title: string;
   images?: string[]; // Multiple images support
   cookTime: string;
-  chef: {
+  chefId: number; // References chefs table
+  chef?: {
     name: string;
-    avatar: string;
+    avatar?: string;
   };
   category: string[];
   ingredientGroups: IngredientGroup[];

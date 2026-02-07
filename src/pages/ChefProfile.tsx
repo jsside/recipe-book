@@ -12,24 +12,55 @@ import {
 import { ChevronLeft as BackIcon } from "@mui/icons-material";
 
 import { RecipeCard } from "@/components/custom/RecipeCard";
-import { useListRecipes } from "@/hooks/useListRecipes";
+import { useListRecipesByChefName } from "@/hooks/useListRecipes";
 
 export default function ChefProfile() {
   const { name } = useParams<{ name: string }>();
-
-  const { data: recipes = [] } = useListRecipes();
-
   const decodedName = decodeURIComponent(name || "");
 
-  // Find all recipes by this chef
-  const chefRecipes = recipes.filter(
-    (recipe) => recipe.chef?.name?.toLowerCase() === decodedName.toLowerCase(),
-  );
+  const { data, isLoading } = useListRecipesByChefName(decodedName);
 
-  // Get chef info from first recipe
-  const chefInfo = chefRecipes.length > 0 ? chefRecipes[0].chef : null;
+  const chefInfo = data?.chef;
+  const chefRecipes = data?.recipes || [];
 
-  if (!chefInfo && recipes.length > 0) {
+  if (isLoading) {
+    return (
+      <Box sx={{ minHeight: "100vh", pb: 6 }}>
+        <Container sx={{ py: 2 }}>
+          <Button
+            component={RouterLink}
+            to="/"
+            startIcon={<BackIcon />}
+            sx={{ color: "text.secondary" }}
+          >
+            Back to recipes
+          </Button>
+        </Container>
+        <Container sx={{ mb: 6 }}>
+          <Paper
+            elevation={0}
+            sx={{
+              p: 4,
+              bgcolor: "background.paper",
+              borderRadius: 3,
+              display: "flex",
+              flexDirection: { xs: "column", sm: "row" },
+              alignItems: { xs: "center", sm: "flex-start" },
+              gap: 3,
+            }}
+          >
+            <Skeleton variant="circular" width={120} height={120} />
+            <Box sx={{ flex: 1 }}>
+              <Skeleton variant="text" width={200} height={40} />
+              <Skeleton variant="text" width={100} />
+            </Box>
+          </Paper>
+        </Container>
+      </Box>
+    );
+  }
+
+  if (!chefInfo) {
     return (
       <Container sx={{ py: 10, textAlign: "center" }}>
         <Typography variant="h4" sx={{ mb: 2 }}>
@@ -70,42 +101,30 @@ export default function ChefProfile() {
             gap: 3,
           }}
         >
-          {chefInfo ? (
-            <>
-              <Avatar
-                src={chefInfo.avatar}
-                alt={chefInfo.name}
-                sx={{ width: 120, height: 120 }}
-              />
-              <Box textAlign={{ xs: "center", sm: "left" }}>
-                <Typography variant="h3" sx={{ mb: 1 }}>
-                  {chefInfo.name}
-                </Typography>
-                <Typography variant="body1" color="text.secondary">
-                  Recipe creator
-                </Typography>
-                <Typography variant="h6" sx={{ mt: 2 }}>
-                  {chefRecipes.length}{" "}
-                  {chefRecipes.length === 1 ? "Recipe" : "Recipes"}
-                </Typography>
-              </Box>
-            </>
-          ) : (
-            <>
-              <Skeleton variant="circular" width={120} height={120} />
-              <Box sx={{ flex: 1 }}>
-                <Skeleton variant="text" width={200} height={40} />
-                <Skeleton variant="text" width={100} />
-              </Box>
-            </>
-          )}
+          <Avatar
+            src={chefInfo.avatar}
+            alt={chefInfo.name}
+            sx={{ width: 120, height: 120 }}
+          />
+          <Box textAlign={{ xs: "center", sm: "left" }}>
+            <Typography variant="h3" sx={{ mb: 1 }}>
+              {chefInfo.name}
+            </Typography>
+            <Typography variant="body1" color="text.secondary">
+              Recipe creator
+            </Typography>
+            <Typography variant="h6" sx={{ mt: 2 }}>
+              {chefRecipes.length}{" "}
+              {chefRecipes.length === 1 ? "Recipe" : "Recipes"}
+            </Typography>
+          </Box>
         </Paper>
       </Container>
 
       {/* Recipes Grid */}
       <Container>
         <Typography variant="h5" sx={{ mb: 3 }}>
-          Recipes by {chefInfo?.name || decodedName}
+          Recipes by {chefInfo.name}
         </Typography>
 
         <Grid container spacing={3}>
@@ -116,7 +135,7 @@ export default function ChefProfile() {
           ))}
         </Grid>
 
-        {chefRecipes.length === 0 && recipes.length > 0 && (
+        {chefRecipes.length === 0 && (
           <Box textAlign="center" py={8}>
             <Typography color="text.secondary">
               No recipes found for this chef.

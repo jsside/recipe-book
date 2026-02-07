@@ -90,6 +90,7 @@ export default function AddEditRecipeForm() {
   const [showCancelDialog, setShowCancelDialog] = useState(false);
 
   const { user } = useAuth();
+
   const { showNotification } = useNotification();
   const addRecipe = useAddRecipe();
   const updateRecipe = useUpdateRecipe();
@@ -176,7 +177,7 @@ export default function AddEditRecipeForm() {
     }
     setSubmitting(false);
     // invalidate getRecipe to refetch query
-    invalidateGetRecipe();
+    invalidateGetRecipe(recipeId);
   };
 
   const formInitialValues = getFormInitialValues(existingRecipe);

@@ -10,7 +10,10 @@ import {
 } from "@mui/material";
 import { Search as SearchIcon } from "@mui/icons-material";
 import { IngredientCard } from "@/components/custom/IngredientCard";
-import { useListIngredients, IngredientRecord } from "@/hooks/useListIngredients";
+import {
+  useListIngredients,
+  IngredientRecord,
+} from "@/hooks/useListIngredients";
 
 export default function Ingredients() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -21,12 +24,16 @@ export default function Ingredients() {
   );
 
   // Transform to the shape expected by IngredientCard
-  const displayIngredients = filteredIngredients.map((ing: IngredientRecord) => ({
-    id: ing.id.toString(),
-    name: ing.name,
-    image: ing.imageUrl || "https://images.unsplash.com/photo-1540420773420-3366772f4999?w=400&q=80",
-    recipeCount: 0, // TODO: Could fetch this from recipe_ingredients junction table
-  }));
+  const displayIngredients = filteredIngredients.map(
+    (ing: IngredientRecord) => ({
+      id: ing.id.toString(),
+      name: ing.name,
+      image:
+        ing.imageUrl ||
+        "https://images.unsplash.com/photo-1540420773420-3366772f4999?w=400&q=80",
+      recipeCount: 0, // TODO: Could fetch this from recipe_ingredients junction table
+    }),
+  );
 
   return (
     <Box sx={{ minHeight: "100vh", py: 4 }}>
@@ -69,7 +76,11 @@ export default function Ingredients() {
           <Grid container spacing={3}>
             {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
               <Grid size={{ xs: 6, sm: 4, md: 3 }} key={i}>
-                <Skeleton variant="rectangular" height={200} sx={{ borderRadius: 2 }} />
+                <Skeleton
+                  variant="rectangular"
+                  height={200}
+                  sx={{ borderRadius: 2 }}
+                />
               </Grid>
             ))}
           </Grid>

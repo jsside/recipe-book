@@ -15,15 +15,8 @@ import { Features } from "@/features";
 import { isNew } from "@/utils/recipeHelpers";
 
 const Index = () => {
-  const {
-    data: recipes = [],
-    isLoading,
-    refetch,
-    isError,
-    error,
-  } = useListRecipes();
+  const { data: recipes = [] } = useListRecipes();
 
-  console.log({ recipes });
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
   // Get latest recipes (added within last 30 days, sorted by newest first)

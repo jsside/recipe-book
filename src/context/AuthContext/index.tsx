@@ -1,7 +1,8 @@
 import { SITE_NAME } from "@/app/constants";
-import React, { useContext, useState, useCallback } from "react";
-import { AuthContext, mockUsers } from "./utils";
+import React, { useState, useCallback } from "react";
+import { AuthContext } from "./utils";
 import { User, UserRole } from "./interfaces";
+import { supabase } from "@/db/supabaseClient";
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(() => {
@@ -14,24 +15,46 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       email: string,
       password: string,
     ): Promise<{ success: boolean; error?: string }> => {
-      // Simulate API delay
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      const { data, error } = await supabase
+        .from("users")
+        .select(
+          `
+          id,
+          email,
+          name,
+          role,
+          avatar,
+          chef_id,
+          password
+        `,
+        )
+        .eq("email", email)
+        .single();
 
-      const foundUser = mockUsers.find(
-        (u) => u.email === email && u.password === password,
-      );
-
-      if (foundUser) {
-        const { password: _, ...userWithoutPassword } = foundUser;
-        setUser(userWithoutPassword);
-        localStorage.setItem(
-          `${SITE_NAME}_user`,
-          JSON.stringify(userWithoutPassword),
-        );
-        return { success: true };
+      if (error || !data) {
+        return { success: false, error: "Invalid email or password" };
       }
 
-      return { success: false, error: "Invalid email or password" };
+      /**
+       * IMPORTANT:
+       * Replace this comparison with bcrypt/argon2 verification
+       */
+      if (data.password !== password) {
+        return { success: false, error: "Invalid email or password" };
+      }
+
+      const clientUser = {
+        id: data.id,
+        chefId: data["chef_id"],
+        name: data.name,
+        email: data.email,
+        role: data.role,
+        avatar: data.avatar,
+      };
+
+      setUser(clientUser);
+      localStorage.setItem(`${SITE_NAME}_user`, JSON.stringify(clientUser));
+      return { success: true };
     },
     [],
   );
@@ -43,25 +66,50 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       name: string,
       role: UserRole,
     ): Promise<{ success: boolean; error?: string }> => {
-      // Simulate API delay
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      // check for existing email
+      const { data: existing } = await supabase
+        .from("users")
+        .select("id")
+        .eq("email", email)
+        .maybeSingle();
 
-      // Check if user exists
-      if (mockUsers.some((u) => u.email === email)) {
+      if (existing) {
         return { success: false, error: "Email already registered" };
       }
 
-      // Create new user (in real app, this would be saved to database)
-      const newUser: User = {
-        id: String(mockUsers.length + 1),
-        email,
-        name,
-        role,
-      };
+      /**
+       * IMPORTANT:
+       * Hash password before insert
+       */
+      const { data, error } = await supabase
+        .from("users")
+        .insert({
+          email,
+          password, // hashed in real app
+          name,
+          role,
+        })
+        .select(
+          `
+          id,
+          email,
+          name,
+          role,
+          avatar,
+          chef_id
+        `,
+        )
+        .single();
 
-      mockUsers.push({ ...newUser, password });
-      setUser(newUser);
-      localStorage.setItem(`${SITE_NAME}_user`, JSON.stringify(newUser));
+      if (error || !data) {
+        return { success: false, error: "Signup failed" };
+      }
+
+      setUser({
+        ...data,
+        chefId: data["chef_id"],
+      });
+      localStorage.setItem(`${SITE_NAME}_user`, JSON.stringify(data));
 
       return { success: true };
     },

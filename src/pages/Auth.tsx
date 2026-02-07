@@ -172,20 +172,6 @@ export default function Auth() {
                 </Button>
               </Stack>
             </form>
-
-            <Box
-              sx={{ mt: 3, p: 2, bgcolor: "secondary.main", borderRadius: 1 }}
-            >
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                Demo accounts:
-              </Typography>
-              <Typography variant="body2" sx={{ fontFamily: "monospace" }}>
-                Chef: chef@example.com / chef123
-              </Typography>
-              <Typography variant="body2" sx={{ fontFamily: "monospace" }}>
-                Viewer: viewer@example.com / viewer123
-              </Typography>
-            </Box>
           </TabPanel>
 
           {/* Signup Panel */}

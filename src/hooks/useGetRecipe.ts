@@ -53,9 +53,9 @@ export const fetchRecipeById = async (
   };
 };
 
-export function invalidateGetRecipe() {
+export function invalidateGetRecipe(recipeId: number) {
   return singletonQueryClient.invalidateQueries([
-    GET_RECIPE_KEY,
+    [GET_RECIPE_KEY, recipeId],
   ] as InvalidateQueryFilters<readonly unknown[]>);
 }
 

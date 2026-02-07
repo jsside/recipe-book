@@ -34,7 +34,7 @@ import { getRecipeCategories } from "@/utils/recipeHelpers";
 import RenderComponent from "@/components/helpers/renderComponent";
 import { IngredientsNutrientsPanel } from "./components/IngredientsNutrientsPanel";
 import { MethodPanel } from "./components/MethodPanel";
-import { useGetRecipe } from "@/hooks/useGetRecipe";
+import { invalidateGetRecipe, useGetRecipe } from "@/hooks/useGetRecipe";
 import { useShoppingList } from "@/context/ShoppingListContext/utils";
 import { useAuth } from "@/context/AuthContext/utils";
 import { ImageGallery, ReferencesSection } from "./components/RecipeGallery";
@@ -128,22 +128,48 @@ export default function RecipeDetail() {
       setIsDeleting(false);
       setDeleteDialogOpen(false);
     }
+    invalidateGetRecipe(recipe.id);
   };
 
   const categories = getRecipeCategories(recipe);
 
   return (
     <Box sx={{ minHeight: "100vh", pb: 6 }}>
-      {/* Back button */}
+      {/* Breadcrumbs area */}
       <Container sx={{ py: 2 }}>
-        <Button
-          component={Link}
-          to="/"
-          startIcon={<BackIcon />}
-          sx={{ color: "text.secondary" }}
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
         >
-          Back to recipes
-        </Button>
+          <Button
+            component={Link}
+            to="/"
+            startIcon={<BackIcon />}
+            sx={{ color: "text.secondary" }}
+          >
+            Back to recipes
+          </Button>
+
+          <RenderComponent
+            if={canEdit}
+            then={
+              <Box>
+                <IconButton onClick={() => navigate(`/edit-recipe/${id}`)}>
+                  <EditIcon />
+                </IconButton>
+                <IconButton
+                  onClick={() => setDeleteDialogOpen(true)}
+                  color="error"
+                >
+                  <DeleteIcon />
+                </IconButton>
+              </Box>
+            }
+          />
+        </Box>
       </Container>
 
       {/* Hero section */}
@@ -269,24 +295,6 @@ export default function RecipeDetail() {
                 >
                   Add to shopping list
                 </Button>
-                <RenderComponent
-                  if={canEdit}
-                  then={
-                    <>
-                      <IconButton
-                        onClick={() => navigate(`/edit-recipe/${id}`)}
-                      >
-                        <EditIcon />
-                      </IconButton>
-                      <IconButton
-                        onClick={() => setDeleteDialogOpen(true)}
-                        color="error"
-                      >
-                        <DeleteIcon />
-                      </IconButton>
-                    </>
-                  }
-                />
                 <IconButton onClick={handleShare}>
                   <ShareIcon />
                 </IconButton>

@@ -5,6 +5,11 @@ import {
   Button,
   Paper,
   Divider,
+  Autocomplete,
+  styled,
+  lighten,
+  darken,
+  createFilterOptions,
 } from "@mui/material";
 import {
   Delete as DeleteIcon,
@@ -16,6 +21,25 @@ import {
   IngredientGroupFormItem,
   IngredientFormItem,
 } from "./interfaces";
+import {
+  IngredientRecord,
+  useListIngredients,
+} from "@/hooks/useListIngredients";
+
+const GroupHeader = styled("div")(({ theme }) => ({
+  position: "sticky",
+  top: "-8px",
+  padding: "4px 10px",
+  color: theme.palette.primary.main,
+  backgroundColor: lighten(theme.palette.primary.light, 0.85),
+  ...theme.applyStyles("dark", {
+    backgroundColor: darken(theme.palette.primary.main, 0.8),
+  }),
+}));
+
+const GroupItems = styled("ul")({
+  padding: 0,
+});
 
 const createEmptyIngredient = (): IngredientFormItem => ({
   name: "",
@@ -168,19 +192,11 @@ export function IngredientGroupForm({
                     size="small"
                     sx={{ width: 80 }}
                   />
-                  <TextField
-                    value={ingredient.name}
-                    onChange={(e) =>
-                      updateIngredient(
-                        groupIndex,
-                        ingredientIndex,
-                        "name",
-                        e.target.value,
-                      )
-                    }
-                    placeholder="Ingredient"
-                    size="small"
-                    sx={{ flex: 1, minWidth: 120 }}
+                  <IngredientAutocomplete
+                    ingredient={ingredient}
+                    updateIngredient={updateIngredient}
+                    groupIndex={groupIndex}
+                    ingredientIndex={ingredientIndex}
                   />
                   <TextField
                     value={ingredient.preparation || ""}
@@ -246,3 +262,81 @@ export function IngredientGroupForm({
     </Stack>
   );
 }
+
+const IngredientAutocomplete = ({
+  ingredient,
+  updateIngredient,
+  groupIndex,
+  ingredientIndex,
+}: {
+  ingredient: IngredientFormItem;
+  updateIngredient: (
+    groupIndex: number,
+    ingredientIndex: number,
+    field: "name" | "note" | "category" | "amount" | "unit" | "preparation",
+    value: string,
+  ) => void;
+  groupIndex: number;
+  ingredientIndex: number;
+}) => {
+  const { data: options = [], isLoading: isLoadingOptions } =
+    useListIngredients();
+
+  function handleChange(event, newValue) {
+    if (typeof newValue === "string") {
+      updateIngredient(groupIndex, ingredientIndex, "name", newValue);
+    } else if (newValue && newValue.name) {
+      updateIngredient(groupIndex, ingredientIndex, "name", newValue.name);
+    } else {
+      updateIngredient(groupIndex, ingredientIndex, "name", "");
+    }
+  }
+  function handleGetOptionLabel(option) {
+    if (typeof option === "string") return option;
+    if (option.id === -1) return `Add "${option.name}"`;
+    return option.name;
+  }
+
+  function handleFilterOptions(options, params) {
+    const filtered = createFilterOptions<IngredientRecord>()(options, params);
+    const { inputValue } = params;
+
+    const isExisting = options.some(
+      (option) => inputValue.toLowerCase() === option.name.toLowerCase(),
+    );
+
+    if (inputValue !== "" && !isExisting) {
+      filtered.push({
+        name: inputValue,
+        id: -1, // Temporary ID to indicate a "new" item
+        category: "New ingredient",
+      } as IngredientRecord);
+    }
+
+    return filtered;
+  }
+
+  return (
+    <Autocomplete
+      value={ingredient.name || ""}
+      freeSolo
+      selectOnFocus
+      clearOnBlur
+      handleHomeEndKeys
+      // Smart matching props
+      autoHighlight // (automatically highlights the first match as user types)
+      autoSelect // (selects that highlighted match on Enter or Tab)
+      options={options}
+      // Create new logic
+      filterOptions={handleFilterOptions}
+      onChange={handleChange}
+      getOptionLabel={handleGetOptionLabel}
+      groupBy={(option) => option.category || "Other"}
+      renderInput={(params) => (
+        <TextField {...params} label="Ingredient" size="small" />
+      )}
+      loading={isLoadingOptions}
+      sx={{ width: 300 }}
+    />
+  );
+};

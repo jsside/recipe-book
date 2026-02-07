@@ -1,6 +1,7 @@
 import { InvalidateQueryFilters, useQuery } from "@tanstack/react-query";
 import { supabase } from "@/db/supabaseClient";
 import { singletonQueryClient } from "@/app/App.queries";
+import { toSentenceCase } from "@/utils/stringHelpers";
 
 export const LIST_INGREDIENTS_KEY = "list-ingredients";
 
@@ -31,7 +32,7 @@ export const fetchIngredients = async (): Promise<IngredientRecord[]> => {
   return (
     data?.map((i) => ({
       id: i.id,
-      name: i.name,
+      name: toSentenceCase(i.name),
       category: i.category ?? undefined,
       imageUrl: i.image_url ?? undefined,
       createdAt: i.created_at,

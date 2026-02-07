@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Recipe } from "@/data/recipes";
+import { IngredientGroup, Recipe } from "@/data/recipes";
 import { supabase } from "@/db/supabaseClient";
 import { LIST_RECIPES_KEY } from "./useListRecipes";
 
@@ -24,8 +24,10 @@ interface AddRecipeInput {
   instructionGroups: unknown;
   references?: unknown;
 }
-
-const addRecipe = async (recipe: AddRecipeInput): Promise<Recipe | null> => {
+const addRecipeFn = async (recipe: AddRecipeInput): Promise<Recipe | null> => {
+  /* -----------------------------
+   * 1. Insert the new recipe
+   * ----------------------------- */
   const { data, error } = await supabase
     .from("recipes")
     .insert([
@@ -46,16 +48,57 @@ const addRecipe = async (recipe: AddRecipeInput): Promise<Recipe | null> => {
         references: recipe.references,
       },
     ])
-    .select(
-      `
-      *,
-      chefs ( id, name, avatar )
-    `,
-    )
+    .select(`*, chefs ( id, name, avatar )`)
     .single();
 
   if (error) throw error;
+  const newRecipeId = data.id;
 
+  /* ---------------------------------------
+   * 2. Handle Ingredients & Linking
+   * --------------------------------------- */
+  if (recipe.ingredientGroups) {
+    // Extract unique, clean names
+    const ingredientNames = (recipe.ingredientGroups as IngredientGroup[])
+      .flatMap((g) => g.items)
+      .map((i) => i.name.trim().toLowerCase())
+      .filter(Boolean);
+
+    const ingredientsSet = Array.from(new Set(ingredientNames));
+
+    if (ingredientsSet.length > 0) {
+      // 2a. Ensure all ingredients exist in the 'ingredients' table
+      // We use ignoreDuplicates so we don't error on existing ingredients
+      await supabase.from("ingredients").upsert(
+        ingredientsSet.map((name) => ({ name })),
+        { onConflict: "name", ignoreDuplicates: true },
+      );
+
+      // 2b. Get the IDs for all ingredients in this recipe
+      const { data: ingredientRows, error: fetchError } = await supabase
+        .from("ingredients")
+        .select("id")
+        .in("name", ingredientsSet);
+
+      if (fetchError) throw fetchError;
+
+      // 2c. Create the links in the junction table
+      const links = ingredientRows.map((row) => ({
+        recipe_id: newRecipeId,
+        ingredient_id: row.id,
+      }));
+
+      const { error: linkError } = await supabase
+        .from("recipe_ingredients")
+        .insert(links); // Use simple insert since this recipe is brand new
+
+      if (linkError) throw linkError;
+    }
+  }
+
+  /* -----------------------------
+   * 3. Return formatted Recipe
+   * ----------------------------- */
   return {
     id: data.id,
     title: data.title,
@@ -91,7 +134,7 @@ export function useAddRecipe() {
   const queryClient = useQueryClient();
 
   const mutation = useMutation<Recipe | null, Error, AddRecipeInput>({
-    mutationFn: addRecipe,
+    mutationFn: addRecipeFn,
     onSuccess: (newRecipe) => {
       if (newRecipe) {
         queryClient.setQueryData<Recipe[]>([LIST_RECIPES_KEY], (old = []) => [

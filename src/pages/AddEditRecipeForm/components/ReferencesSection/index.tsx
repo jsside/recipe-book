@@ -36,6 +36,7 @@ export function ReferencesSection() {
                 <TextField
                   name={`references.${index}.url`}
                   label={ref.type === "link" ? "Link URL" : "Image URL"}
+                  variant="standard"
                   value={ref.url}
                   onChange={handleChange}
                   fullWidth
@@ -49,6 +50,7 @@ export function ReferencesSection() {
                 <TextField
                   name={`references.${index}.title`}
                   label="Title (optional)"
+                  variant="standard"
                   value={ref.title}
                   onChange={handleChange}
                   size="small"

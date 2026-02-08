@@ -25,6 +25,8 @@ import {
   IngredientRecord,
   useListIngredients,
 } from "@/hooks/useListIngredients";
+import i18next from "i18next";
+import { useI18n } from "@/i18n/useI18n";
 
 const GroupHeader = styled("div")(({ theme }) => ({
   position: "sticky",
@@ -165,6 +167,7 @@ export function IngredientGroupForm({
                   sx={{ pl: 4 }}
                 >
                   <TextField
+                    variant="standard"
                     value={ingredient.amount}
                     onChange={(e) =>
                       updateIngredient(
@@ -179,6 +182,7 @@ export function IngredientGroupForm({
                     sx={{ width: 70 }}
                   />
                   <TextField
+                    variant="standard"
                     value={ingredient.unit}
                     onChange={(e) =>
                       updateIngredient(
@@ -199,6 +203,7 @@ export function IngredientGroupForm({
                     ingredientIndex={ingredientIndex}
                   />
                   <TextField
+                    variant="standard"
                     value={ingredient.preparation || ""}
                     onChange={(e) =>
                       updateIngredient(
@@ -208,11 +213,12 @@ export function IngredientGroupForm({
                         e.target.value,
                       )
                     }
-                    placeholder="Prep (e.g., diced)"
+                    placeholder="Prep"
                     size="small"
                     sx={{ width: 120 }}
                   />
                   <TextField
+                    variant="standard"
                     value={ingredient.note || ""}
                     onChange={(e) =>
                       updateIngredient(
@@ -279,6 +285,7 @@ const IngredientAutocomplete = ({
   groupIndex: number;
   ingredientIndex: number;
 }) => {
+  const i18n = useI18n();
   const { data: options = [], isLoading: isLoadingOptions } =
     useListIngredients();
 
@@ -333,7 +340,12 @@ const IngredientAutocomplete = ({
       getOptionLabel={handleGetOptionLabel}
       groupBy={(option) => option.category || "Other"}
       renderInput={(params) => (
-        <TextField {...params} label="Ingredient" size="small" />
+        <TextField
+          {...params}
+          variant="standard"
+          placeholder={i18n.ingredient}
+          size="small"
+        />
       )}
       loading={isLoadingOptions}
       sx={{ width: 300 }}

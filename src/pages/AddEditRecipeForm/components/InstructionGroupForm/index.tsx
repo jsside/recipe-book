@@ -170,6 +170,7 @@ export function InstructionGroupForm({
                   </Box>
                   <Box sx={{ flex: 1 }}>
                     <TextField
+                      variant="standard"
                       value={step.text}
                       onChange={(e) =>
                         updateStep(
@@ -185,7 +186,9 @@ export function InstructionGroupForm({
                       rows={2}
                       size="small"
                     />
+                    {/*  TODO: hide this under add timer. Shouldn't always show this. */}
                     <TextField
+                      variant="standard"
                       value={step.timer || ""}
                       onChange={(e) =>
                         updateStep(

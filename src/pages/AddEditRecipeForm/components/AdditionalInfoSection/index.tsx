@@ -15,6 +15,7 @@ export function AdditionalInfoSection() {
           <TextField
             name="videoUrl"
             label="Video URL (optional)"
+            variant="standard"
             value={values.videoUrl}
             onChange={handleChange}
             fullWidth

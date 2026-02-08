@@ -4,8 +4,10 @@ import { Add as AddIcon, Delete as DeleteIcon } from "@mui/icons-material";
 import { ImageUploadField } from "../ImageUploadField";
 import RenderComponent from "@/components/helpers/renderComponent";
 import { AddEditRecipeFormFields } from "../../interfaces";
+import { useI18n } from "@/i18n/useI18n";
 
 export function ImagesFieldArray() {
+  const i18n = useI18n();
   const { values, setFieldValue } = useFormikContext<AddEditRecipeFormFields>();
 
   return (
@@ -29,7 +31,11 @@ export function ImagesFieldArray() {
                     onChange={(value) =>
                       setFieldValue(`images.${index}`, value)
                     }
-                    label={index === 0 ? "Primary Image" : `Image ${index + 1}`}
+                    label={
+                      index === 0
+                        ? i18n.primaryImageLabel
+                        : i18n.numberedImageLabel({ idx: index + 1 })
+                    }
                     placeholder="Enter image URL or upload"
                   />
                 </Box>
@@ -54,7 +60,7 @@ export function ImagesFieldArray() {
               size="small"
               sx={{ alignSelf: "flex-start" }}
             >
-              Add another image
+              {i18n.addImageLabel}
             </Button>
           </Stack>
           <Typography
@@ -62,7 +68,7 @@ export function ImagesFieldArray() {
             color="text.secondary"
             sx={{ mt: 1, display: "block" }}
           >
-            Add multiple images for a gallery view. First image is the primary.
+            {i18n.addImageDescription}
           </Typography>
         </Box>
       )}

@@ -7,8 +7,8 @@ export const recipeFormSchema = Yup.object().shape({
     .max(200, "Title must be less than 200 characters"),
   description: Yup.string()
     .trim()
-    .required("Description is required")
-    .max(2000, "Description must be less than 2000 characters"),
+    .max(2000, "Description must be less than 2000 characters")
+    .optional(),
   cookTime: Yup.string()
     .trim()
     .required("Cook time is required")

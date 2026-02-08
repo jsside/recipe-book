@@ -30,6 +30,7 @@ export function BasicInfoSection() {
           <TextField
             name="title"
             label={i18n.recipeTitleLabel}
+            variant="standard"
             value={values.title}
             onChange={handleChange}
             onBlur={handleBlur}
@@ -43,12 +44,12 @@ export function BasicInfoSection() {
           <TextField
             name="description"
             label={i18n.recipeDescriptionLabel}
+            variant="standard"
             value={values.description}
             onChange={handleChange}
             onBlur={handleBlur}
             error={touched.description && Boolean(errors.description)}
             helperText={touched.description && errors.description}
-            required
             fullWidth
             multiline
             rows={3}
@@ -63,6 +64,7 @@ export function BasicInfoSection() {
           <TextField
             name="cookTime"
             label="Cook Time"
+            variant="standard"
             value={values.cookTime}
             onChange={handleChange}
             onBlur={handleBlur}
@@ -77,6 +79,7 @@ export function BasicInfoSection() {
           <TextField
             name="servings"
             label="Servings"
+            variant="standard"
             type="number"
             value={values.servings}
             onChange={handleChange}
@@ -91,8 +94,9 @@ export function BasicInfoSection() {
             <InputLabel>Difficulty</InputLabel>
             <Select
               name="difficulty"
-              value={values.difficulty}
               label="Difficulty"
+              variant="standard"
+              value={values.difficulty}
               onChange={handleChange}
             >
               {difficultyOptions.map((opt) => (

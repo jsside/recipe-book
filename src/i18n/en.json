@@ -5,10 +5,17 @@
     "recipeDescriptionLabel": "Description",
     "imagesLabel": "Images",
     "primaryImageLabel": "Primary image",
+    "numberedImageLabel": "Image {{idx}}",
+    "addImageLabel": "Add another image",
+    "addImageDescription": "Add multiple images for a gallery view. First image is the primary.",
+    "cookTimeLabel": "Cook time",
+    "servingsLabel": "Servings",
+    "difficultyLabel": "Difficulty",
     "cancel": "Cancel",
     "loading": "Loading...",
     "added": "added",
     "updated": "updated",
-    "successfulRecipeNotification": "Recipe {{action}} successfully!"
+    "successfulRecipeNotification": "Recipe {{action}} successfully!",
+    "ingredient": "Ingredient"
   }
 }

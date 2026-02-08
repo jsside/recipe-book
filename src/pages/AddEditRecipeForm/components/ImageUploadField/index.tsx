@@ -58,6 +58,7 @@ export function ImageUploadField({
       )}
       <Stack direction="row" spacing={1} alignItems="center">
         <TextField
+          variant="standard"
           value={isLocalFile ? "(Local file selected)" : value}
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}

@@ -14,13 +14,14 @@ export function NutritionSection() {
   return (
     <Paper elevation={0} sx={{ p: 3, borderRadius: 3 }}>
       <Typography variant="h6" sx={{ mb: 3 }}>
-        Nutrition (per serving, optional)
+        Nutrition
       </Typography>
       <Grid container spacing={3}>
         <Grid size={{ xs: 6, sm: 3 }}>
           <TextField
             name="calories"
             label="Calories"
+            variant="standard"
             type="number"
             value={values.calories}
             onChange={handleNumberChange("calories")}
@@ -32,6 +33,7 @@ export function NutritionSection() {
           <TextField
             name="protein"
             label="Protein (g)"
+            variant="standard"
             type="number"
             value={values.protein}
             onChange={handleNumberChange("protein")}
@@ -43,6 +45,7 @@ export function NutritionSection() {
           <TextField
             name="carbs"
             label="Carbs (g)"
+            variant="standard"
             type="number"
             value={values.carbs}
             onChange={handleNumberChange("carbs")}
@@ -54,6 +57,7 @@ export function NutritionSection() {
           <TextField
             name="fat"
             label="Fat (g)"
+            variant="standard"
             type="number"
             value={values.fat}
             onChange={handleNumberChange("fat")}

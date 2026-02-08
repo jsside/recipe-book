@@ -43,6 +43,7 @@ import { AdditionalInfoSection } from "./components/AdditionalInfoSection";
 import { NutritionSection } from "./components/NutritionSection";
 import { CancelConfirmDialog } from "./components/CancelConfirmDialog";
 import { useFormHotkeys } from "./hooks/useFormHotkeys";
+import { useI18n } from "@/i18n/useI18n";
 
 function RecipeFormContent({
   formik,
@@ -53,6 +54,8 @@ function RecipeFormContent({
   onCancel: () => void;
   onSubmit: (() => Promise<void>) & (() => Promise<AddEditRecipeFormFields>);
 }) {
+  const i18n = useI18n();
+
   useFormHotkeys(formik, onSubmit);
 
   return (
@@ -75,7 +78,7 @@ function RecipeFormContent({
           onClick={onCancel}
           sx={{ py: 1.5, flex: 1 }}
         >
-          Cancel
+          {i18n.cancel}
         </Button>
         <Button
           type="submit"
@@ -93,6 +96,7 @@ function RecipeFormContent({
 }
 
 export default function AddEditRecipeForm() {
+  const i18n = useI18n();
   const { id } = useParams<{ id?: string }>();
   const recipeId = id ? parseInt(id, 10) : 0;
   const isEditMode = Boolean(id);
@@ -117,24 +121,8 @@ export default function AddEditRecipeForm() {
   if (isEditMode && isLoadingRecipe) {
     return (
       <Container sx={{ py: 10, textAlign: "center" }}>
-        <Typography>Loading recipe...</Typography>
-      </Container>
-    );
-  }
-
-  // Check if user can edit this recipe
-  const canEdit =
-    !isEditMode ||
-    (existingRecipe && user && existingRecipe.chef?.name === user.name);
-  if (isEditMode && existingRecipe && !canEdit) {
-    return (
-      <Container sx={{ py: 10, textAlign: "center" }}>
-        <Typography variant="h5" sx={{ mb: 2 }}>
-          You can only edit your own recipes
-        </Typography>
-        <Button onClick={() => navigate(-1)} variant="contained">
-          Go Back
-        </Button>
+        {/* TODO [pattern]: diff loading experience */}
+        <Typography>{i18n.loading}</Typography>
       </Container>
     );
   }
@@ -172,11 +160,17 @@ export default function AddEditRecipeForm() {
 
       if (isEditMode && recipeId) {
         await updateRecipe({ id: recipeId, updates: recipeData });
-        showNotification("Recipe updated successfully!", "success");
+        showNotification(
+          i18n.successfulRecipeNotification({ action: i18n.updated }),
+          "success",
+        );
         setTimeout(() => navigate(`/recipe/${recipeId}`), 1000);
       } else {
         await addRecipe(recipeData);
-        showNotification("Recipe created successfully!", "success");
+        showNotification(
+          i18n.successfulRecipeNotification({ action: i18n.added }),
+          "success",
+        );
         setTimeout(() => navigate("/recipes"), 1000);
       }
     } catch (err) {

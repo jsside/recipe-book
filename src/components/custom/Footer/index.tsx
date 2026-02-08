@@ -5,13 +5,16 @@ import {
   Grid,
   Link as MuiLink,
   Stack,
-  IconButton,
 } from "@mui/material";
 import { Link } from "react-router-dom";
-import { Instagram, Twitter, YouTube } from "@mui/icons-material";
 import { SITE_NAME } from "@/app/constants";
+import { useI18n } from "@/i18n/useI18n";
+import { LanguageSwitcher } from "@/i18n/LanguageSwitcher";
+import RenderComponent from "@/components/helpers/renderComponent";
+import { isFeatureEnabled } from "@/features/isFeatureEnabled";
 
 export function Footer() {
+  const i18n = useI18n();
   const footerLinks = {
     Recipes: [
       { label: "All recipes", href: "/recipes" },
@@ -51,6 +54,10 @@ export function Footer() {
             <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
               Share and discover your friends' favorite recipes.
             </Typography>
+            <RenderComponent
+              if={isFeatureEnabled("feature-internationalization")}
+              then={<LanguageSwitcher />}
+            />
           </Grid>
 
           {/* Links */}

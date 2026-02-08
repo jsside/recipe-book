@@ -1,0 +1,14 @@
+{
+  "translation": {
+    "basicInformationHeader": "Basic information",
+    "recipeTitleLabel": "Recipe title",
+    "recipeDescriptionLabel": "Description",
+    "imagesLabel": "Images",
+    "primaryImageLabel": "Primary image",
+    "cancel": "Cancel",
+    "loading": "Loading...",
+    "added": "added",
+    "updated": "updated",
+    "successfulRecipeNotification": "Recipe {{action}} successfully!"
+  }
+}

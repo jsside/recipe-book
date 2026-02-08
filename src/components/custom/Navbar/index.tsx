@@ -296,40 +296,44 @@ export function Navbar() {
           </List>
 
           <Box sx={{ mt: 2, display: "flex", gap: 1 }}>
-            {isAuthenticated ? (
-              <Button
-                fullWidth
-                variant="outlined"
-                onClick={() => {
-                  logout();
-                  setMobileOpen(false);
-                }}
-              >
-                Log Out
-              </Button>
-            ) : (
-              <>
+            <RenderComponent
+              if={isAuthenticated}
+              then={
                 <Button
-                  component={Link}
-                  to="/auth"
                   fullWidth
                   variant="outlined"
-                  onClick={() => setMobileOpen(false)}
+                  onClick={() => {
+                    logout();
+                    setMobileOpen(false);
+                  }}
                 >
-                  Log In
+                  Log Out
                 </Button>
-                <Button
-                  component={Link}
-                  to="/auth"
-                  fullWidth
-                  variant="contained"
-                  color="secondary"
-                  onClick={() => setMobileOpen(false)}
-                >
-                  Join
-                </Button>
-              </>
-            )}
+              }
+              else={
+                <>
+                  <Button
+                    component={Link}
+                    to="/auth"
+                    fullWidth
+                    variant="outlined"
+                    onClick={() => setMobileOpen(false)}
+                  >
+                    Log In
+                  </Button>
+                  <Button
+                    component={Link}
+                    to="/auth"
+                    fullWidth
+                    variant="contained"
+                    color="secondary"
+                    onClick={() => setMobileOpen(false)}
+                  >
+                    Join
+                  </Button>
+                </>
+              }
+            />
           </Box>
         </Box>
       </Drawer>

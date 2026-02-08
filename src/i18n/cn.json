@@ -1,0 +1,9 @@
+{
+  "translation": {
+    "basicInformationHeader": "基本资料",
+    "recipeTitleLabel": "Recipe title",
+    "recipeDescriptionLabel": "Description",
+    "imagesLabel": "Images",
+    "primaryImageLabel": "Primary image"
+  }
+}

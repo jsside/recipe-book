@@ -12,21 +12,24 @@ import { difficultyOptions } from "@/data/recipes";
 import { ImagesFieldArray } from "../ImagesFieldArray";
 import { useFormikContext } from "formik";
 import { AddEditRecipeFormFields } from "../../interfaces";
+import { useI18n } from "@/i18n/useI18n";
 
 export function BasicInfoSection() {
+  const i18n = useI18n();
+
   const { values, handleChange, handleBlur, touched, errors } =
     useFormikContext<AddEditRecipeFormFields>();
 
   return (
     <Paper elevation={0} sx={{ p: 3, borderRadius: 3 }}>
       <Typography variant="h6" sx={{ mb: 3 }}>
-        Basic Information
+        {i18n.basicInformationHeader}
       </Typography>
       <Grid container spacing={3}>
         <Grid size={{ xs: 12 }}>
           <TextField
             name="title"
-            label="Recipe Title"
+            label={i18n.recipeTitleLabel}
             value={values.title}
             onChange={handleChange}
             onBlur={handleBlur}
@@ -39,7 +42,7 @@ export function BasicInfoSection() {
         <Grid size={{ xs: 12 }}>
           <TextField
             name="description"
-            label="Description"
+            label={i18n.recipeDescriptionLabel}
             value={values.description}
             onChange={handleChange}
             onBlur={handleBlur}

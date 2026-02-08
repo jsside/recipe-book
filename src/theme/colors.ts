@@ -9,7 +9,7 @@ export const THEME_COLORS = {
     contrastText: "#f8f8f8",
   },
   background: {
-    default: "#f8f7f4", // Clean off-white
+    default: "#f1efe4", // Clean off-white
     paper: "#ffffff",
   },
   text: {

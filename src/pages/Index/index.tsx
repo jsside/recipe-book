@@ -13,6 +13,7 @@ import ChefCard from "./components/ChefCard";
 import { Features } from "@/features";
 import { isNew } from "@/utils/recipeHelpers";
 import { HorizontalScrollRail } from "@/components/custom/HorizontalScrollRail";
+import { RecipeSneakPeek } from "@/components/custom/RecipeSneakPeek";
 
 const Index = () => {
   const { data: recipes = [] } = useListRecipes();
@@ -81,11 +82,11 @@ const LatestRecipesScrollable = ({ recipes }: { recipes: Recipe[] }) => {
                 key={recipe.id}
                 sx={{
                   flexShrink: 0,
-                  width: { xs: 260, sm: 280, md: 300 },
+                  width: { xs: 350, sm: 380, md: 400 },
                   scrollSnapAlign: "start",
                 }}
               >
-                <RecipeCard recipe={recipe} />
+                <RecipeSneakPeek recipe={recipe} />
               </Box>
             ))}
           </HorizontalScrollRail>

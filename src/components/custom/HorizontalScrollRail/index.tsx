@@ -1,6 +1,8 @@
 import { Box } from "@mui/material";
 import { ReactNode } from "react";
 
+// TODO [blocking]: update so can scroll on mouse drag as well.
+// Example: https://cabagges.world/
 export const HorizontalScrollRail = ({ children }: { children: ReactNode }) => {
   return (
     <Box

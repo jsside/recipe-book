@@ -7,10 +7,10 @@ export function isNewRecipe(recipe: Recipe): boolean {
   if (!recipe.createdAt) return false;
 
   const createdDate = new Date(recipe.createdAt);
-  const thirtyDaysAgo = new Date();
-  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+  const fourteenDaysAgo = new Date();
+  fourteenDaysAgo.setDate(fourteenDaysAgo.getDate() - 14);
 
-  return createdDate >= thirtyDaysAgo;
+  return createdDate >= fourteenDaysAgo;
 }
 
 // Alias for isNewRecipe

@@ -57,7 +57,7 @@ export function RecipeSneakPeek({ recipe }: RecipeSneakPeekProps) {
             aspectRatio: "4/5",
             objectFit: "cover",
             transition: "transform 0.4s ease",
-            borderRadius: 2,
+            borderRadius: 1,
           }}
         />
 

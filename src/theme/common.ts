@@ -19,7 +19,7 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           textTransform: "none",
-          borderRadius: 8,
+          borderRadius: 2,
           fontWeight: 500,
           boxShadow: "none",
           "&:hover": {
@@ -56,7 +56,7 @@ const theme = createTheme({
     MuiChip: {
       styleOverrides: {
         root: {
-          borderRadius: 6,
+          borderRadius: 4,
           fontWeight: 500,
         },
       },

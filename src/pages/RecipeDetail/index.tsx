@@ -314,21 +314,31 @@ export default function RecipeDetail() {
           <MethodPanel recipe={recipe} />
 
           {/* Ingredients and References (Right) */}
-          <Grid size={{ xs: 12, lg: 5 }}>
-            <Stack spacing={4}>
-              <IngredientsNutrientsPanel recipe={recipe} />
 
-              {/* References Section */}
-              <RenderComponent
-                if={referenceLinks.length > 0 || referenceImages.length > 0}
-                then={
-                  <ReferencesSection
-                    links={referenceLinks}
-                    images={referenceImages}
-                  />
-                }
-              />
-            </Stack>
+          <Grid size={{ xs: 12, lg: 5 }}>
+            <Box
+              sx={{
+                width: "100%",
+                position: "sticky",
+                top: 30, // distance from top of viewport
+                alignSelf: "flex-start",
+              }}
+            >
+              <Stack spacing={4}>
+                <IngredientsNutrientsPanel recipe={recipe} />
+
+                {/* References Section */}
+                <RenderComponent
+                  if={referenceLinks.length > 0 || referenceImages.length > 0}
+                  then={
+                    <ReferencesSection
+                      links={referenceLinks}
+                      images={referenceImages}
+                    />
+                  }
+                />
+              </Stack>
+            </Box>
           </Grid>
         </Grid>
       </Container>

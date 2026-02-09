@@ -8,10 +8,11 @@ import {
   Chip,
   IconButton,
   Checkbox,
-  Grid,
   Tooltip,
   Box,
   Button,
+  FormControl,
+  FormControlLabel,
 } from "@mui/material";
 
 import {
@@ -28,6 +29,7 @@ import { useServingsAdjuster } from "@/hooks/useServingsAdjuster";
 import { getAllIngredients } from "@/utils/ingredientParser";
 import ServingsAdjuster from "./ServingsAdjuster";
 import { useShoppingList } from "@/context/ShoppingListContext/utils";
+import { useI18n } from "@/i18n/useI18n";
 
 export const IngredientsNutrientsPanel = ({ recipe }: { recipe: Recipe }) => {
   const [activeTab, setActiveTab] = useState(0);
@@ -49,7 +51,7 @@ export const IngredientsNutrientsPanel = ({ recipe }: { recipe: Recipe }) => {
       sx={{
         p: 3,
         bgcolor: "background.paper",
-        borderRadius: 3,
+        borderRadius: 2,
         position: { lg: "sticky" },
         top: { lg: 100 },
       }}
@@ -152,6 +154,7 @@ const UnitsControl = () => {
 };
 
 const IngredientsTabContent = ({ recipe }: { recipe: Recipe }) => {
+  const i18n = useI18n();
   const { addIngredients } = useShoppingList();
   const { convertAmount } = useUnitConversion();
 
@@ -161,6 +164,17 @@ const IngredientsTabContent = ({ recipe }: { recipe: Recipe }) => {
     decrementServings,
     scaleIngredient,
   } = useServingsAdjuster(recipe?.servings || 4);
+
+  const [checkedList, setCheckedList] = useState([]);
+
+  const handleCheck =
+    (value: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
+      setCheckedList((prev) =>
+        event.target.checked
+          ? [...prev, value]
+          : prev.filter((v) => v !== value),
+      );
+    };
 
   // Get all ingredients
   const allIngredients = useMemo(() => {
@@ -178,11 +192,22 @@ const IngredientsTabContent = ({ recipe }: { recipe: Recipe }) => {
     return [];
   }, [recipe]);
 
-  const handleAddAllToList = () => {
+  const handleAddToList = () => {
     const scaledIngredients = allIngredients.map((ing) => ({
       ...ing,
       ...scaleIngredient(ing),
     }));
+
+    if (checkedList.length > 0) {
+      return addIngredients(
+        scaledIngredients.filter((i) => !checkedList.includes(i.id)),
+        recipe.id,
+        recipe.title,
+        recipe.images?.at(0),
+        recipe.servings,
+      );
+    }
+
     addIngredients(
       scaledIngredients,
       recipe.id,
@@ -218,8 +243,8 @@ const IngredientsTabContent = ({ recipe }: { recipe: Recipe }) => {
                 </Typography>
               }
             />
-            <Stack spacing={1}>
-              {group.items.map((ingredient) => {
+            <FormControl component="fieldset">
+              {group.items.map((ingredient, idx) => {
                 const scaled = scaleIngredient(ingredient);
                 const converted = convertAmount(scaled.amount, scaled.unit);
                 return (
@@ -228,41 +253,63 @@ const IngredientsTabContent = ({ recipe }: { recipe: Recipe }) => {
                     sx={{
                       display: "flex",
                       alignItems: "center",
+                      paddingLeft: ".5rem",
                       gap: 2,
-                      p: 1.5,
-                      borderRadius: 2,
-                      bgcolor: "rgba(0, 0, 0, 0.02)",
+                      borderRadius: 1,
                       "&:hover": {
-                        bgcolor: "rgba(0, 0, 0, 0.04)",
+                        bgcolor: "action.hover",
                       },
                     }}
                   >
-                    <Checkbox size="small" />
-                    <Box sx={{ flex: 1 }}>
-                      <Typography>
-                        {converted.amount} {converted.unit} {ingredient.name}
-                        <RenderComponent
-                          if={!!ingredient.preparation}
-                          then={
-                            <Typography component="span" color="text.secondary">
-                              , {ingredient.preparation}
-                            </Typography>
-                          }
+                    <FormControlLabel
+                      key={idx}
+                      control={
+                        <Checkbox
+                          checked={checkedList.includes(ingredient.id)}
+                          onChange={handleCheck(ingredient.id)}
                         />
-                      </Typography>
-                      <RenderComponent
-                        if={!!ingredient.note}
-                        then={
-                          <Typography variant="caption" color="text.secondary">
-                            {ingredient.note}
+                      }
+                      label={
+                        <Box sx={{ flex: 1 }}>
+                          <Typography
+                            color={
+                              checkedList.includes(ingredient.id)
+                                ? "text.secondary"
+                                : "text.primary"
+                            }
+                          >
+                            {converted.amount} {converted.unit}{" "}
+                            {ingredient.name}
+                            <RenderComponent
+                              if={!!ingredient.preparation}
+                              then={
+                                <Typography
+                                  component="span"
+                                  color="text.secondary"
+                                >
+                                  , {ingredient.preparation}
+                                </Typography>
+                              }
+                            />
                           </Typography>
-                        }
-                      />
-                    </Box>
+                          <RenderComponent
+                            if={!!ingredient.note}
+                            then={
+                              <Typography
+                                variant="caption"
+                                color="text.secondary"
+                              >
+                                {ingredient.note}
+                              </Typography>
+                            }
+                          />
+                        </Box>
+                      }
+                    />
                   </Box>
                 );
               })}
-            </Stack>
+            </FormControl>
           </Box>
         ))}
       </Stack>
@@ -270,11 +317,12 @@ const IngredientsTabContent = ({ recipe }: { recipe: Recipe }) => {
       <Button
         fullWidth
         variant="outlined"
+        color="secondary"
         startIcon={<AddIcon />}
-        onClick={handleAddAllToList}
+        onClick={handleAddToList}
         sx={{ mt: 3 }}
       >
-        Add all to list
+        {checkedList.length > 0 ? i18n.addUncheckedToList : i18n.addAllToList}
       </Button>
     </>
   );

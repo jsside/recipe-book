@@ -33,6 +33,7 @@ import { SITE_NAME } from "@/app/constants";
 import RenderComponent from "@/components/helpers/renderComponent";
 import { useShoppingList } from "@/context/ShoppingListContext/utils";
 import { useAuth } from "@/context/AuthContext/utils";
+import { useI18n } from "@/i18n/useI18n";
 
 interface NavLink {
   label: string;
@@ -50,6 +51,7 @@ const navLinks: NavLink[] = [
 ].flat();
 
 export function Navbar() {
+  const i18n = useI18n();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -81,7 +83,14 @@ export function Navbar() {
   return (
     <>
       {/* Main navbar */}
-      <AppBar position="sticky" color="transparent" elevation={0}>
+      <AppBar
+        position="sticky"
+        elevation={0}
+        sx={{
+          backgroundColor: "background.default",
+          border: "none",
+        }}
+      >
         <Toolbar sx={{ gap: 2, py: 1 }}>
           {/* Logo */}
           <Typography
@@ -110,7 +119,7 @@ export function Navbar() {
           >
             <TextField
               size="small"
-              placeholder="Search recipes..."
+              placeholder={i18n.searchPlaceholder}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               fullWidth
@@ -145,7 +154,7 @@ export function Navbar() {
                   color: "text.primary",
                 }}
               >
-                Add Recipe
+                {i18n.addRecipe}
               </Button>
             )}
 
@@ -181,7 +190,7 @@ export function Navbar() {
                         {user?.name}
                       </Typography>
                       <Typography variant="caption" color="text.secondary">
-                        {user?.role === "chef" ? "Chef" : "Viewer"}
+                        {user?.role === "chef" ? i18n.chef : i18n.viewer}
                       </Typography>
                     </Box>
                   </MenuItem>
@@ -193,10 +202,10 @@ export function Navbar() {
                         navigate("/add-recipe");
                       }}
                     >
-                      Add Recipe
+                      {i18n.addRecipe}
                     </MenuItem>
                   )}
-                  <MenuItem onClick={handleLogout}>Log Out</MenuItem>
+                  <MenuItem onClick={handleLogout}>{i18n.logout}</MenuItem>
                 </Menu>
               </>
             ) : (
@@ -209,7 +218,7 @@ export function Navbar() {
                   color: "text.primary",
                 }}
               >
-                Log In
+                {i18n.login}
               </Button>
             )}
 
@@ -307,7 +316,7 @@ export function Navbar() {
                     setMobileOpen(false);
                   }}
                 >
-                  Log Out
+                  {i18n.logout}
                 </Button>
               }
               else={
@@ -319,7 +328,7 @@ export function Navbar() {
                     variant="outlined"
                     onClick={() => setMobileOpen(false)}
                   >
-                    Log In
+                    {i18n.login}
                   </Button>
                   <Button
                     component={Link}
@@ -329,7 +338,7 @@ export function Navbar() {
                     color="secondary"
                     onClick={() => setMobileOpen(false)}
                   >
-                    Join
+                    {i18n.join}
                   </Button>
                 </>
               }

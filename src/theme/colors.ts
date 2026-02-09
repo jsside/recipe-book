@@ -9,11 +9,12 @@ export const THEME_COLORS = {
     contrastText: "#f8f8f8",
   },
   background: {
-    default: "#f1efe4", // Clean off-white
-    paper: "#ffffff",
+    default: "#f1efe4", // Tan
+    paper: "#e5e1cd",
   },
   text: {
-    primary: "#341F1B",
+    // primary: "#341F1B", // Brown
+    primary: "#1b2b36", // Near black
     secondary: "#737373",
   },
   error: {

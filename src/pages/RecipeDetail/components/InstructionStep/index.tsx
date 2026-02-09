@@ -14,7 +14,7 @@ export default function InstructionStep({
       onClick={onClick}
       sx={{
         p: 2,
-        borderRadius: 2,
+        borderRadius: 1,
         cursor: "pointer",
         transition: "all 0.2s ease",
         bgcolor: isActive ? "action.hover" : "transparent",
@@ -27,6 +27,7 @@ export default function InstructionStep({
         sx={{
           width: 32,
           height: 32,
+          flexShrink: 0,
           borderRadius: "50%",
           bgcolor: isActive ? "secondary.main" : "background.paper",
           color: isActive ? "background.paper" : "text.primary",

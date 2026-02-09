@@ -1,5 +1,12 @@
 {
   "translation": {
+    "chef": "Chef",
+    "viewer": "Viewer",
+    "addRecipe": "Add recipe",
+    "join": "Join",
+    "login": "Log in",
+    "logout": "Log out",
+    "searchPlaceholder": "Search recipes...",
     "basicInformationHeader": "Basic information",
     "recipeTitleLabel": "Recipe title",
     "recipeDescriptionLabel": "Description",
@@ -16,6 +23,8 @@
     "added": "added",
     "updated": "updated",
     "successfulRecipeNotification": "Recipe {{action}} successfully!",
-    "ingredient": "Ingredient"
+    "ingredient": "Ingredient",
+    "addAllToList": "Add all to list",
+    "addUncheckedToList": "Add unchecked to list"
   }
 }

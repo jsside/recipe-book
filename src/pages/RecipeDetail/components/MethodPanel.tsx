@@ -36,10 +36,7 @@ export const MethodPanel = ({ recipe }: { recipe: Recipe }) => {
 
   return (
     <Grid size={{ xs: 12, lg: 7 }}>
-      <Paper
-        elevation={0}
-        sx={{ p: 3, bgcolor: "background.paper", borderRadius: 3 }}
-      >
+      <Paper elevation={0} sx={{ p: 3, bgcolor: "transparent" }}>
         <Typography variant="h5" sx={{ mb: 3 }}>
           Method
         </Typography>

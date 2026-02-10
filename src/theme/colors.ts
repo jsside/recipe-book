@@ -29,6 +29,15 @@ export const THEME_COLORS = {
   action: {
     hover: "rgba(0, 0, 0, 0.04)", // low opacity gray
   },
+  components: {
+    stickyNote: {
+      yellow: "rgba(255, 243, 176, 0.75)",
+      red: "rgba(255, 200, 200, 0.75)",
+      blue: "rgba(200, 220, 255, 0.75)",
+      purple: "rgba(230, 210, 255, 0.75)",
+      green: "rgba(210, 245, 220, 0.75)",
+    },
+  },
 };
 
 // // 1a1a1a near blAck

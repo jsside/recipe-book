@@ -15,6 +15,7 @@ export type UserNote = {
 };
 
 export type CreateUserNoteInput = {
+  id: string;
   page_type: UserNote["page_type"];
   page_id: number | null;
   anchor_type?: UserNote["anchor_type"];

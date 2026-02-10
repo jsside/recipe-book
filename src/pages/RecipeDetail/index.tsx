@@ -15,7 +15,6 @@ import {
   DialogContent,
   DialogContentText,
   DialogActions,
-  Skeleton,
 } from "@mui/material";
 import {
   ChevronLeft as BackIcon,
@@ -41,6 +40,15 @@ import { ImageGallery, ReferencesSection } from "./components/RecipeGallery";
 import { CloudinaryImage } from "@/components/custom/CloudinaryImage";
 import { LoadingRecipeDetail } from "./components/LoadingRecipeDetail";
 import { RecipeNotFound } from "./components/RecipeNotFound";
+import { StickyNote } from "@/components/custom/StickyNote";
+import { StickyNoteLauncher } from "@/components/custom/StickyNoteLauncher";
+import { useGetUserNotes } from "@/hooks/useGetUserNotes";
+import { useUpdateUserNote } from "@/hooks/useUpdateUserNote";
+import { useDeleteUserNote } from "@/hooks/useDeleteUserNote";
+import { useCreateUserNote } from "@/hooks/useCreateUserNote";
+import { StickyNoteColors } from "@/components/custom/StickyNote/interfaces";
+
+//TODO: shuold have a box at the right hand side. click to add sticky note
 
 export default function RecipeDetail() {
   const { id } = useParams();
@@ -51,6 +59,12 @@ export default function RecipeDetail() {
   const { share } = useShare();
   const { user } = useAuth();
   const deleteRecipe = useDeleteRecipe();
+
+  // Sticky notes
+  const { data: notes = [] } = useGetUserNotes("recipe", recipeId);
+  const updateNote = useUpdateUserNote();
+  const deleteNote = useDeleteUserNote();
+  const createNote = useCreateUserNote();
 
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -135,6 +149,46 @@ export default function RecipeDetail() {
 
   return (
     <Box sx={{ minHeight: "100vh", pb: 6 }}>
+      <StickyNoteLauncher
+        onCreate={(x, y) =>
+          createNote.mutate({
+            id: user.id,
+            page_type: "recipe",
+            page_id: recipeId,
+            content: "",
+            position_x: x,
+            position_y: y,
+          })
+        }
+      />
+
+      {notes.map((note) => (
+        <StickyNote
+          key={note.id}
+          id={note.id}
+          content={note.content}
+          color={note.color as StickyNoteColors}
+          x={note.position_x}
+          y={note.position_y}
+          zIndex={note.z_index}
+          onMoveEnd={({ x, y }) =>
+            updateNote.mutate({
+              id: note.id,
+              position_x: x,
+              position_y: y,
+              z_index: note.z_index + 1,
+            })
+          }
+          onChangeContent={(content) =>
+            updateNote.mutate({
+              id: note.id,
+              content,
+            })
+          }
+          onDelete={() => deleteNote.mutate(note.id)}
+        />
+      ))}
+
       {/* Breadcrumbs area */}
       <Container sx={{ py: 2 }}>
         <Box

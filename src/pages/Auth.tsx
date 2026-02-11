@@ -179,7 +179,7 @@ export default function Auth() {
             <form onSubmit={handleSignup}>
               <Stack spacing={3}>
                 <TextField
-                  label="Full Name"
+                  label="Display Name"
                   value={signupName}
                   onChange={(e) => setSignupName(e.target.value)}
                   required

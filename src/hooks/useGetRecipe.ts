@@ -5,6 +5,54 @@ import { singletonQueryClient } from "@/app/App.queries";
 
 export const GET_RECIPE_KEY = "get-recipe";
 
+// export const fetchRecipeById = async (
+//   recipeId: number,
+// ): Promise<Recipe | null> => {
+//   const { data, error } = await supabase
+//     .from("recipes")
+//     .select(
+//       `
+//       *,
+//       chefs (
+//         id,
+//         name,
+//         avatar
+//       )
+//     `,
+//     )
+//     .eq("id", recipeId)
+//     .maybeSingle();
+
+//   if (error) throw error;
+
+//   if (!data) return null;
+
+//   return {
+//     id: data.id,
+//     title: data.title,
+//     images: data.images ?? [],
+//     cookTime: data.cook_time,
+//     servings: data.servings,
+//     difficulty: data.difficulty,
+//     description: data.description,
+//     category: data.category ?? [],
+//     dietaryTags: data.dietary_tags ?? [],
+//     videoUrl: data.video_url ?? undefined,
+//     nutrition: data.nutrition ?? undefined,
+//     ingredientGroups: data.ingredient_groups,
+//     instructionGroups: data.instruction_groups,
+//     references: data.references ?? [],
+//     createdAt: data.created_at,
+//     chefId: data.chef_id,
+//     chef: data.chefs
+//       ? {
+//           name: data.chefs.name,
+//           avatar: data.chefs.avatar,
+//         }
+//       : undefined,
+//   };
+// };
+
 export const fetchRecipeById = async (
   recipeId: number,
 ): Promise<Recipe | null> => {
@@ -27,6 +75,15 @@ export const fetchRecipeById = async (
 
   if (!data) return null;
 
+  //delme
+
+  const {
+    data: { authedUser },
+  } = await supabase.auth.getUser();
+  console.log({ authedUser });
+
+  ///
+
   return {
     id: data.id,
     title: data.title,
@@ -43,9 +100,10 @@ export const fetchRecipeById = async (
     instructionGroups: data.instruction_groups,
     references: data.references ?? [],
     createdAt: data.created_at,
-    chefId: data.chef_id,
+    chefId: data.chef_id, // now points to chefs.id
     chef: data.chefs
       ? {
+          // id: data.chefs.id,
           name: data.chefs.name,
           avatar: data.chefs.avatar,
         }

@@ -10,50 +10,67 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return stored ? JSON.parse(stored) : null;
   });
 
+  async function startSession(email: string, password: string) {
+    // After login/signUp, save session automatically
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (error) throw error;
+
+    return;
+  }
+
   const login = useCallback(
     async (
       email: string,
       password: string,
     ): Promise<{ success: boolean; error?: string }> => {
-      const { data, error } = await supabase
-        .from("users")
+      // 1. Authenticate via Supabase Auth
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error || !data.user) {
+        return {
+          success: false,
+          error: error?.message ?? "Invalid credentials",
+        };
+      }
+
+      // 2. Fetch profile (optional but common)
+      const { data: profile, error: profileError } = await supabase
+        .from("profiles")
         .select(
-          `
-          id,
-          email,
-          name,
-          role,
-          avatar,
-          chef_id,
-          password
+          `id,
+        display_name,
+        role,
+        avatar_url
         `,
         )
-        .eq("email", email)
+        .eq("id", data.user.id)
         .single();
 
-      if (error || !data) {
-        return { success: false, error: "Invalid email or password" };
+      if (profileError || !profile) {
+        return { success: false, error: "Profile not found" };
       }
+      startSession(email, password);
 
-      /**
-       * IMPORTANT:
-       * Replace this comparison with bcrypt/argon2 verification
-       */
-      if (data.password !== password) {
-        return { success: false, error: "Invalid email or password" };
-      }
-
+      // 3. Build client user
       const clientUser = {
-        id: data.id,
-        chefId: data["chef_id"],
-        name: data.name,
-        email: data.email,
-        role: data.role,
-        avatar: data.avatar,
+        id: profile.id,
+        chefId: profile.chef_id,
+        name: profile.display_name,
+        email: profile.email,
+        role: profile.role,
+        avatar: profile.avatar_url,
       };
 
       setUser(clientUser);
       localStorage.setItem(`${SITE_NAME}_user`, JSON.stringify(clientUser));
+
       return { success: true };
     },
     [],
@@ -66,57 +83,41 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       name: string,
       role: UserRole,
     ): Promise<{ success: boolean; error?: string }> => {
-      // check for existing email
-      const { data: existing } = await supabase
-        .from("users")
-        .select("id")
-        .eq("email", email)
-        .maybeSingle();
-
-      if (existing) {
-        return { success: false, error: "Email already registered" };
-      }
-
-      /**
-       * IMPORTANT:
-       * Hash password before insert
-       */
-      const { data, error } = await supabase
-        .from("users")
-        .insert({
-          email,
-          password, // hashed in real app
-          name,
-          role,
-        })
-        .select(
-          `
-          id,
-          email,
-          name,
-          role,
-          avatar,
-          chef_id
-        `,
-        )
-        .single();
-
-      if (error || !data) {
-        return { success: false, error: "Signup failed" };
-      }
-
-      setUser({
-        ...data,
-        chefId: data["chef_id"],
+      // 1. Create Auth user
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            display_name: name,
+            role: role,
+          },
+        },
       });
-      localStorage.setItem(`${SITE_NAME}_user`, JSON.stringify(data));
+
+      if (authError || !authData.user) {
+        return { success: false, error: authError?.message ?? "Signup failed" };
+      }
+      startSession(email, password);
+
+      // 2. Build client user object
+      const clientUser = {
+        id: authData.user.id,
+        name: name,
+        email: email,
+        role: role,
+      };
+
+      setUser(clientUser);
+      localStorage.setItem(`${SITE_NAME}_user`, JSON.stringify(clientUser));
 
       return { success: true };
     },
     [],
   );
 
-  const logout = useCallback(() => {
+  const logout = useCallback(async () => {
+    await supabase.auth.signOut(); // Ends the Supabase session
     setUser(null);
     localStorage.removeItem(`${SITE_NAME}_user`);
   }, []);

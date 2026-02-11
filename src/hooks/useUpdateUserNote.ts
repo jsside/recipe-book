@@ -10,6 +10,7 @@ type UpdateUserNoteContext = {
   }[];
 };
 
+// TODO[performance]: add debounce
 export async function updateUserNoteFn(
   input: UpdateUserNoteInput,
 ): Promise<UserNote> {
@@ -17,7 +18,11 @@ export async function updateUserNoteFn(
 
   const { data, error } = await supabase
     .from("user_notes")
-    .update(updates)
+    .update({
+      ...updates,
+      position_x: input.position_x ? Math.round(input.position_x) : undefined,
+      position_y: input.position_y ? Math.round(input.position_y) : undefined,
+    })
     .eq("id", id)
     .select()
     .single();

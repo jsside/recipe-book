@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import {
   Container,
@@ -36,11 +36,14 @@ import { MethodPanel } from "./components/MethodPanel";
 import { invalidateGetRecipe, useGetRecipe } from "@/hooks/useGetRecipe";
 import { useShoppingList } from "@/context/ShoppingListContext/utils";
 import { useAuth } from "@/context/AuthContext/utils";
-import { ImageGallery, ReferencesSection } from "./components/RecipeGallery";
+import { ReferencesSection } from "./components/RecipeGallery";
 import { CloudinaryImage } from "@/components/custom/CloudinaryImage";
 import { LoadingRecipeDetail } from "./components/LoadingRecipeDetail";
 import { RecipeNotFound } from "./components/RecipeNotFound";
-import { StickyNote } from "@/components/custom/StickyNote";
+import {
+  BASE_STICKY_ZINDEX,
+  StickyNoteContainer,
+} from "@/components/custom/StickyNote";
 import { StickyNoteLauncher } from "@/components/custom/StickyNoteLauncher";
 import { useGetUserNotes } from "@/hooks/useGetUserNotes";
 import { useUpdateUserNote } from "@/hooks/useUpdateUserNote";
@@ -58,6 +61,7 @@ export default function RecipeDetail() {
   const { addIngredients } = useShoppingList();
   const { share } = useShare();
   const { user } = useAuth();
+
   const deleteRecipe = useDeleteRecipe();
 
   // Sticky notes
@@ -152,18 +156,18 @@ export default function RecipeDetail() {
       <StickyNoteLauncher
         onCreate={(x, y) =>
           createNote.mutate({
-            id: user.id,
             page_type: "recipe",
             page_id: recipeId,
             content: "",
             position_x: x,
             position_y: y,
+            z_index: BASE_STICKY_ZINDEX,
           })
         }
       />
 
       {notes.map((note) => (
-        <StickyNote
+        <StickyNoteContainer
           key={note.id}
           id={note.id}
           content={note.content}
@@ -171,21 +175,7 @@ export default function RecipeDetail() {
           x={note.position_x}
           y={note.position_y}
           zIndex={note.z_index}
-          onMoveEnd={({ x, y }) =>
-            updateNote.mutate({
-              id: note.id,
-              position_x: x,
-              position_y: y,
-              z_index: note.z_index + 1,
-            })
-          }
-          onChangeContent={(content) =>
-            updateNote.mutate({
-              id: note.id,
-              content,
-            })
-          }
-          onDelete={() => deleteNote.mutate(note.id)}
+          readOnly={false}
         />
       ))}
 

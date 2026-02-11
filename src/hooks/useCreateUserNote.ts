@@ -6,10 +6,18 @@ import { supabase } from "@/db/supabaseClient";
 export async function createUserNoteFn(
   input: CreateUserNoteInput,
 ): Promise<UserNote> {
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+  const userId = session.user.id;
+
   const { data, error } = await supabase
     .from("user_notes")
     .insert({
       ...input,
+      position_x: Math.round(input.position_x),
+      position_y: Math.round(input.position_y),
+      user_id: userId,
       color: input.color ?? "yellow",
     })
     .select()

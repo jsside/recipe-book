@@ -9,7 +9,7 @@ export function StickyNoteGhost({ x, y }: { x: number; y: number }) {
         width: 220,
         height: 160,
         backgroundColor: "rgba(255,243,176,0.75)",
-        borderRadius: 2,
+        borderRadius: 0,
         boxShadow: 6,
         pointerEvents: "none",
         zIndex: 1300,

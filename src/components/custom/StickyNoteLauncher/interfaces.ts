@@ -1,7 +1,5 @@
-export type PlacementState =
-  | { active: false }
-  | {
-      active: true;
-      x: number;
-      y: number;
-    };
+export type PlacementState = {
+  active: boolean;
+  x: number;
+  y: number;
+};

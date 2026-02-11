@@ -15,7 +15,6 @@ export type UserNote = {
 };
 
 export type CreateUserNoteInput = {
-  id: string;
   page_type: UserNote["page_type"];
   page_id: number | null;
   anchor_type?: UserNote["anchor_type"];
@@ -24,6 +23,7 @@ export type CreateUserNoteInput = {
   color?: string;
   position_x: number;
   position_y: number;
+  z_index: number;
 };
 
 export type UpdateUserNoteInput = {

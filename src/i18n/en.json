@@ -25,6 +25,12 @@
     "successfulRecipeNotification": "Recipe {{action}} successfully!",
     "ingredient": "Ingredient",
     "addAllToList": "Add all to list",
-    "addUncheckedToList": "Add unchecked to list"
+    "addUncheckedToList": "Add unchecked to list",
+    "addInstructionGroupLabel": "Add instruction group",
+    "groupHeadingPlaceholder": "Section heading (optional, e.g., 'Make the dough')",
+    "addStepLabel": "Add step",
+    "stepPlaceholder": "Step {{stepNumber}}",
+    "timerPlaceholder": "Timer",
+    "min": "min"
   }
 }

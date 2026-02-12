@@ -7,7 +7,8 @@ import { StickyNote2Outlined } from "@mui/icons-material";
 
 // TODO
 // [fix]: resize not working
-// [fix]: shouldn't be able to click under the postit
+// [fix]: shouldn't be able to click under the postit on create.
+// [fix]: sticky notes should ALWAYS be over the launcher.
 const StickyNoteBox = styled(Box)(() => ({
   position: "fixed",
 

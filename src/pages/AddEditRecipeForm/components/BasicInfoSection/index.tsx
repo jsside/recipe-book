@@ -90,12 +90,11 @@ export function BasicInfoSection() {
           />
         </Grid>
         <Grid size={{ xs: 12, sm: 4 }}>
-          <FormControl fullWidth>
-            <InputLabel>Difficulty</InputLabel>
+          <FormControl variant="standard" fullWidth>
+            <InputLabel id="difficulty-label">Difficulty</InputLabel>
             <Select
+              labelId="difficulty-label"
               name="difficulty"
-              label="Difficulty"
-              variant="standard"
               value={values.difficulty}
               onChange={handleChange}
             >

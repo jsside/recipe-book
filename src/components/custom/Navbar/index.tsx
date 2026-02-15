@@ -35,6 +35,9 @@ import { useShoppingList } from "@/context/ShoppingListContext/utils";
 import { useAuth } from "@/context/AuthContext/utils";
 import { useI18n } from "@/i18n/useI18n";
 
+//todo if chef, can create profile.
+// should b e able to change avatar and add a banner maybe ?
+
 interface NavLink {
   label: string;
   href: string;
@@ -195,17 +198,34 @@ export function Navbar() {
                       </Typography>
                     </Box>
                   </MenuItem>
+                  <RenderComponent
+                    if={user?.role === "chef"}
+                    then={
+                      <MenuItem
+                        onClick={() => {
+                          handleUserMenuClose();
+                          navigate(`/chef/${encodeURIComponent(user?.name)}`);
+                        }}
+                      >
+                        Profile
+                      </MenuItem>
+                    }
+                  />
+
                   <Divider />
-                  {user?.role === "chef" && (
-                    <MenuItem
-                      onClick={() => {
-                        handleUserMenuClose();
-                        navigate("/add-recipe");
-                      }}
-                    >
-                      {i18n.addRecipe}
-                    </MenuItem>
-                  )}
+                  <RenderComponent
+                    if={user?.role === "chef"}
+                    then={
+                      <MenuItem
+                        onClick={() => {
+                          handleUserMenuClose();
+                          navigate("/add-recipe");
+                        }}
+                      >
+                        {i18n.addRecipe}
+                      </MenuItem>
+                    }
+                  />
                   <MenuItem onClick={handleLogout}>{i18n.logout}</MenuItem>
                 </Menu>
               </>

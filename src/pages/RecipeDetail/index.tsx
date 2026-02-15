@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import {
   Container,
@@ -46,8 +46,6 @@ import {
 } from "@/components/custom/StickyNote";
 import { StickyNoteLauncher } from "@/components/custom/StickyNoteLauncher";
 import { useGetUserNotes } from "@/hooks/useGetUserNotes";
-import { useUpdateUserNote } from "@/hooks/useUpdateUserNote";
-import { useDeleteUserNote } from "@/hooks/useDeleteUserNote";
 import { useCreateUserNote } from "@/hooks/useCreateUserNote";
 import { StickyNoteColors } from "@/components/custom/StickyNote/interfaces";
 

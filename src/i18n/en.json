@@ -31,6 +31,12 @@
     "addStepLabel": "Add step",
     "stepPlaceholder": "Step {{stepNumber}}",
     "timerPlaceholder": "Timer",
-    "min": "min"
+    "min": "min",
+    "backToRecipes": "Back to recipes",
+    "chefNotFound": "Chef not found",
+    "backToHome": "Back to home",
+    "recipeCreator": "Recipe creator",
+    "emptyRecipes": "No recipes found for this chef.",
+    "recipesByChef": "Recipes by {{name}}"
   }
 }

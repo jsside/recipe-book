@@ -8,13 +8,18 @@ import {
   Button,
   Paper,
   Skeleton,
+  IconButton,
 } from "@mui/material";
-import { ChevronLeft as BackIcon } from "@mui/icons-material";
+import { ChevronLeft as BackIcon, Edit as EditIcon } from "@mui/icons-material";
 
 import { RecipeCard } from "@/components/custom/RecipeCard";
 import { useListRecipesByChefName } from "@/hooks/useListRecipes";
+import { useAuth } from "@/context/AuthContext/utils";
+import RenderComponent from "@/components/helpers/renderComponent";
+import { useI18n } from "@/i18n/useI18n";
 
 export default function ChefProfile() {
+  const i18n = useI18n();
   const { name } = useParams<{ name: string }>();
   const decodedName = decodeURIComponent(name || "");
 
@@ -22,6 +27,10 @@ export default function ChefProfile() {
 
   const chefInfo = data?.chef;
   const chefRecipes = data?.recipes || [];
+
+  // Check if current user can edit this profile
+  const { user } = useAuth();
+  const canEdit = user && data && user?.name === data.chef.name;
 
   if (isLoading) {
     return (
@@ -33,7 +42,7 @@ export default function ChefProfile() {
             startIcon={<BackIcon />}
             sx={{ color: "text.secondary" }}
           >
-            Back to recipes
+            {i18n.backToRecipes}
           </Button>
         </Container>
         <Container sx={{ mb: 6 }}>
@@ -64,10 +73,10 @@ export default function ChefProfile() {
     return (
       <Container sx={{ py: 10, textAlign: "center" }}>
         <Typography variant="h4" sx={{ mb: 2 }}>
-          Chef not found
+          {i18n.chefNotFound}
         </Typography>
         <Button component={RouterLink} to="/" variant="contained">
-          Back to home
+          {i18n.backToHome}
         </Button>
       </Container>
     );
@@ -83,7 +92,7 @@ export default function ChefProfile() {
           startIcon={<BackIcon />}
           sx={{ color: "text.secondary" }}
         >
-          Back to recipes
+          {i18n.backToRecipes}
         </Button>
       </Container>
 
@@ -111,20 +120,31 @@ export default function ChefProfile() {
               {chefInfo.name}
             </Typography>
             <Typography variant="body1" color="text.secondary">
-              Recipe creator
+              {i18n.recipeCreator}
             </Typography>
             <Typography variant="h6" sx={{ mt: 2 }}>
               {chefRecipes.length}{" "}
               {chefRecipes.length === 1 ? "Recipe" : "Recipes"}
             </Typography>
           </Box>
+
+          <RenderComponent
+            if={canEdit}
+            then={
+              <Box>
+                <IconButton>
+                  <EditIcon />
+                </IconButton>
+              </Box>
+            }
+          />
         </Paper>
       </Container>
 
       {/* Recipes Grid */}
       <Container>
         <Typography variant="h5" sx={{ mb: 3 }}>
-          Recipes by {chefInfo.name}
+          {i18n.recipesByChef({ name: chefInfo.name })}
         </Typography>
 
         <Grid container spacing={3}>
@@ -137,9 +157,7 @@ export default function ChefProfile() {
 
         {chefRecipes.length === 0 && (
           <Box textAlign="center" py={8}>
-            <Typography color="text.secondary">
-              No recipes found for this chef.
-            </Typography>
+            <Typography color="text.secondary">{i18n.emptyRecipes}</Typography>
           </Box>
         )}
       </Container>

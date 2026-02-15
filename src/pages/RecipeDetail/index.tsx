@@ -66,8 +66,6 @@ export default function RecipeDetail() {
 
   // Sticky notes
   const { data: notes = [] } = useGetUserNotes("recipe", recipeId);
-  const updateNote = useUpdateUserNote();
-  const deleteNote = useDeleteUserNote();
   const createNote = useCreateUserNote();
 
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);

@@ -1,8 +1,10 @@
+import { Timer } from "@/components/custom/Timer";
 import InstructionStep from "./InstructionStep";
 import RenderComponent from "@/components/helpers/renderComponent";
 import { Recipe } from "@/data/recipes";
 import { useServingsAdjuster } from "@/hooks/useServingsAdjuster";
 import { useUnitConversion } from "@/hooks/useUnitConversion";
+import { secondsToMMSS } from "@/pages/AddEditRecipeForm/utils";
 import {
   getAllIngredients,
   parseInstructionWithIngredients,
@@ -33,6 +35,13 @@ export const MethodPanel = ({ recipe }: { recipe: Recipe }) => {
   const { convertAmount } = useUnitConversion();
   const { scaleIngredient } = useServingsAdjuster(recipe?.servings || 4);
   const [activeStep, setActiveStep] = useState<number | null>(null);
+  const [timerOpen, setTimerOpen] = useState(false);
+  const [timerSeconds, setTimerSeconds] = useState<number | null>(null);
+
+  const startTimer = (seconds: number) => {
+    setTimerSeconds(seconds);
+    setTimerOpen(true);
+  };
 
   return (
     <Grid size={{ xs: 12, lg: 7 }}>
@@ -80,13 +89,23 @@ export const MethodPanel = ({ recipe }: { recipe: Recipe }) => {
                             <RenderComponent
                               if={!!step.timer}
                               then={
-                                <Chip
-                                  icon={<TimerIcon />}
-                                  label={`${step.timer} min`}
-                                  size="small"
-                                  variant="outlined"
-                                  sx={{ flexShrink: 0 }}
-                                />
+                                // <Chip
+                                //   icon={<TimerIcon />}
+                                //   label={`${step.timer} min`}
+                                //   size="small"
+                                //   variant="outlined"
+                                //   sx={{ flexShrink: 0 }}
+                                // />
+
+                                <Typography
+                                  sx={{
+                                    cursor: "pointer",
+                                    color: "primary.main",
+                                  }}
+                                  onClick={() => startTimer(step.timer)}
+                                >
+                                  {secondsToMMSS(step.timer)}
+                                </Typography>
                               }
                             />
                           </Stack>
@@ -108,6 +127,13 @@ export const MethodPanel = ({ recipe }: { recipe: Recipe }) => {
           ))}
         </Stack>
       </Paper>
+      {timerSeconds != null && (
+        <Timer
+          seconds={timerSeconds}
+          open={timerOpen}
+          onClose={() => setTimerOpen(false)}
+        />
+      )}
     </Grid>
   );
 };

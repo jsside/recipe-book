@@ -19,7 +19,7 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           textTransform: "none",
-          borderRadius: 2,
+          borderRadius: 8,
           fontWeight: 500,
           boxShadow: "none",
           "&:hover": {

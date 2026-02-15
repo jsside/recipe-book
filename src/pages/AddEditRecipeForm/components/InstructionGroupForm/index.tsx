@@ -23,6 +23,7 @@ import {
 } from "./interfaces";
 import { ReactNode, useState } from "react";
 import { useI18n } from "@/i18n/useI18n";
+import { secondsToMMSS } from "../../utils";
 
 const createEmptyStep = (): InstructionFormStep => ({
   text: "",
@@ -182,140 +183,6 @@ const InstructionGroup = ({
   );
 };
 
-// const InstructionStep = ({
-//   groups,
-//   step,
-//   stepIndex,
-//   globalStepNumber,
-//   group,
-//   groupIndex,
-//   onChange,
-// }: {
-//   groups: InstructionGroupFormItem[];
-//   step: InstructionFormStep;
-//   stepIndex: number;
-//   globalStepNumber: number;
-//   group: InstructionGroupFormItem;
-//   groupIndex: number;
-//   onChange: (groups: InstructionGroupFormItem[]) => void;
-// }) => {
-//   const i18n = useI18n();
-//   const [isHovered, setIsHovered] = useState(false);
-//   const [isFocused, setIsFocused] = useState(false);
-
-//   const removeStep = (groupIndex: number, stepIndex: number) => {
-//     const updated = [...groups];
-//     if (updated[groupIndex].steps.length > 1) {
-//       updated[groupIndex] = {
-//         ...updated[groupIndex],
-//         steps: updated[groupIndex].steps.filter((_, i) => i !== stepIndex),
-//       };
-//       onChange(updated);
-//     }
-//   };
-
-//   const updateStep = (
-//     groupIndex: number,
-//     stepIndex: number,
-//     field: keyof InstructionFormStep,
-//     value: string | number | undefined
-//   ) => {
-//     const updated = [...groups];
-//     updated[groupIndex] = {
-//       ...updated[groupIndex],
-//       steps: updated[groupIndex].steps.map((s, i) =>
-//         i === stepIndex ? { ...s, [field]: value } : s
-//       ),
-//     };
-//     onChange(updated);
-//   };
-
-//   const showControls = isHovered || isFocused;
-
-//   return (
-//     <Stack
-//       key={stepIndex}
-//       direction="row"
-//       spacing={2}
-//       alignItems="flex-start"
-//       onMouseEnter={() => setIsHovered(true)}
-//       onMouseLeave={() => setIsHovered(false)}
-//     >
-//       <Box
-//         sx={{
-//           width: 32,
-//           height: 32,
-//           borderRadius: "50%",
-//           bgcolor: "primary.main",
-//           color: "primary.contrastText",
-//           display: "flex",
-//           alignItems: "center",
-//           justifyContent: "center",
-//           fontWeight: 600,
-//           fontSize: "0.875rem",
-//           flexShrink: 0,
-//           mt: 0.5,
-//         }}
-//       >
-//         {globalStepNumber}
-//       </Box>
-
-//       <Box sx={{ flex: 1 }}>
-//         <TextField
-//           variant="standard"
-//           value={step.text}
-//           onChange={(e) =>
-//             updateStep(groupIndex, stepIndex, "text", e.target.value)
-//           }
-//           placeholder={i18n.stepPlaceholder({ stepNumber: globalStepNumber })}
-//           fullWidth
-//           multiline
-//           size="small"
-//           onFocus={() => setIsFocused(true)}
-//           onBlur={() => setIsFocused(false)}
-//         />
-//       </Box>
-
-//     {/* ON HOVER CONTENT */}
-//       {/* {showControls && ( */}
-//         <Box visibility={showControls ? "visible" : "hidden"}>
-//           <TextField
-//             value={step.timer || ""}
-//             onChange={(e) =>
-//               updateStep(
-//                 groupIndex,
-//                 stepIndex,
-//                 "timer",
-//                 e.target.value ? Number(e.target.value) : undefined
-//               )
-//             }
-//             placeholder={i18n.timerPlaceholder}
-//             size="small"
-//             type="number"
-//             sx={{ mt: 1, width: 140 }}
-//             InputProps={{
-//               startAdornment: (
-//                 <InputAdornment position="start">
-//                   <TimerOutlinedIcon fontSize="small" color="action" />
-//                 </InputAdornment>
-//               ),
-//               endAdornment: <InputAdornment position="end">{i18n.min}</InputAdornment>,
-//             }}
-//             inputProps={{ min: 0 }}
-//           />
-
-//           <IconButton
-//             onClick={() => removeStep(groupIndex, stepIndex)}
-//             size="small"
-//             disabled={group.steps.length === 1}
-//           >
-//             <DeleteIcon fontSize="small" />
-//           </IconButton>
-//         </Box>
-//       {/* )} */}
-//     </Stack>
-//   );
-// };
 export const InstructionStep = ({
   groups,
   step,
@@ -436,7 +303,7 @@ export const InstructionStep = ({
                 }
 
                 // limit to MM:SS
-                if (value.length > 4) return;
+                if (value.length > 5) return;
 
                 e.target.value = value;
               }}
@@ -473,7 +340,7 @@ export const InstructionStep = ({
               inputProps={{
                 inputMode: "numeric",
                 pattern: "[0-9]{2}:[0-9]{2}",
-                maxLength: 4,
+                maxLength: 5,
               }}
               autoFocus
             />
@@ -515,11 +382,4 @@ export const InstructionStep = ({
       </Stack>
     </Stack>
   );
-};
-
-const secondsToMMSS = (value?: number) => {
-  if (value == null) return "";
-  const minutes = Math.floor(value / 60);
-  const seconds = value % 60;
-  return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
 };

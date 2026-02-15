@@ -136,7 +136,7 @@ export function StickyNote({
           minHeight: 160,
           backgroundColor: `components.stickyNote.${color}`,
           p: 1.5,
-          borderRadius: 0,
+          borderRadius: 1,
           cursor: "inherit",
           userSelect: "none",
         }}

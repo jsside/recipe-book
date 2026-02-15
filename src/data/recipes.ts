@@ -9,7 +9,7 @@ export interface Recipe {
   title: string;
   images?: string[]; // Multiple images support
   cookTime: string;
-  chefId: number; // References chefs table
+  chefId: string; // References chefs table
   chef?: {
     name: string;
     avatar?: string;

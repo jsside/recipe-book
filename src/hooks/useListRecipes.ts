@@ -83,7 +83,7 @@ interface ChefWithRecipes {
 }
 
 export const fetchRecipesByChef = async (
-  chefId: number,
+  chefId: string,
 ): Promise<ChefWithRecipes | null> => {
   const { data, error } = await supabase
     .from("chefs")
@@ -122,14 +122,14 @@ export const fetchRecipesByChef = async (
   };
 };
 
-export function invalidateListRecipesByChef(chefId: number) {
+export function invalidateListRecipesByChef(chefId: string) {
   return singletonQueryClient.invalidateQueries([
     LIST_RECIPES_KEY,
     chefId,
   ] as InvalidateQueryFilters<readonly unknown[]>);
 }
 
-export function useListRecipesByChef(chefId: number) {
+export function useListRecipesByChef(chefId: string) {
   return useQuery<ChefWithRecipes | null, Error>({
     queryFn: () => fetchRecipesByChef(chefId),
     queryKey: [LIST_RECIPES_KEY, chefId],

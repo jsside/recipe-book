@@ -75,15 +75,6 @@ export const fetchRecipeById = async (
 
   if (!data) return null;
 
-  //delme
-
-  const {
-    data: { authedUser },
-  } = await supabase.auth.getUser();
-  console.log({ authedUser });
-
-  ///
-
   return {
     id: data.id,
     title: data.title,

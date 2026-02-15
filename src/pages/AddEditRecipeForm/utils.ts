@@ -5,7 +5,7 @@ import { initialValues } from "./constants";
 interface User {
   name: string;
   avatar?: string;
-  chefId?: number;
+  id?: string;
 }
 
 interface TransformedRecipeData {
@@ -13,7 +13,7 @@ interface TransformedRecipeData {
   description: string;
   cookTime: string;
   servings: number;
-  chefId: number;
+  chefId: string;
   images?: string[];
   category?: string[];
   dietaryTags?: string[];
@@ -98,7 +98,7 @@ export function transformFormToRecipe(
     category: values.categories.length > 0 ? values.categories : ["Dinner"],
     dietaryTags: values.dietaryTags,
     videoUrl: values.videoUrl?.trim() || undefined,
-    chefId: user.chefId || 0,
+    chefId: user.id || "",
     ingredientGroups: formattedIngredientGroups,
     instructionGroups: formattedInstructionGroups,
     nutrition:

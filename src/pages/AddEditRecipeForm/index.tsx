@@ -155,7 +155,7 @@ export default function AddEditRecipeForm() {
       const recipeData = transformFormToRecipe(valuesWithUploadedImages, {
         name: user.name,
         avatar: user.avatar,
-        chefId: user.chefId,
+        id: user.id,
       });
 
       if (isEditMode && recipeId) {

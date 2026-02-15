@@ -8,7 +8,7 @@ interface UpdateRecipeInput {
   description?: string;
   cookTime?: string;
   servings?: number;
-  chefId?: number;
+  chefId?: string;
   images?: string[];
   category?: string[];
   dietaryTags?: string[];

@@ -40,11 +40,46 @@ export function parseInstructionWithIngredients(
     (a, b) => b.name.length - a.name.length,
   );
 
-  // Create a regex pattern for all ingredient names (case-insensitive)
-  const ingredientNames = sortedIngredients.map((ing) =>
-    ing.name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"),
+  // Extract searchable keywords from each ingredient name
+  // e.g. "Skinless Chicken Thighs" -> also matchable by "chicken", "thighs"
+  const ingredientKeywords: { keyword: string; ingredient: Ingredient }[] = [];
+  for (const ing of sortedIngredients) {
+    // Add full name first (highest priority due to length sort)
+    ingredientKeywords.push({ keyword: ing.name, ingredient: ing });
+    // Add individual words (>= 3 chars) for fuzzy matching
+    const words = ing.name.split(/\s+/).filter((w) => w.length >= 3);
+    for (const word of words) {
+      // Skip generic/common words that would match too broadly
+      const stopWords = new Set([
+        "the", "and", "for", "with", "from", "into", "each", "all",
+        "can", "tin", "jar", "bag", "box", "cup", "tsp", "tbsp",
+        "small", "medium", "large", "fresh", "dried", "skinless",
+        "boneless", "whole", "half", "finely", "roughly", "chopped",
+        "sliced", "diced", "minced", "grated", "crushed", "peeled",
+      ]);
+      if (!stopWords.has(word.toLowerCase())) {
+        ingredientKeywords.push({ keyword: word, ingredient: ing });
+      }
+    }
+  }
+
+  // Deduplicate and sort by keyword length (longest first) for greedy matching
+  const seen = new Set<string>();
+  const uniqueKeywords = ingredientKeywords.filter(({ keyword }) => {
+    const lower = keyword.toLowerCase();
+    if (seen.has(lower)) return false;
+    seen.add(lower);
+    return true;
+  });
+  uniqueKeywords.sort((a, b) => b.keyword.length - a.keyword.length);
+
+  const escapedKeywords = uniqueKeywords.map(({ keyword }) =>
+    keyword.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"),
   );
-  const pattern = new RegExp(`\\b(${ingredientNames.join("|")})\\b`, "gi");
+  const pattern = new RegExp(
+    `\\b(${escapedKeywords.join("|")})\\b`,
+    "gi",
+  );
 
   // Track which ingredients have been mentioned to avoid duplicate measurements
   const mentionedIngredients = new Set<string>();
@@ -62,9 +97,14 @@ export function parseInstructionWithIngredients(
     }
 
     const matchedName = match[0];
-    const ingredient = sortedIngredients.find(
-      (ing) => ing.name.toLowerCase() === matchedName.toLowerCase(),
-    );
+    // Find ingredient by exact name match first, then by keyword match
+    const ingredient =
+      sortedIngredients.find(
+        (ing) => ing.name.toLowerCase() === matchedName.toLowerCase(),
+      ) ??
+      uniqueKeywords.find(
+        ({ keyword }) => keyword.toLowerCase() === matchedName.toLowerCase(),
+      )?.ingredient;
 
     if (
       ingredient &&

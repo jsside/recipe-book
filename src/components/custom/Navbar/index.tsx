@@ -42,6 +42,7 @@ interface NavLink {
 
 const navLinks: NavLink[] = [
   { label: "All recipes", href: "/recipes" },
+  { label: "Chefs", href: "/chefs" },
   ...(insertIf(Features["feature-recipe-by-ingredient"], [
     { label: "Ingredients", href: "/ingredients" },
   ]) as NavLink[]),

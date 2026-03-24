@@ -96,7 +96,7 @@ export function RecipeSneakPeek({ recipe }: RecipeSneakPeekProps) {
         >
           {recipe.title}
         </Typography>
-        <Typography variant="caption">{recipe.chef.name}</Typography>
+        <Typography variant="caption">{recipe.chef?.name}</Typography>
       </CardContent>
     </Card>
   );

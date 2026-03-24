@@ -96,7 +96,13 @@ export function StickyNoteLauncher({
 
   return (
     <>
-      <StickyNoteLauncherButton onClick={startPlacement} />
+      <StickyNoteLauncherButton onClick={() => {}} />
+      <StickyNoteBox onClick={startPlacement}>
+        <StickyNote2Outlined
+          className="StickyNoteLauncher--button"
+          sx={{ color: "transparent" }}
+        />
+      </StickyNoteBox>
       {placement && <StickyNoteGhost x={placement.x} y={placement.y} />}
     </>
   );

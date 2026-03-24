@@ -25,7 +25,7 @@ const StickyNoteBox = styled(Box)(() => ({
   },
 }));
 
-function StickyNoteLauncherButton({ onClick }: { onClick: () => void }) {
+function StickyNoteLauncherButton({ onClick }: { onClick: (e: React.MouseEvent) => void }) {
   return (
     <StickyNoteBox onClick={onClick}>
       <StickyNote2Outlined

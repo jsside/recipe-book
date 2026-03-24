@@ -16,6 +16,7 @@ import MealPlans from "../pages/MealPlans";
 import Auth from "../pages/Auth";
 import AddEditRecipeForm from "../pages/AddEditRecipeForm";
 import ChefProfile from "../pages/ChefProfile";
+import Chefs from "../pages/Chefs";
 import NotFound from "../pages/NotFound";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { singletonQueryClient } from "./App.queries";

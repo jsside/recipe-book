@@ -97,9 +97,14 @@ export function parseInstructionWithIngredients(
     }
 
     const matchedName = match[0];
-    const ingredient = sortedIngredients.find(
-      (ing) => ing.name.toLowerCase() === matchedName.toLowerCase(),
-    );
+    // Find ingredient by exact name match first, then by keyword match
+    const ingredient =
+      sortedIngredients.find(
+        (ing) => ing.name.toLowerCase() === matchedName.toLowerCase(),
+      ) ??
+      uniqueKeywords.find(
+        ({ keyword }) => keyword.toLowerCase() === matchedName.toLowerCase(),
+      )?.ingredient;
 
     if (
       ingredient &&

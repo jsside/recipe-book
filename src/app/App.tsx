@@ -59,6 +59,7 @@ const App = () => (
                           path="/edit-recipe/:id"
                           element={<AddEditRecipeForm />}
                         />
+                        <Route path="/chefs" element={<Chefs />} />
                         <Route path="/chef/:name" element={<ChefProfile />} />
                         <Route path="*" element={<NotFound />} />
                       </Routes>
